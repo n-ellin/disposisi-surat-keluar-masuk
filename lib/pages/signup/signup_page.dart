@@ -146,7 +146,7 @@ class SignUpPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            items: ["Kepala Sekolah", "TU", "Lainnya"]
+                            items: ["Kepala Sekolah", "Tata Usaha", "Waka Kesiswaan", "Kepala Tata Usaha", "Waka Kurikulum", "Waka Humas", "Waka Sarpras", "Ketua Konsli", "BK", "BKK", "Koordinator", "Prakerin", "Kepala Perpustakaan"]
                                 .map(
                                   (e) => DropdownMenuItem(
                                     value: e,

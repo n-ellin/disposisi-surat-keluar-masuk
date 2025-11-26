@@ -1,101 +1,195 @@
 import 'package:flutter/material.dart';
+import '../signup/signup_page.dart';
+import '../signin/signin_page.dart';
 
-// IMPORT HALAMAN ASLI
-import 'package:ta_mobile_disposisi_surat/pages/signin/signin_page.dart';
-import 'package:ta_mobile_disposisi_surat/pages/signup/signup_page.dart';
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
+    final textScale = width / 380;
+    final imageScale = width / 350;
+
     return Scaffold(
-      body: Stack(
-        children: [
-          // BACKGROUND IMAGE GEDUNG
-          Positioned.fill(
-            child: Image.asset("assets/image/lobby.jpg", fit: BoxFit.cover),
-          ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
 
-          // OVERLAY GELAP
-          Container(color: Colors.black.withOpacity(0.15)),
-
-          // KONTEN UTAMA
-          Column(
-            children: [
-              const SizedBox(height: 65), // Logo agak naik
-              // LOGO SEKOLAH
-              Image.asset("assets/image/logosmk.jpg", width: 150, height: 150),
-
-              const Spacer(), // Spacer ini bikin tombol selalu di bawah
-              // BUTTON LOGIN
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const SigninPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.7),
-                      foregroundColor: Colors.blueAccent,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: const Text(
-                      "LOG IN",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              // BUTTON SIGN UP
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const SignUpPage()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.7),
-                      foregroundColor: Colors.blueAccent,
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    child: const Text(
-                      "SIGN UP",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 40), // jarak bawah
+        /// === BACKGROUND GRADIENT ===
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFE3F2FD),  // biru muda
+              Color(0xFF90CAF9),  // biru medium
             ],
           ),
-        ],
+        ),
+
+        child: Column(
+          children: [
+            SizedBox(height: height * 0.09),
+
+            // ==== JUDUL ====
+            Column(
+              children: [
+                Text(
+                  "Disposisi",
+                  style: TextStyle(
+                    color: Color(0xFF1E3A5F),
+                    fontSize: 40 * textScale,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  "Surat Masuk",
+                  style: TextStyle(
+                    color: Color(0xFF1E3A5F),
+                    fontSize: 40 * textScale,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Text(
+                  "Surat Keluar",
+                  style: TextStyle(
+                    color: Color(0xFF1E3A5F),
+                    fontSize: 40 * textScale,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: height * 0.04),
+
+            // ==== MASKOT ====
+            SizedBox(
+              height: height * 0.28,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    right: 5,
+                    bottom: 0,
+                    child: Image.asset(
+                      'assets/images/rasi.png',
+                      height: 195 * imageScale,
+                    ),
+                  ),
+                  Positioned(
+                    left: 5,
+                    bottom: 0,
+                    child: Image.asset(
+                      'assets/images/ino.png',
+                      height: 200 * imageScale,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: height * 0.05),
+
+            // ==== CARD BAWAH ====
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(top: height * 0.04),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(60),
+                    topRight: Radius.circular(60),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 35,
+                      offset: Offset(0, -8),
+                    ),
+                  ],
+                ),
+
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    /// === SIGN UP ===
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SignUp()),
+                        );
+                      },
+                      child: Container(
+                        width: width * 0.65,
+                        padding: EdgeInsets.symmetric(vertical: height * 0.015),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF64B5F6),
+                              Color(0xFF1E88E5)
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Daftar",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24 * textScale,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: height * 0.035),
+
+                    /// === SIGN IN ===
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SignIn()),
+                        );
+                      },
+                      child: Container(
+                        width: width * 0.65,
+                        padding: EdgeInsets.symmetric(vertical: height * 0.015),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF64B5F6),
+                              Color(0xFF1E88E5)
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Masuk",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24 * textScale,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

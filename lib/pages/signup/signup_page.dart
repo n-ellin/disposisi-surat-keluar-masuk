@@ -1,221 +1,285 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/pages/signin/signin_page.dart';
+import 'package:flutter/services.dart';
+import 'package:ta_mobile_disposisi_surat/pages/Home/home_page.dart';
+import '../signin/signin_page.dart'; // import halaman SignIn
+  // import halaman Home
 
-class SignUpPage extends StatelessWidget {
-  const SignUpPage({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
+
+  @override
+  State<SignUp> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUp> {
+  bool _obscurePass = true;
+  bool _obscureConfirmPass = true;
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.blue.shade300,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Background
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/image/lobby.jpg"),
-                fit: BoxFit.cover,
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final width = size.width;
+
+    return WillPopScope(
+      onWillPop: () async {
+        // Navigasi saat back ditekan, langsung ke Home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const WelcomePage()),
+        );
+        return false; // mencegah kembali ke halaman sebelumnya
+      },
+      child: Scaffold(
+        body: SizedBox(
+          width: width,
+          height: height,
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFE3F2FD), Color(0xFF90CAF9)],
               ),
             ),
-          ),
-
-          Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 25,
-                        vertical: 30,
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.10),
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: Image.asset(
+                          "assets/images/rasi2.png",
+                          height: height * 0.25,
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.25),
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: Column(
-                        children: [
-                          Image.asset("assets/image/logosmk.jpg", height: 100),
-                          SizedBox(height: 10),
-
-                          Text(
-                            "SIGN UP",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueGrey,
-                            ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: width * 0.06),
+                          padding: EdgeInsets.symmetric(
+                            vertical: height * 0.02,
+                            horizontal: width * 0.06,
                           ),
-
-                          SizedBox(height: 20),
-
-                          // NAMA
-                          TextField(
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: 14,
-                                horizontal: 20,
-                              ),
-                              hintText: "Nama",
-                              prefixIcon: Icon(Icons.person),
-                              filled: true,
-                              fillColor: Colors.white.withOpacity(0.8),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.25),
+                              width: 1.5,
                             ),
-                          ),
-
-                          SizedBox(height: 15),
-
-                          // EMAIL
-                          TextField(
-                            decoration: InputDecoration(
-                              hintText: "Email",
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: 14,
-                                horizontal: 20,
-                              ),
-                              prefixIcon: Icon(Icons.email),
-                              filled: true,
-                              fillColor: Colors.white.withOpacity(0.8),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: 15),
-
-                          // PASSWORD
-                          TextField(
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: "Password",
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: 14,
-                                horizontal: 20,
-                              ),
-                              prefixIcon: Icon(Icons.visibility),
-                              filled: true,
-                              fillColor: Colors.white.withOpacity(0.8),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: 15),
-
-                          // confirm password
-                          TextField(
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: "Confirm Password",
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: 14,
-                                horizontal: 20,
-                              ),
-                              prefixIcon: Icon(Icons.visibility_outlined),
-                              filled: true,
-                              fillColor: Colors.white.withOpacity(0.8),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: 15),
-
-                          // ROLE DROPDOWN
-                          DropdownButtonFormField<String>(
-                            decoration: InputDecoration(
-                              hintText: "Role",
-                              prefixIcon: Icon(Icons.badge),
-                              filled: true,
-                              fillColor: Colors.white.withOpacity(0.8),
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: 14,
-                                horizontal: 20,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            items: ["Kepala Sekolah", "Tata Usaha", "Waka Kesiswaan", "Kepala Tata Usaha", "Waka Kurikulum", "Waka Humas", "Waka Sarpras", "Ketua Konsli", "BK", "BKK", "Koordinator", "Prakerin", "Kepala Perpustakaan"]
-                                .map(
-                                  (e) => DropdownMenuItem(
-                                    value: e,
-                                    child: Text(e),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (value) {},
-                          ),
-
-                          SizedBox(height: 20),
-
-                          // BUTTON
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue.shade300,
-                                foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
-                              onPressed: () {},
-                              child: Text(
-                                "SIGN UP",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: 15),
-
-                          // LINK TO LOGIN
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text("Do you have an account? "),
-                              TextButton(
-                                onPressed: () {
-                                  // Navigasi ke halaman Sign Up
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const SigninPage(),
-                                    ),
-                                  );
-                                },
-                                child: const Text(
-                                  "Sign In",
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(255, 253, 252, 252)
+                                    .withOpacity(0.10),
+                                blurRadius: 20,
+                                spreadRadius: 1,
                               ),
                             ],
                           ),
-                        ],
+                          child: Column(
+                            children: [
+                              Text(
+                                "Daftar",
+                                style: TextStyle(
+                                  fontSize: width * 0.07,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              SizedBox(height: height * 0.02),
+                              _buildTextField(
+                                  label: "Nama", icon: Icons.person_outline, width: width),
+                              SizedBox(height: height * 0.02),
+                              _buildTextField(
+                                  label: "Email",
+                                  icon: Icons.email_outlined,
+                                  keyboardType: TextInputType.emailAddress,
+                                  width: width),
+                              SizedBox(height: height * 0.02),
+                              _buildPasswordField(
+                                label: "Kata Sandi",
+                                obscure: _obscurePass,
+                                onTap: () => setState(() => _obscurePass = !_obscurePass),
+                                width: width,
+                              ),
+                              SizedBox(height: height * 0.02),
+                              _buildPasswordField(
+                                label: "Ulangi kata sandi",
+                                obscure: _obscureConfirmPass,
+                                onTap: () => setState(
+                                    () => _obscureConfirmPass = !_obscureConfirmPass),
+                                width: width,
+                              ),
+                              SizedBox(height: height * 0.02),
+                              _buildDropdown(width),
+                              SizedBox(height: height * 0.03),
+                              SizedBox(
+                                width: double.infinity,
+                                height: height * 0.065,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue.shade400,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  onPressed: () {},
+                                  child: Text(
+                                    "Daftar",
+                                    style: TextStyle(
+                                      fontSize: width * 0.045,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: height * 0.015),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Sudah memiliki akun? ",
+                                    style: TextStyle(fontSize: width * 0.035),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Navigasi ke halaman SignIn
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => const SignIn()),
+                                      );
+                                    },
+                                    child: Text(
+                                      "Masuk",
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(255, 16, 85, 142),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: width * 0.038,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
+    );
+  }
+
+  // ========================= WIDGET REUSABLE =========================
+  Widget _buildTextField({
+    required String label,
+    required IconData icon,
+    required double width,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextField(
+      cursorColor: Colors.blue,
+      keyboardType: keyboardType,
+      style: TextStyle(fontSize: width * 0.038),
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: Colors.black, size: width * 0.06),
+        labelText: label,
+        labelStyle: TextStyle(fontSize: width * 0.038, color: Colors.black),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.3),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 15),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField({
+    required String label,
+    required bool obscure,
+    required VoidCallback onTap,
+    required double width,
+  }) {
+    return TextField(
+      obscureText: obscure,
+      cursorColor: const Color.fromARGB(255, 82, 128, 165),
+      style: TextStyle(fontSize: width * 0.038),
+      decoration: InputDecoration(
+        prefixIcon: Icon(Icons.lock_outline, color: Colors.black, size: width * 0.06),
+        suffixIcon: IconButton(
+          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: Colors.black, size: width * 0.06),
+          onPressed: onTap,
+        ),
+        labelText: label,
+        labelStyle: TextStyle(fontSize: width * 0.038, color: Colors.black),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.3),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 15),
+      ),
+    );
+  }
+
+  Widget _buildDropdown(double width) {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        prefixIcon: Icon(Icons.person_2_outlined, color: Colors.black, size: width * 0.06),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.grey, width: 1.3),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.blue, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+      ),
+      items: const [
+        DropdownMenuItem(value: "Tata Usaha", child: Text("Tata Usaha")),
+        DropdownMenuItem(value: "Kepala Sekolah", child: Text("Kepala Sekolah")),
+        DropdownMenuItem(value: "Lainnya", child: Text("Lainnya")),
+      ],
+      hint: Text("Jabatan", style: TextStyle(fontSize: width * 0.038)),
+      onChanged: (value) {},
     );
   }
 }

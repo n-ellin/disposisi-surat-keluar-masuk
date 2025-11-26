@@ -173,10 +173,17 @@ class _KepsekMenuState extends State<KepsekMenu> {
           ),
           const SizedBox(height: 12),
 
-          // ISI CARD SURAT KELUAR
-          const Text("Kode", style: TextStyle(color: Colors.black54)),
-          const Text("No Surat", style: TextStyle(color: Colors.black54)),
-          const Text("Asal", style: TextStyle(color: Colors.black54)),
+          // 👇 Kondisi isi berdasarkan jenis surat
+          if (jenis == "Surat Keluar") ...[
+            const Text("Kode", style: TextStyle(color: Colors.black54)),
+            const Text("No Surat", style: TextStyle(color: Colors.black54)),
+            const Text("Asal", style: TextStyle(color: Colors.black54)),
+          ] else ...[
+            const Text("No Surat", style: TextStyle(color: Colors.black54)),
+            const Text("Asal", style: TextStyle(color: Colors.black54)),
+            const Text("Perihal", style: TextStyle(color: Colors.black54)),
+            const Text("Tgl Diterima", style: TextStyle(color: Colors.black54)),
+          ],
 
           const SizedBox(height: 16),
 

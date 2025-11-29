@@ -31,15 +31,7 @@ class _SignInPageState extends State<SignIn> {
   final List<String> roles = [
     "Tata Usaha",
     "Kepala Sekolah",
-    "Waka Kurikulum",
-    "Waka Kesiswaan",
-    "Waka Humas",
-    "Waka Sarpras",
-    "Ketua Konsli",
-    "BK",
-    "BKK",
-    "Koordinator Prakerin",
-    "Kepala Perpustakaan",
+    "Lainnya",
   ];
 
   @override

@@ -172,7 +172,7 @@ class _SignUpPageState extends State<SignUp> {
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) => const SignIn(),
+                                          builder: (_) => const WelcomePage(),
                                         ),
                                       );
                                     },
@@ -285,10 +285,21 @@ class _SignUpPageState extends State<SignUp> {
         fillColor: Colors.white,
       ),
       items: const [
-        DropdownMenuItem(value: "Tata Usaha", child: Text("Tata Usaha")),
+        DropdownMenuItem(value: "Kepala Tata Usaha", child: Text("Kepala Tata Usaha")),
         DropdownMenuItem(value: "Kepala Sekolah", child: Text("Kepala Sekolah")),
-        DropdownMenuItem(value: "Lainnya", child: Text("Lainnya")),
+        DropdownMenuItem(value: "Tata Usaha", child: Text("Tata Usaha")),
+        DropdownMenuItem(value: "Waka Kurikulum", child: Text("Waka Kurikulum")),
+        DropdownMenuItem(value: "Waka Kesiswaan",child: Text("Waka Kesiswaan")),
+        DropdownMenuItem(value: "Waka Humas",child: Text("Waka Humas")),
+        DropdownMenuItem(value: "Waka Sarpras",child: Text("Waka Sarpras")),
+        DropdownMenuItem(value: "Waka Konsli",child: Text("Ketua Konsli")),
+        DropdownMenuItem(value: "BK",child: Text("BK")),
+        DropdownMenuItem(value: "BKK", child: Text("BKK")),
+        DropdownMenuItem(value: "Koordinator", child: Text("Koordinator")),
+        DropdownMenuItem(value: "Prakerin", child: Text("Prakerin")),
+        DropdownMenuItem(value: "Kepala Perpustakaan",child: Text("kepala Perpustakaan")),
       ],
+      
       hint: Text("Jabatan", style: TextStyle(fontSize: width * 0.038)),
       value: selectedRole,
       onChanged: (value) {

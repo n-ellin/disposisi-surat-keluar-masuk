@@ -17,7 +17,6 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignIn> {
-  // DUMMY DATA LOGIN (untuk testing tanpa backend)
   final List<Map<String, String>> dummyUsers = [
     {"email": "deta002@gmail.com", "password": "deta002", "role": "Tata Usaha"},
     {
@@ -28,31 +27,26 @@ class _SignInPageState extends State<SignIn> {
     {"email": "user@smk.com", "password": "user123", "role": "Lainnya"},
   ];
 
-  /*BAGIAN STATE & CONTROLLER
-    digunakan untuk menyimpan input, status UI seperti sembunyikan password,
-    dan error validasi. */
+  bool _obscurePass = true;
+  bool _showError = false;
+  bool _showEmptyPassError = false;
+  bool _showEmptyEmailError = false;
+  bool _showEmailNotFoundError = false;
+  bool _showRoleMismatchError = false;
 
-  bool _obscurePass = true; // Mengatur icon tampil/sembunyi password
-  bool _showError = false; // Error ketika password salah
-  bool _showEmptyPassError = false; // Error ketika password masih kosong
-
-  // Controller untuk mengambil input teks dari TextField
   final TextEditingController emailC = TextEditingController();
   final TextEditingController passwordC = TextEditingController();
 
-  // Dropdown untuk memilih role/jabatan pengguna
   String? selectedRole;
-  final List<String> roles = ["Tata Usaha", "Kepala Sekolah", "Lainnya"];
+  final List<String> roles = ["Kepala Tata Usaha","Kepala Sekolah","Tata Usaha", "Waka Kurikulum", "Waka Kesiswaan","Waka Humas","Waka Sarpras","Ketua Konsli","BK","BKK","Koordinator", "Prakerin","Kepala Perpustakaan"];
 
   @override
   Widget build(BuildContext context) {
-    // Mengambil ukuran layar agar komponen UI responsif
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      // Mengatur warna status bar dan navigasi HP agar sesuai tema aplikasi
       value: const SystemUiOverlayStyle(
         statusBarColor: Color(0xFFE3F2FD),
         statusBarIconBrightness: Brightness.dark,
@@ -60,9 +54,6 @@ class _SignInPageState extends State<SignIn> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
 
-      /* WILLPOPSCOPE
-         - Digunakan untuk mencegah user keluar menggunakan tombol back
-         - dan mengarahkan kembali ke halaman WelcomePage. */
       child: WillPopScope(
         onWillPop: () async {
           Navigator.pushReplacement(
@@ -73,14 +64,12 @@ class _SignInPageState extends State<SignIn> {
         },
 
         child: Scaffold(
-          resizeToAvoidBottomInset:
-              false, // Mencegah layout bergeser saat keyboard muncul
+          resizeToAvoidBottomInset: false,
 
           body: Container(
             width: width,
             height: height,
 
-            /*LATAR BELAKANG (BACKGROUND GRADIENT)*/
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -94,15 +83,12 @@ class _SignInPageState extends State<SignIn> {
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
-                      physics:
-                          const BouncingScrollPhysics(), // Efek scroll lembut
+                      physics: const BouncingScrollPhysics(),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: height * 0.04),
 
-                          /*BAGIAN LOGO / MASKOT
-                             - ditampilkan agar user mengenali aplikasi sebelum login*/
                           Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: width * 0.10,
@@ -121,14 +107,10 @@ class _SignInPageState extends State<SignIn> {
 
                           SizedBox(height: height * 0.02),
 
-                          /*FORM LOGIN DENGAN GLASS EFFECT (Glassmorphism)*/
                           ClipRRect(
                             borderRadius: BorderRadius.circular(25),
                             child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                sigmaX: 12,
-                                sigmaY: 12,
-                              ), // Efek blur
+                              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                               child: Container(
                                 margin: EdgeInsets.symmetric(
                                   horizontal: width * 0.06,
@@ -149,7 +131,6 @@ class _SignInPageState extends State<SignIn> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Judul form login
                                     Center(
                                       child: Text(
                                         "Masuk",
@@ -161,17 +142,24 @@ class _SignInPageState extends State<SignIn> {
                                       ),
                                     ),
                                     SizedBox(height: height * 0.02),
-
-                                    // INPUT EMAIL
                                     _buildTextField(
                                       controller: emailC,
                                       label: "Email",
                                       icon: Icons.email_outlined,
                                       keyboardType: TextInputType.emailAddress,
                                     ),
+
+                                    if (_showEmptyEmailError)
+                                      _errorMessage("Isi email", width),
+
+                                    if (_showEmailNotFoundError)
+                                      _errorMessage(
+                                        "Email tidak ditemukan",
+                                        width,
+                                      ),
+
                                     SizedBox(height: height * 0.02),
 
-                                    // INPUT PASSWORD + LOGIC SHOW/HIDE
                                     _buildPasswordField(
                                       controller: passwordC,
                                       label: "Kata Sandi",
@@ -181,22 +169,25 @@ class _SignInPageState extends State<SignIn> {
                                       ),
                                     ),
 
-                                    // Menampilkan validasi jika user belum mengisi password
                                     if (_showEmptyPassError)
                                       _errorMessage("Isi kata sandi", width),
 
-                                    // Menampilkan pesan jika password salah
                                     if (_showError)
                                       _errorMessage("Kata sandi salah", width),
 
                                     SizedBox(height: height * 0.02),
 
-                                    // DROPDOWN ROLE / JABATAN
                                     _buildDropdown(width),
+
+                                    if (_showRoleMismatchError)
+                                      _errorMessage(
+                                        "Jabatan tidak sesuai",
+                                        width,
+                                      ),
+
+
                                     SizedBox(height: height * 0.03),
 
-                                    /*TOMBOL LOGIN
-                                       - Menjalankan fungsi loginUser() ketika ditekan*/
                                     SizedBox(
                                       width: double.infinity,
                                       height: height * 0.065,
@@ -225,7 +216,6 @@ class _SignInPageState extends State<SignIn> {
 
                                     SizedBox(height: height * 0.03),
 
-                                    // Link menuju halaman pendaftaran akun
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -267,7 +257,6 @@ class _SignInPageState extends State<SignIn> {
                     ),
                   ),
 
-                  // Copyright footer
                   Padding(
                     padding: EdgeInsets.only(bottom: height * 0.02),
                     child: Text(
@@ -287,7 +276,6 @@ class _SignInPageState extends State<SignIn> {
     );
   }
 
-  // Widget reusable untuk error message
   Widget _errorMessage(String msg, double width) {
     return Padding(
       padding: const EdgeInsets.only(top: 4),
@@ -298,7 +286,6 @@ class _SignInPageState extends State<SignIn> {
     );
   }
 
-  /*REUSABLE INPUT FIELD (EMAIL ROLE)*/
   Widget _buildTextField({
     required String label,
     required IconData icon,
@@ -319,7 +306,6 @@ class _SignInPageState extends State<SignIn> {
     );
   }
 
-  /*REUSABLE INPUT FIELD PASSWORD (DENGAN TOGGLE ICON)*/
   Widget _buildPasswordField({
     required String label,
     required bool obscure,
@@ -335,7 +321,6 @@ class _SignInPageState extends State<SignIn> {
         fillColor: Colors.white,
         prefixIcon: const Icon(Icons.lock_outline, color: Colors.black),
 
-        // Icon mata untuk menampilkan atau menyembunyikan password
         suffixIcon: IconButton(
           icon: Icon(
             obscure ? Icons.visibility_off : Icons.visibility,
@@ -350,7 +335,6 @@ class _SignInPageState extends State<SignIn> {
     );
   }
 
-  /*DROPDOWN JABATAN*/
   Widget _buildDropdown(double width) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -377,7 +361,6 @@ class _SignInPageState extends State<SignIn> {
                 ),
               ),
 
-              // Mengubah role ketika user memilih opsi
               onChanged: (value) => setState(() => selectedRole = value),
 
               items: roles.map((role) {
@@ -390,24 +373,32 @@ class _SignInPageState extends State<SignIn> {
     );
   }
 
-  /*FUNGSI LOGIN
-     - Validasi password & role
-     - Menentukan halaman tujuan sesuai jabatan pengguna
-     - Backend masih placeholder (print)*/
   Future<void> loginUser() async {
     final email = emailC.text.trim();
     final password = passwordC.text.trim();
     final role = selectedRole;
 
-    // Validasi password kosong
     setState(() {
-      _showEmptyPassError = password.isEmpty;
+      _showEmptyEmailError = false;
+      _showEmptyPassError = false;
       _showError = false;
+      _showEmailNotFoundError = false;
+      _showRoleMismatchError = false;
     });
 
-    if (password.isEmpty) return;
+    // email kosong
+    if (email.isEmpty) {
+      setState(() => _showEmptyEmailError = true);
+      return;
+    }
 
-    // Validasi role belum dipilih
+    // password kosong
+    if (password.isEmpty) {
+      setState(() => _showEmptyPassError = true);
+      return;
+    }
+
+    // role kosong
     if (role == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Pilih jabatan terlebih dahulu')),
@@ -415,21 +406,33 @@ class _SignInPageState extends State<SignIn> {
       return;
     }
 
-    // CARI USER DI DUMMY DATA
-    final user = dummyUsers.firstWhere(
-      (u) =>
-          u['email'] == email && u['password'] == password && u['role'] == role,
+    // cari user dari email
+    final userByEmail = dummyUsers.firstWhere(
+      (user) => user["email"] == email,
       orElse: () => {},
     );
 
-    // Jika tidak ditemukan -> error
-    if (user.isEmpty) {
-      setState(() => _showError = true);
+    // email tidak terdaftar
+    if (userByEmail.isEmpty) {
+      setState(() => _showEmailNotFoundError = true);
       return;
     }
 
-    // Jika sesuai → NAVIGASI sesuai role
-    if (role == "Tata Usaha") {
+    // password salah (email benar)
+    if (userByEmail["password"] != password) {
+      setState(() => _showError = true); //kata sandi salah
+      return;
+    }
+
+    // role salah (email dan password benar)
+    if (userByEmail["role"] != role) {
+      setState(() => _showRoleMismatchError = true);
+      return;
+    }
+
+
+    //login berhasil
+    if (role == "Tata Usaha" || role == "Kepala Tata Usaha") {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const TUHomePage()),

@@ -1,8 +1,8 @@
-import 'dart:ui'; 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../Home/home_page.dart';
-import '../signin/signin_page.dart'; 
+import '../signin/signin_page.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -14,13 +14,13 @@ class SignUp extends StatefulWidget {
 class _SignUpPageState extends State<SignUp> {
   bool _obscurePass = true;
   bool _obscureConfirmPass = true;
-  String? selectedRole; 
+  String? selectedRole;
 
-  @override //menambahkan metode
+  @override
   void initState() {
     super.initState();
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
+      const SystemUiOverlayStyle(
         statusBarColor: Color(0xFFE3F2FD),
         statusBarIconBrightness: Brightness.light,
       ),
@@ -34,18 +34,17 @@ class _SignUpPageState extends State<SignUp> {
     final width = size.width;
 
     return WillPopScope(
-      onWillPop: () async { 
-        Navigator.pushReplacement( 
+      onWillPop: () async {
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const WelcomePage()),
         );
         return false;
       },
-      child: Scaffold( //dasar halaman
+      child: Scaffold(
         body: SizedBox(
           width: width,
-          height: height,
-          child: Container( 
+          child: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -53,18 +52,16 @@ class _SignUpPageState extends State<SignUp> {
                 colors: [Color(0xFFE3F2FD), Color(0xFF90CAF9)],
               ),
             ),
-            child: SafeArea( 
+            child: SafeArea(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: width * 0.10),
-                      child: FittedBox(
+                      child: Image.asset(
+                        "assets/images/rasi2.png",
+                        height: height * 0.16,
                         fit: BoxFit.contain,
-                        child: Image.asset(
-                          "assets/images/rasi2.png",
-                          height: height * 0.25,
-                        ),
                       ),
                     ),
                     ClipRRect(
@@ -72,9 +69,14 @@ class _SignUpPageState extends State<SignUp> {
                       child: BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: width * 0.06),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: width * 0.05,
+                          ),
+                          constraints: const BoxConstraints(maxWidth: 500),
                           padding: EdgeInsets.symmetric(
-                              vertical: height * 0.02, horizontal: width * 0.06),
+                            vertical: height * 0.02,
+                            horizontal: width * 0.06,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(25),
@@ -84,8 +86,7 @@ class _SignUpPageState extends State<SignUp> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color.fromARGB(255, 253, 252, 252)
-                                    .withOpacity(0.10),
+                                color: Colors.black.withOpacity(0.10),
                                 blurRadius: 20,
                                 spreadRadius: 1,
                               ),
@@ -119,22 +120,23 @@ class _SignUpPageState extends State<SignUp> {
                                 label: "Kata Sandi",
                                 obscure: _obscurePass,
                                 onTap: () => setState(
-                                  () => _obscurePass = !_obscurePass,
-                                ),
+                                    () => _obscurePass = !_obscurePass),
                                 width: width,
                               ),
                               SizedBox(height: height * 0.02),
                               _buildPasswordField(
                                 label: "Ulangi kata sandi",
                                 obscure: _obscureConfirmPass,
-                                onTap: () => setState(
-                                  () => _obscureConfirmPass = !_obscureConfirmPass,
-                                ),
+                                onTap: () => setState(() =>
+                                    _obscureConfirmPass =
+                                        !_obscureConfirmPass),
                                 width: width,
                               ),
                               SizedBox(height: height * 0.02),
                               _buildDropdown(width),
                               SizedBox(height: height * 0.03),
+
+                              // ================= BUTTON DAFTAR ====================
                               SizedBox(
                                 width: double.infinity,
                                 height: height * 0.065,
@@ -146,8 +148,41 @@ class _SignUpPageState extends State<SignUp> {
                                     ),
                                   ),
                                   onPressed: () {
-                                    // nanti di sini bisa kirim data ke backend
-                                    print("Role terpilih: $selectedRole");
+                                    // wajib pilih role
+                                    if (selectedRole == null) {
+                                      _showPopup(
+                                        "Silakan pilih jabatan terlebih dahulu.",
+                                        () => Navigator.pop(context),
+                                      );
+                                      return;
+                                    }
+
+                                    // role yang langsung login
+                                    if (selectedRole == "Kepala Tata Usaha" ||
+                                        selectedRole == "Kepala Sekolah" ||
+                                        selectedRole == "Tata Usaha") {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => const SignIn(),
+                                        ),
+                                      );
+                                    } else {
+                                      // role lain wajib menunggu approval
+                                      _showPopup(
+                                        "Tunggu persetujuan admin dalam waktu 2 jam",
+                                        () {
+                                          Navigator.pop(context);
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const WelcomePage(),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    }
                                   },
                                   child: Text(
                                     "Daftar",
@@ -159,6 +194,7 @@ class _SignUpPageState extends State<SignUp> {
                                   ),
                                 ),
                               ),
+
                               SizedBox(height: height * 0.015),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -172,14 +208,15 @@ class _SignUpPageState extends State<SignUp> {
                                       Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) => const WelcomePage(),
+                                          builder: (_) => const SignIn(),
                                         ),
                                       );
                                     },
                                     child: Text(
                                       "Masuk",
                                       style: TextStyle(
-                                        color: const Color.fromARGB(255, 16, 85, 142),
+                                        color: const Color.fromARGB(
+                                            255, 16, 85, 142),
                                         fontWeight: FontWeight.bold,
                                         fontSize: width * 0.038,
                                       ),
@@ -198,6 +235,23 @@ class _SignUpPageState extends State<SignUp> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // ========================= POPUP =========================
+  void _showPopup(String message, VoidCallback onOk) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Informasi"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: onOk,
+            child: const Text("OK"),
+          ),
+        ],
       ),
     );
   }
@@ -227,7 +281,8 @@ class _SignUpPageState extends State<SignUp> {
         ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 15),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 14, horizontal: 15),
       ),
     );
   }
@@ -243,7 +298,8 @@ class _SignUpPageState extends State<SignUp> {
       cursorColor: const Color.fromARGB(255, 82, 128, 165),
       style: TextStyle(fontSize: width * 0.038),
       decoration: InputDecoration(
-        prefixIcon: Icon(Icons.lock_outline, color: Colors.black, size: width * 0.06),
+        prefixIcon:
+            Icon(Icons.lock_outline, color: Colors.black, size: width * 0.06),
         suffixIcon: IconButton(
           icon: Icon(
             obscure ? Icons.visibility_off : Icons.visibility,
@@ -264,15 +320,21 @@ class _SignUpPageState extends State<SignUp> {
         ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 15),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 14, horizontal: 15),
       ),
     );
   }
 
   Widget _buildDropdown(double width) {
     return DropdownButtonFormField<String>(
+      isExpanded: true,
       decoration: InputDecoration(
-        prefixIcon: Icon(Icons.person_2_outlined, color: Colors.black, size: width * 0.06),
+        prefixIcon: Icon(
+          Icons.person_2_outlined,
+          color: Colors.black,
+          size: width * 0.06,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
           borderSide: const BorderSide(color: Colors.grey, width: 1.3),
@@ -285,21 +347,28 @@ class _SignUpPageState extends State<SignUp> {
         fillColor: Colors.white,
       ),
       items: const [
-        DropdownMenuItem(value: "Kepala Tata Usaha", child: Text("Kepala Tata Usaha")),
-        DropdownMenuItem(value: "Kepala Sekolah", child: Text("Kepala Sekolah")),
+        DropdownMenuItem(
+            value: "Kepala Tata Usaha", child: Text("Kepala Tata Usaha")),
+        DropdownMenuItem(
+            value: "Kepala Sekolah", child: Text("Kepala Sekolah")),
         DropdownMenuItem(value: "Tata Usaha", child: Text("Tata Usaha")),
-        DropdownMenuItem(value: "Waka Kurikulum", child: Text("Waka Kurikulum")),
-        DropdownMenuItem(value: "Waka Kesiswaan",child: Text("Waka Kesiswaan")),
-        DropdownMenuItem(value: "Waka Humas",child: Text("Waka Humas")),
-        DropdownMenuItem(value: "Waka Sarpras",child: Text("Waka Sarpras")),
-        DropdownMenuItem(value: "Waka Konsli",child: Text("Ketua Konsli")),
-        DropdownMenuItem(value: "BK",child: Text("BK")),
+        DropdownMenuItem(
+            value: "Waka Kurikulum", child: Text("Waka Kurikulum")),
+        DropdownMenuItem(
+            value: "Waka Kesiswaan", child: Text("Waka Kesiswaan")),
+        DropdownMenuItem(value: "Waka Humas", child: Text("Waka Humas")),
+        DropdownMenuItem(
+            value: "Waka Sarpras", child: Text("Waka Sarpras")),
+        DropdownMenuItem(
+            value: "Waka Konseling", child: Text("Waka Konseling")),
+        DropdownMenuItem(value: "BK", child: Text("BK")),
         DropdownMenuItem(value: "BKK", child: Text("BKK")),
         DropdownMenuItem(value: "Koordinator", child: Text("Koordinator")),
         DropdownMenuItem(value: "Prakerin", child: Text("Prakerin")),
-        DropdownMenuItem(value: "Kepala Perpustakaan",child: Text("kepala Perpustakaan")),
+        DropdownMenuItem(
+            value: "Kepala Perpustakaan",
+            child: Text("Kepala Perpustakaan")),
       ],
-      
       hint: Text("Jabatan", style: TextStyle(fontSize: width * 0.038)),
       value: selectedRole,
       onChanged: (value) {

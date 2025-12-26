@@ -41,6 +41,9 @@ class SuratCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    final avatarSize = w * 0.10;
+    final iconSize = avatarSize * 0.65;
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -49,33 +52,86 @@ class SuratCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // HEADER
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.blue.shade100,
-                  child: Icon(_iconSurat(), color: Colors.blue),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    jenisSurat,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Text(tanggal, style: const TextStyle(fontSize: 12)),
-              ],
-            ),
+            // HEADER (KHUSUS TU)
+            if (role == CardRole.tu)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ICON
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 6,
+                    ), // atur turun naik di sini
+                    child: CircleAvatar(
+                      radius: avatarSize / 2,
+                      backgroundColor: const Color(0xFFD9D9D9),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final iconSize = constraints.maxWidth * 0.6;
 
-            if (status != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Chip(
-                  label: Text(
-                    status!,
-                    style: const TextStyle(color: Colors.white),
+                          return ColorFiltered(
+                            colorFilter: const ColorFilter.mode(
+                              Color(0xFF438BB2),
+                              BlendMode.srcIn,
+                            ),
+                            child: Image.asset(
+                              jenisSurat == 'Surat Masuk'
+                                  ? 'assets/icons/ic_inmail.png'
+                                  : 'assets/icons/ic_outmail.png',
+                              width: iconSize,
+                              height: iconSize,
+                              fit: BoxFit.contain,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                  backgroundColor: _statusColor(),
-                ),
+
+                  const SizedBox(width: 10),
+
+                  // JENIS SURAT + STATUS
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          jenisSurat,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        if (status != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _statusColor().withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              status!,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: _statusColor(),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  // TANGGAL
+                  Text(
+                    tanggal,
+                    style: const TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
+                ],
               ),
 
             const SizedBox(height: 10),
@@ -112,11 +168,18 @@ class SuratCard extends StatelessWidget {
                   ElevatedButton(
                     onPressed: onDelete,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Colors.blue, // warna tombol
                       shape: const StadiumBorder(),
                     ),
-                    child: const Text('Hapus'),
+                    child: const Text(
+                      'Hapus',
+                      style: TextStyle(
+                        color: Colors.white, // 🎨 WARNA TEKS
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
+
                 const SizedBox(width: 8),
                 CircleAvatar(
                   backgroundColor: Colors.blue,

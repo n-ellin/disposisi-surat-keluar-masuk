@@ -24,10 +24,10 @@ class AuthController {
       _goToDashboard(context, const TuDashboardPage());
     } else if (username == 'kepsek') {
       currentRole = 'kepsek';
-      _goToDashboard(context, const KepsekDashboardPage());
+      _goToDashboard(context, const KepsekMenu());
     } else {
       currentRole = 'other';
-      _goToDashboard(context, const OtherDashboardPage());
+      _goToDashboard(context, const MenuOther());
     }
   }
 

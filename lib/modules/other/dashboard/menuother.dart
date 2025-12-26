@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../notifotth.dart';
-import '../../../shared/widgets/surat_model.dart';
+import '../../../shared/widgets/surat_card.dart';
 import '../../profile/profile.dart';
 
 class MenuOther extends StatefulWidget {

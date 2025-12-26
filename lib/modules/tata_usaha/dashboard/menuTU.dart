@@ -205,20 +205,65 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
         ),
       ),
 
-      // ================= FAB =================
-      floatingActionButton: FloatingActionButton(
-        elevation: 6,
-        backgroundColor: const Color(0xFF2E8BC0),
-        onPressed: () {},
-        child: Icon(Icons.add, size: w * 0.07),
+      // FAB
+      floatingActionButton: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          // ===== FAB TAMBAHAN =====
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+            bottom: _isFabOpen ? 70 : 0,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: _isFabOpen ? 1 : 0,
+              child: FloatingActionButton(
+                heroTag: 'fab_mail',
+                mini: true,
+                backgroundColor: Colors.white,
+                elevation: 6,
+                onPressed: () {},
+                child: const Icon(Icons.mail, color: Color(0xFF2E8BC0)),
+              ),
+            ),
+          ),
+
+          // ===== FAB UTAMA =====
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: FloatingActionButton(
+              heroTag: 'fab_main',
+              backgroundColor: const Color(0xFF2E8BC0),
+              elevation: 0,
+              onPressed: () {
+                setState(() => _isFabOpen = !_isFabOpen);
+              },
+              child: AnimatedRotation(
+                turns: _isFabOpen ? 0.125 : 0,
+                duration: const Duration(milliseconds: 250),
+                child: const Icon(Icons.add, size: 32),
+              ),
+            ),
+          ),
+        ],
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-      // ================= NAVBAR =================
+      // NAVBAR
       bottomNavigationBar: CustomNavbar(
         role: NavbarRole.tu,
         currentIndex: _currentIndex,
-        isFabOpen: _isFabOpen,
         onTap: (i) {
           setState(() => _currentIndex = i);
         },

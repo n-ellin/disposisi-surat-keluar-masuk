@@ -28,8 +28,10 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  flutter_svg: ^2.0.9
   flutter:
     sdk: flutter
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -68,8 +70,8 @@ flutter:
     - assets/images/rasi.png
     - assets/images/logo.png
     - assets/images/logosmk.jpg
-    - assets/icons/ic_inmail.svg
-    - assets/icons/ic_outmail.svg
+    - assets/icons/ic_inmail.png
+    - assets/icons/ic_outmail.png
     - assets/icons/ic_home.svg
     - assets/icons/ic_history.svg
     - assets/icons/ic_approval.svg

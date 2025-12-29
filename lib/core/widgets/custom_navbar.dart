@@ -19,44 +19,29 @@ class CustomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Material(
-        elevation: 14,
-        shadowColor: Colors.black.withOpacity(0.25),
-        borderRadius: BorderRadius.circular(40), // CAPSULE LUAR
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(40), // CAPSULE LUAR
-          child: BottomAppBar(
-            color: Colors.white,
-            elevation: 0,
-            shape: const CircularNotchedRectangle(),
-            notchMargin: 10,
-
-            child: SizedBox(
-              height: 70,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: _buildItems(),
-              ),
+        color: Colors.transparent,
+        elevation: 8,
+        shadowColor: Colors.black26,
+        borderRadius: BorderRadius.circular(36), // capsule shape
+        clipBehavior: Clip.antiAlias,
+        child: BottomAppBar(
+          color: Colors.white, // biar shadow terlihat
+          elevation: 0,
+          notchMargin: 10,
+          shape: SmoothFabNotch(
+            notchDepth: 2, // atur seberapa dalam lekukan
+            notchPadding:
+                12, // atur lebar lekukan kiri/kanan// atur kelengkungan lekukan
+          ),
+          child: SizedBox(
+            height: 70,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: _buildItems(),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _navIcon(String asset, int index) {
-    final isActive = currentIndex == index;
-
-    return IconButton(
-      onPressed: () => onTap(index),
-      icon: SvgPicture.asset(
-        asset,
-        width: 24,
-        height: 24,
-        colorFilter: ColorFilter.mode(
-          isActive ? const Color(0xFF2E8BC0) : Colors.grey,
-          BlendMode.srcIn,
         ),
       ),
     );
@@ -66,11 +51,35 @@ class CustomNavbar extends StatelessWidget {
     return [
       Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
       Expanded(child: _navIcon('assets/icons/ic_approval.svg', 1)),
-
-      const SizedBox(width: 64), // ruang FAB (SIMETRIS)
-
+      const SizedBox(width: 72), // untuk FAB
       Expanded(child: _navIcon('assets/icons/ic_history.svg', 2)),
       Expanded(child: _navIcon('assets/icons/ic_profile.svg', 3)),
     ];
+  }
+
+  Widget _navIcon(String asset, int index) {
+    final isActive = currentIndex == index;
+    return GestureDetector(
+      onTap: () => onTap(index),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 1, end: isActive ? 1.2 : 1.0),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.elasticOut,
+        builder: (context, scale, child) {
+          return Transform.scale(
+            scale: scale,
+            child: SvgPicture.asset(
+              asset,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                isActive ? const Color(0xFF2E8BC0) : Colors.grey,
+                BlendMode.srcIn,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

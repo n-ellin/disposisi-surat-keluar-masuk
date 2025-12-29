@@ -1,39 +1,61 @@
 import 'package:flutter/material.dart';
 
 class SmoothFabNotch extends NotchedShape {
+  final double notchDepth;
+  final double notchPadding;
+  final double bottomDip; // 👈 INI KUNCI
+
+  SmoothFabNotch({
+    this.notchDepth = 8,
+    this.notchPadding = 12,
+    this.bottomDip = 6, // 👈 BESAR = makin turun
+  });
+
   @override
   Path getOuterPath(Rect host, Rect? guest) {
-    if (guest == null)
+    if (guest == null) {
       return Path()
-        ..addRRect(RRect.fromRectAndRadius(host, const Radius.circular(40)));
+        ..addRRect(RRect.fromRectAndRadius(host, const Radius.circular(36)));
+    }
 
-    final double fabRadius = guest.width / 2;
-    final double fabCenterX = guest.center.dx;
-    final double notchDepth = 28;
+    final fabRadius = guest.width / 2;
+    final centerX = host.center.dx;
 
-    return Path()
-      ..moveTo(host.left, host.top)
-      ..lineTo(fabCenterX - fabRadius - 12, host.top)
-      ..quadraticBezierTo(
-        fabCenterX - fabRadius,
-        host.top,
-        fabCenterX - fabRadius + 6,
-        host.top + notchDepth,
-      )
-      ..arcToPoint(
-        Offset(fabCenterX + fabRadius - 6, host.top + notchDepth),
-        radius: Radius.circular(fabRadius),
-        clockwise: false,
-      )
-      ..quadraticBezierTo(
-        fabCenterX + fabRadius,
-        host.top,
-        fabCenterX + fabRadius + 12,
-        host.top,
-      )
-      ..lineTo(host.right, host.top)
-      ..lineTo(host.right, host.bottom)
-      ..lineTo(host.left, host.bottom)
-      ..close();
+    final path = Path()..moveTo(host.left, host.top);
+
+    // kiri lurus
+    path.lineTo(centerX - fabRadius - notchPadding, host.top);
+
+    // turun kiri
+    path.quadraticBezierTo(
+      centerX - fabRadius,
+      host.top,
+      centerX - fabRadius,
+      host.top + notchDepth,
+    );
+
+    // 🔥 ARC FAB (INI TETAP)
+    path.arcToPoint(
+      Offset(centerX + fabRadius, host.top + notchDepth),
+      radius: Radius.circular(fabRadius),
+      clockwise: false,
+    );
+
+    // 🔥 INI YANG HILANG SELAMA INI
+    // 👇 CEKUNG KE BAWAH DI BAWAH FAB
+    path.quadraticBezierTo(
+      centerX,
+      host.top + notchDepth + bottomDip, // 👈 TURUN KE BAWAH
+      centerX + fabRadius + notchPadding,
+      host.top,
+    );
+
+    // kanan lurus
+    path.lineTo(host.right, host.top);
+    path.lineTo(host.right, host.bottom);
+    path.lineTo(host.left, host.bottom);
+    path.close();
+
+    return path;
   }
 }

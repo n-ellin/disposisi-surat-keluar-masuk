@@ -70,12 +70,12 @@ flutter:
     - assets/images/rasi.png
     - assets/images/logo.png
     - assets/images/logosmk.jpg
-    - assets/icons/ic_inmail.png
-    - assets/icons/ic_outmail.png
     - assets/icons/ic_home.svg
     - assets/icons/ic_history.svg
     - assets/icons/ic_approval.svg
     - assets/icons/ic_profile.svg
+    - assets/icons/ic_inmail.svg
+    - assets/icons/ic_outmail.svg
     
     
 

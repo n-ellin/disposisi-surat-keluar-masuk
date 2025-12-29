@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 enum CardRole { tu, kepsek, other }
 
@@ -35,15 +36,12 @@ class SuratCard extends StatelessWidget {
     }
   }
 
-  IconData _iconSurat() {
-    return jenisSurat == 'Surat Masuk' ? Icons.inbox : Icons.outbox;
-  }
-
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
-    final avatarSize = w * 0.10;
-    final iconSize = avatarSize * 0.65;
+    final avatarSize = w * 0.10; // responsive
+    final iconSize = avatarSize * 0.6;
+
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -52,38 +50,35 @@ class SuratCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // HEADER
-            // HEADER (KHUSUS TU)
             if (role == CardRole.tu)
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // ICON
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 6,
-                    ), // atur turun naik di sini
-                    child: CircleAvatar(
-                      radius: avatarSize / 2,
-                      backgroundColor: const Color(0xFFD9D9D9),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final iconSize = constraints.maxWidth * 0.6;
-
-                          return ColorFiltered(
-                            colorFilter: const ColorFilter.mode(
-                              Color(0xFF438BB2),
-                              BlendMode.srcIn,
-                            ),
-                            child: Image.asset(
-                              jenisSurat == 'Surat Masuk'
-                                  ? 'assets/icons/ic_inmail.png'
-                                  : 'assets/icons/ic_outmail.png',
-                              width: iconSize,
-                              height: iconSize,
-                              fit: BoxFit.contain,
-                            ),
-                          );
-                        },
+                  CircleAvatar(
+                    radius: avatarSize / 2, // ukuran lingkaran
+                    backgroundColor: const Color(0xFFD9D9D9),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 4,
+                        horizontal: 4,
+                      ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: SvgPicture.asset(
+                          jenisSurat == 'Surat Masuk'
+                              ? 'assets/icons/ic_inmail.svg'
+                              : 'assets/icons/ic_outmail.svg',
+                          width:
+                              avatarSize *
+                              0.6, // ubah ini untuk memperkecil ikon
+                          height: avatarSize * 0.6, // ubah ini juga
+                          fit: BoxFit.contain,
+                          colorFilter: const ColorFilter.mode(
+                            Color(0xFF438BB2),
+                            BlendMode.srcIn,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -136,7 +131,7 @@ class SuratCard extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // ISI
+            // ISI SURAT
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -168,18 +163,17 @@ class SuratCard extends StatelessWidget {
                   ElevatedButton(
                     onPressed: onDelete,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // warna tombol
+                      backgroundColor: Colors.blue,
                       shape: const StadiumBorder(),
                     ),
                     child: const Text(
                       'Hapus',
                       style: TextStyle(
-                        color: Colors.white, // 🎨 WARNA TEKS
+                        color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-
                 const SizedBox(width: 8),
                 CircleAvatar(
                   backgroundColor: Colors.blue,

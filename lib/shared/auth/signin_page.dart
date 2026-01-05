@@ -38,7 +38,21 @@ class _SignInPageState extends State<SignIn> {
   final TextEditingController passwordC = TextEditingController();
 
   String? selectedRole;
-  final List<String> roles = ["Kepala Tata Usaha","Kepala Sekolah","Tata Usaha", "Waka Kurikulum", "Waka Kesiswaan","Waka Humas","Waka Sarpras","Ketua Konsli","BK","BKK","Koordinator", "Prakerin","Kepala Perpustakaan"];
+  final List<String> roles = [
+    "Kepala Tata Usaha",
+    "Kepala Sekolah",
+    "Tata Usaha",
+    "Waka Kurikulum",
+    "Waka Kesiswaan",
+    "Waka Humas",
+    "Waka Sarpras",
+    "Ketua Konsli",
+    "BK",
+    "BKK",
+    "Koordinator",
+    "Prakerin",
+    "Kepala Perpustakaan",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +198,6 @@ class _SignInPageState extends State<SignIn> {
                                         "Jabatan tidak sesuai",
                                         width,
                                       ),
-
 
                                     SizedBox(height: height * 0.03),
 
@@ -430,7 +443,6 @@ class _SignInPageState extends State<SignIn> {
       return;
     }
 
-
     //login berhasil
     if (role == "Tata Usaha" || role == "Kepala Tata Usaha") {
       Navigator.pushReplacement(
@@ -440,7 +452,7 @@ class _SignInPageState extends State<SignIn> {
     } else if (role == "Kepala Sekolah") {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const KepsekMenu()),
+        MaterialPageRoute(builder: (_) => const KepsekDashboardPage()),
       );
     } else {
       Navigator.pushReplacement(

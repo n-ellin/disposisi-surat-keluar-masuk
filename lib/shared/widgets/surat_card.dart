@@ -23,14 +23,27 @@ class SuratCard extends StatelessWidget {
     required this.onDetail,
   });
 
+  Color _statusTextcolor() {
+    switch (status) {
+      case 'disetujui':
+        return Color(0xFF7AB777);
+      case 'ditolak':
+        return Color(0xFFE617172);
+      case 'menunggu':
+        return Color(0XFF5E665D);
+      default:
+        return Colors.grey;
+    }
+  }
+
   Color _statusColor() {
     switch (status) {
       case 'disetujui':
-        return Colors.green;
+        return Color(0xFFA3D78A).withOpacity(0.6);
       case 'ditolak':
-        return Colors.red;
+        return Color(0xFFFF5555).withOpacity(0.6);
       case 'menunggu':
-        return Colors.orange;
+        return Color(0XFFD0D3CE).withOpacity(0.6);
       default:
         return Colors.grey;
     }

@@ -24,7 +24,7 @@ class AuthController {
       _goToDashboard(context, const TuDashboardPage());
     } else if (username == 'kepsek') {
       currentRole = 'kepsek';
-      _goToDashboard(context, const KepsekMenu());
+      _goToDashboard(context, const KepsekDashboardPage());
     } else {
       currentRole = 'other';
       _goToDashboard(context, const MenuOther());
@@ -33,10 +33,7 @@ class AuthController {
 
   // NAVIGASI KE DASHBOARD
   static void _goToDashboard(BuildContext context, Widget page) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => page),
-    );
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => page));
   }
 
   // LOGOUT

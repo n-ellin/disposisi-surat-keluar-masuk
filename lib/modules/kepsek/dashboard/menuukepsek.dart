@@ -9,35 +9,33 @@ class KepsekDashboardPage extends StatefulWidget {
 }
 
 class _KepsekDashboardPageState extends State<KepsekDashboardPage> {
-  int _currentIndex = 1;
-  String _filter = 'semua';
+  int _currentIndex = 0;
+  String _filter = 'Semua';
 
-  final Map<String, Color> filterColors = {
-    'semua': Colors.grey,
-    'menunggu': Colors.orange,
-    'disetujui': Colors.green,
-    'ditolak': Colors.red,
-  };
+  final List<String> filters = ['Semua', 'Surat Keluar', 'Surat Masuk'];
 
   final List<Map<String, dynamic>> suratList = [
     {
       'jenis': 'Surat Keluar',
       'tanggal': 'Senin, 12 Oktober 2025',
-      'status': 'menunggu',
+      'dari': '-',
+      'kode': '-',
+      'nomor': '-',
       'perihal': 'Permohonan Izin Kegiatan',
     },
     {
       'jenis': 'Surat Masuk',
       'tanggal': 'Senin, 12 Oktober 2025',
-      'status': 'menunggu',
+      'nomor': '-',
+      'asal': '-',
       'perihal': 'Undangan Rapat',
+      'tglSurat': '-',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
-    final h = MediaQuery.of(context).size.height;
 
     return Scaffold(
       extendBody: true,
@@ -47,6 +45,10 @@ class _KepsekDashboardPageState extends State<KepsekDashboardPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Image.asset('assets/images/logo.png'),
+        ),
         title: const Text(
           'Disposisi Surat',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
@@ -64,7 +66,7 @@ class _KepsekDashboardPageState extends State<KepsekDashboardPage> {
         padding: EdgeInsets.all(w * 0.04),
         child: Column(
           children: [
-            // 🔍 SEARCH
+            // SEARCH
             TextField(
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
@@ -78,37 +80,41 @@ class _KepsekDashboardPageState extends State<KepsekDashboardPage> {
               ),
             ),
 
-            SizedBox(height: h * 0.015),
+            const SizedBox(height: 12),
 
-            // 🏷 FILTER
-            Wrap(
-              spacing: 8,
-              children: filterColors.keys.map((e) {
+            // FILTER
+            Row(
+              children: filters.map((e) {
                 final active = _filter == e;
-                return ChoiceChip(
-                  label: Text(e),
-                  selected: active,
-                  selectedColor: filterColors[e],
-                  labelStyle: TextStyle(
-                    color: active ? Colors.white : Colors.black,
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(e),
+                    selected: active,
+                    selectedColor: const Color(0xFF7C8B7A),
+                    backgroundColor: Colors.white,
+                    side: BorderSide(color: Colors.grey.shade400),
+                    labelStyle: TextStyle(
+                      color: active ? Colors.white : Colors.black,
+                    ),
+                    onSelected: (_) {
+                      setState(() => _filter = e);
+                    },
                   ),
-                  onSelected: (_) {
-                    setState(() => _filter = e);
-                  },
                 );
               }).toList(),
             ),
 
-            SizedBox(height: h * 0.02),
+            const SizedBox(height: 16),
 
-            // 📄 LIST SURAT
+            // LIST
             Expanded(
               child: ListView.builder(
-                padding: EdgeInsets.only(bottom: h * 0.15),
+                padding: const EdgeInsets.only(bottom: 120),
                 itemCount: suratList.length,
                 itemBuilder: (context, index) {
                   final surat = suratList[index];
-                  return _kepsekCard(surat);
+                  return _suratCard(surat);
                 },
               ),
             ),
@@ -120,20 +126,19 @@ class _KepsekDashboardPageState extends State<KepsekDashboardPage> {
       bottomNavigationBar: CustomNavbar(
         role: NavbarRole.kepsek,
         currentIndex: _currentIndex,
-        onTap: (i) {
-          setState(() => _currentIndex = i);
-        },
+        onTap: (i) => setState(() => _currentIndex = i),
       ),
     );
   }
 
-  // ================= CARD KEPSEK =================
-  Widget _kepsekCard(Map<String, dynamic> surat) {
+  // ================= CARD =================
+  Widget _suratCard(Map<String, dynamic> surat) {
+    final isKeluar = surat['jenis'] == 'Surat Keluar';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade300),
       ),
@@ -145,60 +150,77 @@ class _KepsekDashboardPageState extends State<KepsekDashboardPage> {
             children: [
               CircleAvatar(
                 backgroundColor: Colors.blue.shade100,
-                child: const Icon(Icons.mail, color: Colors.blue),
+                child: Icon(
+                  isKeluar ? Icons.upload : Icons.download,
+                  color: Colors.blue,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      surat['jenis'],
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      surat['tanggal'],
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  surat['jenis'],
+                  style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
+              Text(surat['tanggal'], style: const TextStyle(fontSize: 12)),
             ],
           ),
 
           const SizedBox(height: 12),
 
-          // PERIHAL
-          Text('Perihal:', style: TextStyle(color: Colors.grey.shade600)),
-          Text(
-            surat['perihal'],
-            style: const TextStyle(fontWeight: FontWeight.w500),
+          // DETAIL BOX
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Column(
+              children: isKeluar
+                  ? [
+                      _row('Dari', surat['dari']),
+                      _row('Kode', surat['kode']),
+                      _row('Nomor Surat', surat['nomor']),
+                      _row('Perihal', surat['perihal']),
+                    ]
+                  : [
+                      _row('Nomor Surat', surat['nomor']),
+                      _row('Asal', surat['asal']),
+                      _row('Perihal', surat['perihal']),
+                      _row('Tanggal Surat', surat['tglSurat']),
+                    ],
+            ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
-          // ACTION
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              OutlinedButton.icon(
-                icon: const Icon(Icons.close, size: 18),
-                label: const Text('Tolak'),
-                style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
-                onPressed: () {},
+          // BUTTON
+          Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5DA9E9),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
-              const SizedBox(width: 8),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.check, size: 18),
-                label: const Text('Setujui'),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                onPressed: () {},
-              ),
-            ],
+              onPressed: () {},
+              child: const Text('Selengkapnya'),
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _row(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: [
+          SizedBox(width: 100, child: Text(label)),
+          const Text(':  '),
+          Expanded(child: Text(value)),
         ],
       ),
     );

@@ -37,14 +37,16 @@ class NotifUserPage extends StatelessWidget {
                       child: Text(
                         "Notifikasi",
                         style: TextStyle(
-                          fontSize: 26,
+                          fontSize: 30,
                           fontWeight: FontWeight.w800,
                           color: Color(0xff7AA5DA),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 26), // agar teks tetap benar-benar center
+                  const SizedBox(
+                    width: 26,
+                  ), // agar teks tetap benar-benar center
                 ],
               ),
             ),
@@ -87,28 +89,35 @@ class NotifUserPage extends StatelessWidget {
             color: Colors.grey.withOpacity(0.18),
             blurRadius: 6,
             offset: Offset(0, 3),
-          )
+          ),
         ],
         color: Colors.white,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Text(
-              date,
-              style: const TextStyle(fontSize: 12, color: Colors.black87),
-            ),
-          ]),
-          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                date,
+                style: const TextStyle(fontSize: 12, color: Color(0xFF000000)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 2),
           Text(
             title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             message,
-            style: const TextStyle(fontSize: 13, color: Colors.black87, height: 1.3),
+            style: const TextStyle(
+              fontSize: 15,
+              color: Color.fromARGB(255, 65, 65, 65),
+              height: 1.3,
+            ),
           ),
         ],
       ),

@@ -70,6 +70,8 @@ flutter:
     - assets/images/rasi.png
     - assets/images/logo.png
     - assets/images/logosmk.jpg
+    - assets/images/inorasi.png
+
     - assets/icons/ic_home.svg
     - assets/icons/ic_history.svg
     - assets/icons/ic_approval.svg

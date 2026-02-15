@@ -30,8 +30,10 @@ class _SignUpPageState extends State<SignUp> {
     super.initState();
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Color(0xFFE3F2FD),
-        statusBarIconBrightness: Brightness.light,
+        statusBarColor: Colors.transparent, // transparan
+        statusBarIconBrightness:
+            Brightness.dark, // icon hitam (karena atas putih)
+        statusBarBrightness: Brightness.light, // iOS support
       ),
     );
   }
@@ -59,9 +61,14 @@ class _SignUpPageState extends State<SignUp> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFFE3F2FD), Color(0xFF90CAF9)],
+                colors: [
+                  Color(0xFFEBF4F5), // atas
+                  Color(0xFF147A94), // bawah
+                ],
+                stops: [0.32, 0.83],
               ),
             ),
+
             child: SafeArea(
               child: SingleChildScrollView(
                 child: Form(
@@ -72,7 +79,7 @@ class _SignUpPageState extends State<SignUp> {
                         padding: EdgeInsets.symmetric(horizontal: width * 0.10),
                         child: Image.asset(
                           "assets/images/rasi2.png",
-                          height: height * 0.16,
+                          height: height * 0.25,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -179,7 +186,7 @@ class _SignUpPageState extends State<SignUp> {
                                   height: height * 0.065,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue.shade400,
+                                      backgroundColor: Color(0XFF2575A0),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -220,12 +227,7 @@ class _SignUpPageState extends State<SignUp> {
                                       child: Text(
                                         "Masuk",
                                         style: TextStyle(
-                                          color: const Color.fromARGB(
-                                            255,
-                                            16,
-                                            85,
-                                            142,
-                                          ),
+                                          color: const Color(0XFF2575A0),
                                           fontWeight: FontWeight.bold,
                                           fontSize: width * 0.038,
                                         ),
@@ -302,23 +304,28 @@ class _SignUpPageState extends State<SignUp> {
             return null;
           },
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.black, size: width * 0.06),
-        labelText: label,
-        labelStyle: TextStyle(fontSize: width * 0.038, color: Colors.black),
-        errorStyle: const TextStyle(color: Colors.red),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: Colors.grey, width: 1.3),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: Colors.blue, width: 2),
-        ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 14,
-          horizontal: 15,
+        prefixIcon: Icon(icon, color: Colors.black54, size: width * 0.06),
+
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.black26),
+
+        floatingLabelStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+
+        errorStyle: const TextStyle(color: Colors.red),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black26),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black),
         ),
       ),
     );
@@ -344,35 +351,42 @@ class _SignUpPageState extends State<SignUp> {
       cursorColor: const Color.fromARGB(255, 82, 128, 165),
       style: TextStyle(fontSize: width * 0.038),
       decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+
         prefixIcon: Icon(
           Icons.lock_outline,
-          color: Colors.black,
+          color: Colors.black54,
           size: width * 0.06,
         ),
+
         suffixIcon: IconButton(
           icon: Icon(
             obscure ? Icons.visibility_off : Icons.visibility,
-            color: Colors.black,
+            color: Colors.black54,
             size: width * 0.06,
           ),
           onPressed: onTap,
         ),
+
         labelText: label,
-        labelStyle: TextStyle(fontSize: width * 0.038, color: Colors.black),
+        labelStyle: const TextStyle(color: Colors.black26),
+
+        floatingLabelStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+
         errorStyle: const TextStyle(color: Colors.red),
+
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: Colors.grey, width: 1.3),
+          borderSide: const BorderSide(color: Colors.black26),
         ),
+
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: Colors.blue, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 14,
-          horizontal: 15,
+          borderSide: const BorderSide(color: Colors.black),
         ),
       ),
     );
@@ -383,23 +397,34 @@ class _SignUpPageState extends State<SignUp> {
       isExpanded: true,
       validator: (value) => value == null ? "Silakan pilih jabatan" : null,
       decoration: InputDecoration(
+        labelText: "Jabatan",
+        labelStyle: const TextStyle(color: Colors.black26),
+
+        floatingLabelStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+
         prefixIcon: Icon(
           Icons.person_2_outlined,
-          color: Colors.black,
+          color: Colors.black54,
           size: width * 0.06,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: Colors.grey, width: 1.3),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: Colors.blue, width: 2),
-        ),
-        errorStyle: const TextStyle(color: Colors.red),
+
         filled: true,
         fillColor: Colors.white,
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black26),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black),
+        ),
       ),
+
       items: const [
         DropdownMenuItem(
           value: "Kepala Tata Usaha",

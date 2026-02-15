@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/core/widgets/custom_navbar.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class TuDashboardPage extends StatefulWidget {
   const TuDashboardPage({super.key});
@@ -11,70 +10,93 @@ class TuDashboardPage extends StatefulWidget {
 }
 
 class _TuDashboardPageState extends State<TuDashboardPage> {
-  int _currentIndex = 1;
-  bool _isFabOpen = false;
+  int _currentIndex = 0;
   String _selectedFilter = 'semua';
-  double _fabScale = 1.0;
+  String _searchQuery = '';
 
-  // ===== MINI FAB BUILDER =====
-  Widget _buildMiniFab({
-    required bool show,
-    required double bottom,
-    required Widget child,
-  }) {
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-      bottom: show ? bottom : 0,
-      child: AnimatedScale(
-        scale: show ? 1 : 0,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOut,
-        child: Material(
-          elevation: 6,
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          child: child,
-        ),
-      ),
-    );
-  }
 
-  // ===== DATA SURAT =====
   final List<Map<String, dynamic>> _allSurat = [
     {
       'jenisSurat': 'Surat Keluar',
       'tanggal': 'Senin, 12 Oktober 2025',
       'status': 'disetujui',
-      'data': {'Dari': '', 'Kode': '', 'Nomor Surat': '', 'Perihal': ''},
+      'data': {'Dari': 'Tata Usaha', 'Perihal': 'Permohonan Izin Kegiatan'},
     },
     {
       'jenisSurat': 'Surat Masuk',
       'tanggal': 'Senin, 12 Oktober 2025',
       'status': 'ditolak',
       'data': {
-        'Nomor Surat': '',
-        'Asal': '',
-        'Perihal': '',
-        'Tanggal Surat': '',
+        'Dari': 'Dinas Pendidikan',
+        'Perihal': 'Undangan Rapat Koordinasi',
+      },
+    },
+    {
+      'jenisSurat': 'Surat Masuk',
+      'tanggal': 'Senin, 12 Oktober 2025',
+      'status': 'menunggu',
+      'data': {
+        'Dari': 'Dinas Pendidikan',
+        'Perihal': 'Undangan Rapat Koordinasi',
       },
     },
   ];
 
   List<Map<String, dynamic>> get _filteredSurat {
-    if (_selectedFilter == 'semua') {
-      return _allSurat;
-    } else {
-      return _allSurat.where((s) => s['status'] == _selectedFilter).toList();
+    List<Map<String, dynamic>> result = _allSurat;
+
+    if (_selectedFilter != 'semua') {
+      result = result
+          .where(
+            (s) =>
+                (s['status'] ?? '').toString().toLowerCase() ==
+                _selectedFilter.toLowerCase(),
+          )
+          .toList();
     }
+
+    if (_searchQuery.isNotEmpty) {
+      result = result.where((s) {
+        final query = _searchQuery.toLowerCase();
+
+        final jenisSurat = (s['jenisSurat'] ?? '').toString().toLowerCase();
+        final tanggal = (s['tanggal'] ?? '').toString().toLowerCase();
+        final status = (s['status'] ?? '').toString().toLowerCase();
+        final dari = (s['data']?['Dari'] ?? '').toString().toLowerCase();
+        final perihal = (s['data']?['Perihal'] ?? '').toString().toLowerCase();
+
+        return jenisSurat.contains(query) ||
+            tanggal.contains(query) ||
+            status.contains(query) ||
+            dari.contains(query) ||
+            perihal.contains(query);
+      }).toList();
+    }
+
+    return result;
   }
 
   final Map<String, Color> filterColors = {
-    'semua': const Color(0xFF777C6D),
-    'disetujui': const Color(0xFF80A46F),
-    'diproses': const Color(0xFFDED967),
-    'ditolak': const Color(0xFFFF5555),
+    'semua': const Color(0xFF6F7A83),
+    'menunggu': const Color(0xFFC59B36),
+    'disetujui': const Color(0xFF3F9142),
+    'ditolak': const Color(0xFFB63A3A),
   };
+
+  String _label(String key) {
+    switch (key) {
+      case 'semua':
+        return 'Semua';
+      case 'menunggu':
+        return 'Menunggu';
+      case 'disetujui':
+        return 'Disetujui';
+      case 'ditolak':
+        return 'Ditolak';
+      default:
+        return key;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,68 +104,70 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
     final w = size.width;
     final h = size.height;
 
-    final double fabSize = w * 0.16;
-    final double fabIconSize = fabSize * 0.5;
-    final double fabDownOffset = h * 0.015;
-
     return Scaffold(
-      extendBody: true,
       backgroundColor: Colors.white,
 
-      // ================= APPBAR =================
+      /// ================= APPBAR =================
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
-        centerTitle: false,
-        title: Text(
-          'Disposisi Surat',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: w * 0.045,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        leading: SizedBox(
-          width: w * 0.16,
+
+        leadingWidth: w * 0.16, // ⬅️ kasih ruang lebih biar ga gepeng
+
+        leading: Padding(
+          padding: EdgeInsets.only(left: w * 0.04),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: w * 0.06),
+            child: AspectRatio(
+              aspectRatio: 1, // ⬅️ JAGA RASIO BULAT
               child: ClipOval(
                 child: Image.asset(
-                  "assets/images/logosmk.jpg",
-                  width: w * 0.10,
-                  height: w * 0.10,
-                  fit: BoxFit.cover,
+                  'assets/images/logosmk.jpg',
+                  fit: BoxFit.cover, // isi lingkaran tanpa gepeng
                 ),
               ),
             ),
           ),
         ),
+
         actions: [
           Padding(
             padding: EdgeInsets.only(right: w * 0.06),
             child: Icon(
               Icons.notifications,
               color: Colors.black,
-              size: w * 0.08,
+              size: (w * 0.08).clamp(22.0, 28.0),
             ),
           ),
         ],
       ),
 
-      // ================= BODY =================
+      /// ================= BODY =================
       body: Padding(
         padding: EdgeInsets.all(w * 0.04),
         child: Column(
           children: [
-            // 🔍 SEARCH BAR
+            /// 🏷 TITLE
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Disposisi Surat',
+                style: TextStyle(
+                  fontSize: (w * 0.055).clamp(18.0, 24.0),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: h * 0.015),
+
+            /// 🔍 SEARCH PERIHAL
             TextField(
+              onChanged: (value) => setState(() => _searchQuery = value),
               style: TextStyle(fontSize: w * 0.04),
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search, size: w * 0.055),
-                hintText: 'Cari surat...',
+                hintText: 'Cari Surat...',
                 filled: true,
                 fillColor: Colors.grey.shade100,
                 contentPadding: EdgeInsets.symmetric(vertical: h * 0.018),
@@ -155,44 +179,51 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
             ),
             SizedBox(height: h * 0.015),
 
-            // 🏷 FILTER CHIP
-            Wrap(
-              spacing: w * 0.02,
-              runSpacing: h * 0.01,
-              children: filterColors.keys.map((e) {
-                final isSelected = _selectedFilter == e;
-                final color = filterColors[e]!;
+            /// 🏷 FILTER BUTTON (SHADOW HALUS SAAT AKTIF)
+            Row(
+              children: filterColors.keys.map((key) {
+                final isSelected = _selectedFilter == key;
+                final color = filterColors[key]!;
 
-                return SizedBox(
-                  width: w * 0.21,
-                  child: ChoiceChip(
-                    label: Center(
-                      child: Text(
-                        e,
-                        style: TextStyle(
-                          fontSize: w * 0.035,
-                          color: isSelected ? Colors.white : Colors.black,
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
+                return Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: w * 0.01),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: color.withOpacity(0.18),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ]
+                            : [],
+                      ),
+                      child: ChoiceChip(
+                        label: Center(
+                          child: Text(
+                            _label(key),
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : color,
+                              fontWeight: FontWeight.w600,
+                              fontSize: w * 0.028,
+                            ),
+                          ),
                         ),
+                        selected: isSelected,
+                        showCheckmark: false,
+                        selectedColor: color, // warna solid saat aktif
+                        backgroundColor: Colors.white, // putih saat nonaktif
+                        side: BorderSide(color: color, width: 1.5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        onSelected: (_) =>
+                            setState(() => _selectedFilter = key),
                       ),
                     ),
-                    selected: isSelected,
-                    showCheckmark: false,
-                    selectedColor: color,
-                    backgroundColor: Colors.white,
-                    elevation: isSelected ? 4 : 0,
-                    shadowColor: color.withOpacity(0.4),
-                    side: BorderSide(
-                      color: isSelected
-                          ? Colors.transparent
-                          : Colors.grey.shade300,
-                      width: 1,
-                    ),
-                    onSelected: (_) {
-                      setState(() => _selectedFilter = e);
-                    },
                   ),
                 );
               }).toList(),
@@ -200,14 +231,12 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
 
             SizedBox(height: h * 0.02),
 
-            // 📄 LIST SURAT
+            /// 📄 LIST SURAT
             Expanded(
               child: ListView.builder(
-                padding: EdgeInsets.only(bottom: h * 0.14),
                 itemCount: _filteredSurat.length,
                 itemBuilder: (context, index) {
                   final surat = _filteredSurat[index];
-
                   return Padding(
                     padding: EdgeInsets.only(bottom: h * 0.015),
                     child: SuratCard(
@@ -227,117 +256,11 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
         ),
       ),
 
-      // ================= FAB =================
-      floatingActionButton: Transform.translate(
-        offset: Offset(0, fabDownOffset),
-        child: Stack(
-          alignment: Alignment.center,
-          clipBehavior: Clip.none,
-          children: [
-            // Mini FAB Surat Masuk
-            _buildMiniFab(
-              show: _isFabOpen,
-              bottom: fabSize * 2,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(24),
-                onTap: () {},
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset('assets/icons/ic_inmail.svg', width: 20),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'Surat Masuk',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // Mini FAB Surat Keluar
-            _buildMiniFab(
-              show: _isFabOpen,
-              bottom: fabSize * 1.1,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(24),
-                onTap: () {},
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/ic_outmail.svg',
-                        width: 20,
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'Surat Keluar',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // FAB UTAMA (+)
-            AnimatedScale(
-              scale: _fabScale,
-              duration: const Duration(milliseconds: 120),
-              curve: Curves.easeOut,
-              child: SizedBox(
-                width: fabSize,
-                height: fabSize,
-                child: Material(
-                  color: const Color(0xFF2E8BC0),
-                  shape: const CircleBorder(),
-                  elevation: 6,
-                  child: InkWell(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    customBorder: const CircleBorder(),
-                    onTapDown: (_) => setState(() => _fabScale = 0.9),
-                    onTapUp: (_) => setState(() => _fabScale = 1.0),
-                    onTapCancel: () => setState(() => _fabScale = 1.0),
-                    onTap: () => setState(() => _isFabOpen = !_isFabOpen),
-                    child: Center(
-                      child: AnimatedRotation(
-                        turns: _isFabOpen ? 0.125 : 0,
-                        duration: const Duration(milliseconds: 250),
-                        child: Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: fabIconSize,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-      // ================= NAVBAR =================
+      /// ================= NAVBAR =================
       bottomNavigationBar: CustomNavbar(
         role: NavbarRole.tu,
         currentIndex: _currentIndex,
-        onTap: (i) => setState(() => _currentIndex = i),
+        onTap: (index) => setState(() => _currentIndex = index),
       ),
     );
   }

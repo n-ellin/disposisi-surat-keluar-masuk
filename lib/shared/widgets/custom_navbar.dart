@@ -16,6 +16,8 @@ class CustomNavbar extends StatelessWidget {
     required this.onTap,
   });
 
+  bool get _hasFab => role == NavbarRole.tu;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -24,21 +26,16 @@ class CustomNavbar extends StatelessWidget {
         color: Colors.transparent,
         elevation: 8,
         shadowColor: Colors.black26,
-        borderRadius: BorderRadius.circular(36), // capsule shape
+        borderRadius: BorderRadius.circular(36),
         clipBehavior: Clip.antiAlias,
         child: BottomAppBar(
-          color: Colors.white, // biar shadow terlihat
+          color: Colors.white,
           elevation: 0,
-          notchMargin: 10,
-          shape: SmoothFabNotch(
-            notchDepth: 2, // atur seberapa dalam lekukan
-            notchPadding:
-                12, // atur lebar lekukan kiri/kanan// atur kelengkungan lekukan
-          ),
+          shape: const _NoNotch(),
           child: SizedBox(
             height: 70,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: _buildItems(),
             ),
           ),
@@ -47,18 +44,31 @@ class CustomNavbar extends StatelessWidget {
     );
   }
 
+  // ================= ITEMS BASED ON ROLE =================
   List<Widget> _buildItems() {
+    if (role == NavbarRole.tu) {
+      return [
+        Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
+        Expanded(
+          child: _navIcon('assets/icons/ic_approval.svg', 1),
+        ), // FAB slot
+        Expanded(child: _navIcon('assets/icons/ic_history.svg', 2)),
+        Expanded(child: _navIcon('assets/icons/ic_profile.svg', 3)),
+      ];
+    }
+
+    // Kepsek & Other (tanpa approval & tanpa FAB)
     return [
       Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
-      Expanded(child: _navIcon('assets/icons/ic_approval.svg', 1)),
-      const SizedBox(width: 72), // untuk FAB
-      Expanded(child: _navIcon('assets/icons/ic_history.svg', 2)),
-      Expanded(child: _navIcon('assets/icons/ic_profile.svg', 3)),
+      Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
+      Expanded(child: _navIcon('assets/icons/ic_profile.svg', 2)),
     ];
   }
 
+  // ================= ICON =================
   Widget _navIcon(String asset, int index) {
-    final isActive = currentIndex == index;
+    final bool isActive = currentIndex == index;
+
     return GestureDetector(
       onTap: () => onTap(index),
       child: TweenAnimationBuilder<double>(
@@ -73,7 +83,7 @@ class CustomNavbar extends StatelessWidget {
               width: 24,
               height: 24,
               colorFilter: ColorFilter.mode(
-                isActive ? const Color(0xFF2E8BC0) : Colors.grey,
+                isActive ? const Color(0xFF2E8BC0) : Color(0xFF9FB8C2),
                 BlendMode.srcIn,
               ),
             ),
@@ -81,5 +91,14 @@ class CustomNavbar extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class _NoNotch extends NotchedShape {
+  const _NoNotch();
+
+  @override
+  Path getOuterPath(Rect host, Rect? guest) {
+    return Path()..addRect(host);
   }
 }

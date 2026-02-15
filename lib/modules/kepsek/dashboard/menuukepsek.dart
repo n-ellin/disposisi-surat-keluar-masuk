@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/core/widgets/custom_navbar.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
 
 class KepsekDashboardPage extends StatefulWidget {
   const KepsekDashboardPage({super.key});
@@ -10,218 +11,151 @@ class KepsekDashboardPage extends StatefulWidget {
 
 class _KepsekDashboardPageState extends State<KepsekDashboardPage> {
   int _currentIndex = 0;
-  String _filter = 'Semua';
-
-  final List<String> filters = ['Semua', 'Surat Keluar', 'Surat Masuk'];
-
-  final List<Map<String, dynamic>> suratList = [
-    {
-      'jenis': 'Surat Keluar',
-      'tanggal': 'Senin, 12 Oktober 2025',
-      'dari': '-',
-      'kode': '-',
-      'nomor': '-',
-      'perihal': 'Permohonan Izin Kegiatan',
-    },
-    {
-      'jenis': 'Surat Masuk',
-      'tanggal': 'Senin, 12 Oktober 2025',
-      'nomor': '-',
-      'asal': '-',
-      'perihal': 'Undangan Rapat',
-      'tglSurat': '-',
-    },
-  ];
+  String _selectedFilter = "Semua";
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
+    final size = MediaQuery.of(context).size;
+    final w = size.width;
 
     return Scaffold(
-      extendBody: true,
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F7F9),
 
-      // ================= APPBAR =================
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Image.asset('assets/images/logo.png'),
-        ),
-        title: const Text(
-          'Disposisi Surat',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-        ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.notifications, color: Colors.black),
-          ),
-        ],
-      ),
-
-      // ================= BODY =================
-      body: Padding(
-        padding: EdgeInsets.all(w * 0.04),
-        child: Column(
-          children: [
-            // SEARCH
-            TextField(
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Cari surat...',
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // FILTER
-            Row(
-              children: filters.map((e) {
-                final active = _filter == e;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(e),
-                    selected: active,
-                    selectedColor: const Color(0xFF7C8B7A),
-                    backgroundColor: Colors.white,
-                    side: BorderSide(color: Colors.grey.shade400),
-                    labelStyle: TextStyle(
-                      color: active ? Colors.white : Colors.black,
-                    ),
-                    onSelected: (_) {
-                      setState(() => _filter = e);
-                    },
-                  ),
-                );
-              }).toList(),
-            ),
-
-            const SizedBox(height: 16),
-
-            // LIST
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.only(bottom: 120),
-                itemCount: suratList.length,
-                itemBuilder: (context, index) {
-                  final surat = suratList[index];
-                  return _suratCard(surat);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-
-      // ================= NAVBAR =================
-      bottomNavigationBar: CustomNavbar(
-        role: NavbarRole.kepsek,
-        currentIndex: _currentIndex,
-        onTap: (i) => setState(() => _currentIndex = i),
-      ),
-    );
-  }
-
-  // ================= CARD =================
-  Widget _suratCard(Map<String, dynamic> surat) {
-    final isKeluar = surat['jenis'] == 'Surat Keluar';
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade300),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // HEADER
-          Row(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: w * 0.05),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                backgroundColor: Colors.blue.shade100,
-                child: Icon(
-                  isKeluar ? Icons.upload : Icons.download,
-                  color: Colors.blue,
+              SizedBox(height: w * 0.04),
+
+              /// ================= TITLE =================
+              Text(
+                "Disposisi Surat",
+                style: TextStyle(
+                  fontSize: w * 0.055,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(width: 12),
+
+              SizedBox(height: w * 0.05),
+
+              /// ================= SEARCH =================
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: w * 0.04),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(w * 0.06),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: w * 0.05,
+                      offset: Offset(0, w * 0.02),
+                    )
+                  ],
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    icon: const Icon(Icons.search, color: Colors.grey),
+                    hintText: "Cari surat...",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+
+              SizedBox(height: w * 0.05),
+
+              /// ================= FILTER BUTTON =================
+              Row(
+                children: [
+                  _filterButton("Semua"),
+                  SizedBox(width: w * 0.03),
+                  _filterButton("Surat Masuk"),
+                  SizedBox(width: w * 0.03),
+                  _filterButton("Surat Keluar"),
+                ],
+              ),
+
+              SizedBox(height: w * 0.05),
+
+              /// ================= LIST CARD =================
               Expanded(
-                child: Text(
-                  surat['jenis'],
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                child: ListView(
+                  children: [
+                    SuratCard(
+                      jenisSurat: "Surat Masuk",
+                      tanggal: "12 Okt 2026",
+                      data: {
+                        "Dari": "Tata Usaha",
+                        "Perihal": "Permohonan Rapat SIKAP",
+                      },
+                      role: CardRole.other,
+                      status: "menunggu",
+                      onDetail: () {},
+                    ),
+
+                    SuratCard(
+                      jenisSurat: "Surat Keluar",
+                      tanggal: "12 Okt 2026",
+                      data: {
+                        "Dari": "Tata Usaha",
+                        "Perihal": "Permohonan Rapat SIKAP",
+                      },
+                      role: CardRole.other,
+                      status: "disetujui",
+                      onDetail: () {},
+                    ),
+                  ],
                 ),
               ),
-              Text(surat['tanggal'], style: const TextStyle(fontSize: 12)),
             ],
           ),
+        ),
+      ),
 
-          const SizedBox(height: 12),
-
-          // DETAIL BOX
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: Column(
-              children: isKeluar
-                  ? [
-                      _row('Dari', surat['dari']),
-                      _row('Kode', surat['kode']),
-                      _row('Nomor Surat', surat['nomor']),
-                      _row('Perihal', surat['perihal']),
-                    ]
-                  : [
-                      _row('Nomor Surat', surat['nomor']),
-                      _row('Asal', surat['asal']),
-                      _row('Perihal', surat['perihal']),
-                      _row('Tanggal Surat', surat['tglSurat']),
-                    ],
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          // BUTTON
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF5DA9E9),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              onPressed: () {},
-              child: const Text('Selengkapnya'),
-            ),
-          ),
-        ],
+      /// ================= NAVBAR =================
+      bottomNavigationBar: CustomNavbar(
+        role: NavbarRole.other,
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }
 
-  Widget _row(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          SizedBox(width: 100, child: Text(label)),
-          const Text(':  '),
-          Expanded(child: Text(value)),
-        ],
+  /// ================= FILTER BUTTON WIDGET =================
+  Widget _filterButton(String text) {
+    final bool isActive = _selectedFilter == text;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedFilter = text;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isActive ? const Color(0xFF2E8BC0) : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: const Color(0xFF2E8BC0),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: isActive ? Colors.white : const Color(0xFF2E8BC0),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

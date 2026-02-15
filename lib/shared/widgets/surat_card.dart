@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 enum CardRole { tu, kepsek, other }
 
@@ -23,27 +23,41 @@ class SuratCard extends StatelessWidget {
     required this.onDetail,
   });
 
-  Color _statusTextcolor() {
-    switch (status) {
+  // ===== STATUS LABEL =====
+  String _label() {
+    switch (status?.toLowerCase()) {
       case 'disetujui':
-        return Color(0xFF7AB777);
+        return 'Disetujui';
       case 'ditolak':
-        return Color(0xFFE617172);
+        return 'Ditolak';
       case 'menunggu':
-        return Color(0XFF5E665D);
+        return 'Menunggu';
       default:
-        return Colors.grey;
+        return '';
     }
   }
 
-  Color _statusColor() {
-    switch (status) {
+  Color _bgColor() {
+    switch (status?.toLowerCase()) {
       case 'disetujui':
-        return Color(0xFFA3D78A).withOpacity(0.6);
+        return const Color(0xFFDDEEDC);
       case 'ditolak':
-        return Color(0xFFFF5555).withOpacity(0.6);
+        return const Color(0xFFF4D6D8);
       case 'menunggu':
-        return Color(0XFFD0D3CE).withOpacity(0.6);
+        return const Color(0xFFF1E2BF);
+      default:
+        return Colors.grey.shade200;
+    }
+  }
+
+  Color _textColor() {
+    switch (status?.toLowerCase()) {
+      case 'disetujui':
+        return const Color(0xFF2E7D32);
+      case 'ditolak':
+        return const Color(0xFFB4232C);
+      case 'menunggu':
+        return const Color(0xFF8A6D1F);
       default:
         return Colors.grey;
     }
@@ -51,152 +65,164 @@ class SuratCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
-    final avatarSize = w * 0.10; // responsive
-    final iconSize = avatarSize * 0.6;
+    final size = MediaQuery.of(context).size;
+    final w = size.width;
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+    return GestureDetector(
+      onTap: onDetail,
+      child: Container(
+        margin: EdgeInsets.only(bottom: w * 0.045),
+        padding: EdgeInsets.fromLTRB(
+          w * 0.04,
+          w * 0.04,
+          w * 0.04,
+          w * 0.035,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(w * 0.05),
+          border: Border.all(color: const Color(0xFFEAEAEA)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: w * 0.05,
+              offset: Offset(0, w * 0.025),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: w * 0.02,
+              offset: Offset(0, w * 0.01),
+            ),
+          ],
+        ),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // HEADER
-            if (role == CardRole.tu)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // ICON
-                  CircleAvatar(
-                    radius: avatarSize / 2, // ukuran lingkaran
-                    backgroundColor: const Color(0xFFD9D9D9),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 4,
-                        horizontal: 4,
-                      ),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: SvgPicture.asset(
-                          jenisSurat == 'Surat Masuk'
-                              ? 'assets/icons/ic_inmail.svg'
-                              : 'assets/icons/ic_outmail.svg',
-                          width:
-                              avatarSize *
-                              0.6, // ubah ini untuk memperkecil ikon
-                          height: avatarSize * 0.6, // ubah ini juga
-                          fit: BoxFit.contain,
-                          colorFilter: const ColorFilter.mode(
-                            Color(0xFF438BB2),
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 10),
-
-                  // JENIS SURAT + STATUS
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          jenisSurat,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        if (status != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _statusColor().withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              status!,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: _statusColor(),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-
-                  // TANGGAL
-                  Text(
-                    tanggal,
-                    style: const TextStyle(fontSize: 12, color: Colors.black54),
-                  ),
-                ],
-              ),
-
-            const SizedBox(height: 10),
-
-            // ISI SURAT
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                children: data.entries
-                    .map(
-                      (e) => Row(
-                        children: [
-                          Expanded(child: Text(e.key)),
-                          const Text(': '),
-                          Expanded(child: Text(e.value)),
-                        ],
-                      ),
-                    )
-                    .toList(),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // FOOTER
+            /// ================= HEADER =================
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (role == CardRole.tu)
-                  ElevatedButton(
-                    onPressed: onDelete,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: const StadiumBorder(),
-                    ),
-                    child: const Text(
-                      'Hapus',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          jenisSurat,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: w * 0.042,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(width: w * 0.02),
+
+                      if (status != null)
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: w * 0.03,
+                            vertical: w * 0.012,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _bgColor(),
+                            borderRadius: BorderRadius.circular(w * 0.06),
+                          ),
+                          child: Text(
+                            _label(),
+                            style: TextStyle(
+                              fontSize: w * 0.028,
+                              fontWeight: FontWeight.w700,
+                              color: _textColor(),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: Colors.blue,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_forward, color: Colors.white),
-                    onPressed: onDetail,
+                ),
+
+                SizedBox(width: w * 0.02),
+
+                Text(
+                  tanggal,
+                  style: TextStyle(
+                    fontSize: w * 0.03,
+                    color: const Color(0xFF9E9E9E),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
+
+            SizedBox(height: w * 0.03),
+
+            /// ================= DETAIL =================
+            _infoText("Dari", data['Dari'], w),
+            _infoText("Perihal", data['Perihal'], w),
+
+            SizedBox(height: w * 0.04),
+
+            /// ================= FOOTER =================
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (role == CardRole.tu)
+                  OutlinedButton.icon(
+                    onPressed: onDelete,
+                    icon: Icon(Icons.delete_outline, size: w * 0.045),
+                    label: Text(
+                      "Hapus",
+                      style: TextStyle(fontSize: w * 0.032),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: const BorderSide(color: Colors.red),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: w * 0.04,
+                        vertical: w * 0.025,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(w * 0.04),
+                      ),
+                    ),
+                  ),
+
+                SizedBox(width: w * 0.03),
+
+                CircleAvatar(
+                  radius: w * 0.055,
+                  backgroundColor: AppColors.bluePrimary,
+                  child: Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Colors.white,
+                    size: w * 0.055,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Helper untuk teks detail
+  Widget _infoText(String label, String? value, double w) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: w * 0.02),
+      child: RichText(
+        text: TextSpan(
+          style: TextStyle(
+            fontSize: w * 0.034,
+            color: Colors.black87,
+          ),
+          children: [
+            TextSpan(
+              text: "$label : ",
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            TextSpan(text: value ?? '-'),
           ],
         ),
       ),

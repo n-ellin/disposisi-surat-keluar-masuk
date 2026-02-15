@@ -62,7 +62,7 @@ class _SignInPageState extends State<SignIn> {
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor: Color(0xFFE3F2FD),
+        statusBarColor: Colors.transparent, // biar nyatu UI
         statusBarIconBrightness: Brightness.dark,
         systemNavigationBarColor: Colors.white,
         systemNavigationBarIconBrightness: Brightness.dark,
@@ -88,7 +88,8 @@ class _SignInPageState extends State<SignIn> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFFE3F2FD), Color.fromARGB(255, 255, 98, 50)],
+                stops: [0.0, 1.0],
+                colors: [Color(0xFFEBF4F5), Color(0xFFE08A34)],
               ),
             ),
 
@@ -207,7 +208,7 @@ class _SignInPageState extends State<SignIn> {
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: const Color(
-                                            0xFFF56642,
+                                            0xFFE66D26,
                                           ),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
@@ -251,7 +252,7 @@ class _SignInPageState extends State<SignIn> {
                                           child: Text(
                                             "Daftar",
                                             style: TextStyle(
-                                              color: const Color(0xFFF56642),
+                                              color: const Color(0xFFE75321),
                                               fontWeight: FontWeight.bold,
                                               fontSize: width * 0.038,
                                             ),
@@ -275,7 +276,7 @@ class _SignInPageState extends State<SignIn> {
                     child: Text(
                       "© 2025 SMKN 2 Singosari. All Rights Reserved",
                       style: TextStyle(
-                        color: Colors.black54,
+                        color: Colors.black,
                         fontSize: width * 0.033,
                       ),
                     ),
@@ -309,12 +310,30 @@ class _SignInPageState extends State<SignIn> {
       controller: controller,
       cursorColor: Colors.blue,
       keyboardType: keyboardType,
+      style: const TextStyle(color: Colors.black),
+
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        prefixIcon: Icon(icon, color: Colors.black),
+        prefixIcon: Icon(icon, color: Colors.black54),
+
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(13)),
+        labelStyle: const TextStyle(color: Colors.black26),
+
+        floatingLabelStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black26),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black),
+        ),
       ),
     );
   }
@@ -329,60 +348,78 @@ class _SignInPageState extends State<SignIn> {
       controller: controller,
       obscureText: obscure,
       cursorColor: Colors.blue,
+      style: const TextStyle(color: Colors.black), // input user
+
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-        prefixIcon: const Icon(Icons.lock_outline, color: Colors.black),
+        prefixIcon: const Icon(Icons.lock_outline, color: Colors.black54),
 
         suffixIcon: IconButton(
           icon: Icon(
             obscure ? Icons.visibility_off : Icons.visibility,
-            color: Colors.black,
+            color: Colors.black54,
           ),
           onPressed: onTap,
         ),
 
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(13)),
+        labelStyle: const TextStyle(color: Colors.black26),
+
+        floatingLabelStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black26),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black),
+        ),
       ),
     );
   }
 
   Widget _buildDropdown(double width) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(13),
-        border: Border.all(color: Colors.black26),
+    return DropdownButtonFormField<String>(
+      value: selectedRole,
+
+      decoration: InputDecoration(
+        labelText: "Jabatan",
+        labelStyle: const TextStyle(color: Colors.black26),
+
+        floatingLabelStyle: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.w600,
+        ),
+
+        prefixIcon: const Icon(Icons.person_2_outlined, color: Colors.black54),
+
+        filled: true,
+        fillColor: Colors.white,
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black26),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(13),
+          borderSide: const BorderSide(color: Colors.black),
+        ),
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.person_2_outlined, color: Colors.black54),
-          const SizedBox(width: 8),
 
-          Expanded(
-            child: DropdownButton<String>(
-              value: selectedRole,
-              isExpanded: true,
-              underline: const SizedBox(),
-              hint: Text(
-                "Jabatan",
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: width * 0.038,
-                ),
-              ),
+      icon: const Icon(Icons.keyboard_arrow_down, color: Colors.black54),
 
-              onChanged: (value) => setState(() => selectedRole = value),
+      items: roles.map((role) {
+        return DropdownMenuItem(value: role, child: Text(role));
+      }).toList(),
 
-              items: roles.map((role) {
-                return DropdownMenuItem(value: role, child: Text(role));
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
+      onChanged: (value) => setState(() => selectedRole = value),
     );
   }
 

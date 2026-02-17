@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../home/home_page.dart';
+import 'welcome.dart';
 import 'signin_page.dart';
 
 class SignUp extends StatefulWidget {
@@ -48,7 +48,7 @@ class _SignUpPageState extends State<SignUp> {
       onWillPop: () async {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const WelcomePage()),
+          MaterialPageRoute(builder: (_) => const Welcome()),
         );
         return false;
       },
@@ -265,7 +265,7 @@ class _SignUpPageState extends State<SignUp> {
         Navigator.pop(context);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const WelcomePage()),
+          MaterialPageRoute(builder: (_) => const Welcome()),
         );
       });
     }

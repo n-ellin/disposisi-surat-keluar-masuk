@@ -2,20 +2,19 @@ import 'package:flutter/material.dart';
 
 // import halaman di sini, bukan di main
 import 'shared/auth/splash_screen.dart';
-import 'shared/home/home_page.dart';
 import 'shared/auth/signin_page.dart';
 import 'shared/auth/signup_page.dart';
 import 'modules/tata_usaha/dashboard/menuTU.dart';
 import 'modules/kepsek/dashboard/menuukepsek.dart';
 import 'modules/other/dashboard/menuother.dart';
-import 'modules/profile/profile.dart';
+import 'shared/auth/profile.dart';
 import 'modules/other/notifotth.dart';
 import 'shared/auth/home.dart';
 import 'shared/auth/notif.dart';
 import 'modules/tata_usaha/detail/detil_surat_page.dart';
 import 'modules/kepsek/detail/detail_suratkeluar.dart';
 import 'modules/kepsek/notif/notif_page.dart';
-import 'shared/auth/home1.dart';
+import 'shared/auth/welcome.dart';
 
 
 class MyApp extends StatelessWidget {

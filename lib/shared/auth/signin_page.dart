@@ -7,7 +7,7 @@ import '../../modules/tata_usaha/dashboard/menuTU.dart';
 import '../../modules/kepsek/dashboard/menuukepsek.dart';
 import '../../modules/other/dashboard/menuother.dart';
 import 'signup_page.dart';
-import '../home/home_page.dart';
+import 'welcome.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -72,7 +72,7 @@ class _SignInPageState extends State<SignIn> {
         onWillPop: () async {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const WelcomePage()),
+            MaterialPageRoute(builder: (_) => const Welcome()),
           );
           return false;
         },

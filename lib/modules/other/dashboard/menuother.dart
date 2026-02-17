@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../notifotth.dart';
 import '../../../shared/widgets/surat_card.dart';
-import '../../profile/profile.dart';
+import '../../../shared/auth/profile.dart';
 
 class MenuOther extends StatefulWidget {
   const MenuOther({super.key});

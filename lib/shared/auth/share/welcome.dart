@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../auth/signup_page.dart';
-import '../auth/signin_page.dart';
+import 'signup_page.dart';
+import 'signin_page.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({super.key});

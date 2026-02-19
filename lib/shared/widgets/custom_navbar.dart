@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'notched_custom.dart';
-
-enum NavbarRole { tu, kepsek, other }
+import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
 
 class CustomNavbar extends StatelessWidget {
   final NavbarRole role;

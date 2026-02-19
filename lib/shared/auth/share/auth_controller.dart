@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 // IMPORT DASHBOARD PER ROLE
-import '../../modules/tata_usaha/dashboard/menuTU.dart';
-import '../../modules/kepsek/dashboard/menuukepsek.dart';
-import '../../modules/other/dashboard/menuother.dart';
+import '../../../modules/tata_usaha/menuTU.dart';
+import '../../../modules/kepsek/menuukepsek.dart';
+import '../../../modules/other/menuother.dart';
 
 class AuthController {
   // SIMPAN ROLE (DUMMY)
@@ -21,10 +21,16 @@ class AuthController {
     // LOGIKA DUMMY ROLE
     if (username == 'tu') {
       currentRole = 'tu';
-      _goToDashboard(context, const TuDashboardPage());
+      _goToDashboard(context, 
+      const TuDashboardPage(
+        jenisSurat: 'Surat Masuk',
+      ));
     } else if (username == 'kepsek') {
       currentRole = 'kepsek';
-      _goToDashboard(context, const KepsekDashboardPage());
+      _goToDashboard(context, 
+      const KepsekDashboardPage(
+        jenisSurat: 'Surat Masuk',
+      ));
     } else {
       currentRole = 'other';
       _goToDashboard(context, const MenuOther());

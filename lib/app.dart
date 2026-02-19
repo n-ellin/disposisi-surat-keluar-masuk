@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 
-// import halaman di sini, bukan di main
-import 'shared/auth/splash_screen.dart';
-import 'shared/auth/signin_page.dart';
-import 'shared/auth/signup_page.dart';
-import 'modules/tata_usaha/dashboard/menuTU.dart';
-import 'modules/kepsek/dashboard/menuukepsek.dart';
-import 'modules/other/dashboard/menuother.dart';
-import 'shared/auth/profile.dart';
-import 'modules/other/notifotth.dart';
-import 'shared/auth/home.dart';
-import 'shared/auth/notif.dart';
-import 'modules/tata_usaha/detail/detil_surat_page.dart';
-import 'modules/kepsek/detail/detail_suratkeluar.dart';
-import 'modules/kepsek/notif/notif_page.dart';
-import 'shared/auth/welcome.dart';
+import 'shared/models/navbar_role.dart';
 
+// import halaman di sini, bukan di main
+import 'shared/auth/share/splash_screen.dart';
+import 'shared/auth/share/signin_page.dart';
+import 'shared/auth/share/signup_page.dart';
+
+import 'modules/tata_usaha/menuTU.dart';
+import 'modules/kepsek/menuukepsek.dart';
+import 'modules/other/menuother.dart';
+
+import 'shared/auth/pages/profile.dart';
+import 'shared/auth/pages/notif.dart';
+
+import 'shared/auth/pages/home.dart';
+import 'shared/auth/share/welcome.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -25,11 +25,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Simdis",
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
-      ),
-      home: const Welcome(),
+      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+      home: const Home(role: NavbarRole.tu),
     );
   }
 }

@@ -63,7 +63,26 @@ class SuratCard extends StatelessWidget {
     }
   }
 
+  Color _buttonColor() {
+    if (role == CardRole.kepsek) {
+      if (jenisSurat.toLowerCase() == 'surat masuk') {
+        return AppColors.orangePrimary;
+      } else {
+        return AppColors.bluePrimary;
+      }
+    }
+
+    if (role == CardRole.other) {
+      return AppColors.bluePrimary;
+    }
+
+    return AppColors.bluePrimary;
+  }
+
+
   @override
+
+
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final w = size.width;
@@ -72,12 +91,7 @@ class SuratCard extends StatelessWidget {
       onTap: onDetail,
       child: Container(
         margin: EdgeInsets.only(bottom: w * 0.045),
-        padding: EdgeInsets.fromLTRB(
-          w * 0.04,
-          w * 0.04,
-          w * 0.04,
-          w * 0.035,
-        ),
+        padding: EdgeInsets.fromLTRB(w * 0.04, w * 0.04, w * 0.04, w * 0.035),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(w * 0.05),
@@ -119,7 +133,7 @@ class SuratCard extends StatelessWidget {
                       ),
                       SizedBox(width: w * 0.02),
 
-                      if (status != null)
+                      if (role == CardRole.tu && status != null)
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: w * 0.03,
@@ -137,6 +151,7 @@ class SuratCard extends StatelessWidget {
                               color: _textColor(),
                             ),
                           ),
+                          
                         ),
                     ],
                   ),
@@ -164,17 +179,16 @@ class SuratCard extends StatelessWidget {
             SizedBox(height: w * 0.04),
 
             /// ================= FOOTER =================
+            /// ================= FOOTER =================
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (role == CardRole.tu)
+                /// ===== ROLE TU =====
+                if (role == CardRole.tu) ...[
                   OutlinedButton.icon(
                     onPressed: onDelete,
                     icon: Icon(Icons.delete_outline, size: w * 0.045),
-                    label: Text(
-                      "Hapus",
-                      style: TextStyle(fontSize: w * 0.032),
-                    ),
+                    label: Text("Hapus", style: TextStyle(fontSize: w * 0.032)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
@@ -188,17 +202,49 @@ class SuratCard extends StatelessWidget {
                     ),
                   ),
 
-                SizedBox(width: w * 0.03),
+                  SizedBox(width: w * 0.03),
 
-                CircleAvatar(
-                  radius: w * 0.055,
-                  backgroundColor: AppColors.bluePrimary,
-                  child: Icon(
-                    Icons.arrow_forward_rounded,
-                    color: Colors.white,
-                    size: w * 0.055,
+                  CircleAvatar(
+                    radius: w * 0.055,
+                    backgroundColor: _buttonColor(),
+                    child: Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Colors.white,
+                      size: w * 0.055,
+                    ),
                   ),
-                ),
+                ]
+                /// ===== ROLE KEPSEK & OTHER =====
+                else ...[
+                  SizedBox(
+                    height: w * 0.085,
+                    child: ElevatedButton(
+                      onPressed: onDetail,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _buttonColor(),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(w * 0.03),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: w * 0.05),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Detail",
+                            style: TextStyle(
+                              fontSize: w * 0.032,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(width: w * 0.02),
+                          Icon(Icons.arrow_forward_rounded, size: w * 0.045),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ],
@@ -213,10 +259,7 @@ class SuratCard extends StatelessWidget {
       padding: EdgeInsets.only(bottom: w * 0.02),
       child: RichText(
         text: TextSpan(
-          style: TextStyle(
-            fontSize: w * 0.034,
-            color: Colors.black87,
-          ),
+          style: TextStyle(fontSize: w * 0.034, color: Colors.black87),
           children: [
             TextSpan(
               text: "$label : ",

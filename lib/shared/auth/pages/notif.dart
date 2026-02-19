@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-enum NavbarRole { tu, kepsek, other }
+import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
 
 class NotificationPage extends StatelessWidget {
   final NavbarRole role;

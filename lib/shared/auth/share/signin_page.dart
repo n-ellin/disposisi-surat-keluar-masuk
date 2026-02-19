@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 // Import halaman tujuan setelah user login berdasarkan role/jabatan
-import '../../modules/tata_usaha/dashboard/menuTU.dart';
-import '../../modules/kepsek/dashboard/menuukepsek.dart';
-import '../../modules/other/dashboard/menuother.dart';
+import '../../../modules/tata_usaha/menuTU.dart';
+import '../../../modules/kepsek/menuukepsek.dart';
+import '../../../modules/other/menuother.dart';
 import 'signup_page.dart';
 import 'welcome.dart';
 
@@ -484,12 +484,17 @@ class _SignInPageState extends State<SignIn> {
     if (role == "Tata Usaha" || role == "Kepala Tata Usaha") {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const TuDashboardPage()),
+        MaterialPageRoute(builder: (_) => const TuDashboardPage(
+          jenisSurat: 'Surat Masuk',
+        ),
+        ),
       );
     } else if (role == "Kepala Sekolah") {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const KepsekDashboardPage()),
+        MaterialPageRoute(builder: (_) => const KepsekDashboardPage(
+          jenisSurat: 'Surat Masuk',
+        )),
       );
     } else {
       Navigator.pushReplacement(

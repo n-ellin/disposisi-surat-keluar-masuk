@@ -5,6 +5,7 @@ import 'package:ta_mobile_disposisi_surat/modules/kepsek/menuukepsek.dart';
 
 import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart'; // pastikan path sesuai
 import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/menuTU.dart';
 
 class Home extends StatefulWidget {
@@ -208,9 +209,11 @@ class _HomeState extends State<Home> {
         ),
       ),
       bottomNavigationBar: CustomNavbar(
+        currentIndex: 0,
         role: widget.role,
-        currentIndex: _currentIndex,
-        onTap: _onNavbarTap,
+        onTap: (index) {
+          handleNavbarTap(context, index, widget.role);
+        },
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'shared/auth/share/signin_page.dart';
 import 'shared/auth/share/signup_page.dart';
 
 import 'modules/tata_usaha/menuTU.dart';
+import 'modules/tata_usaha/approval.dart';
 import 'modules/kepsek/menuukepsek.dart';
 import 'modules/other/menuother.dart';
 
@@ -26,7 +27,30 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Simdis",
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
-      home: const Home(role: NavbarRole.tu),
+
+      /// HALAMAN AWAL
+      initialRoute: '/home',
+
+      /// SEMUA ROUTE APLIKASI
+      routes: {
+        '/welcome': (context) => const Welcome(),
+        '/signin': (context) => const SignIn(),
+        '/signup': (context) => const SignUp(),
+
+        '/home': (context) => const Home(role: NavbarRole.tu),
+        '/history': (context) => const MenuOther(),
+        '/approval': (context) => const ApprovalPage(role: NavbarRole.tu),
+
+        '/profile': (context) => const ProfilePage(
+          role: NavbarRole.tu,
+          nama: 'Nama User',
+          email: 'user@email.com',
+          jabatan: 'Tata Usaha',
+          imagePath: 'assets/images/profile.jpg',
+        ),
+
+        '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
+      },
     );
   }
 }

@@ -66,9 +66,9 @@ class SuratCard extends StatelessWidget {
   Color _buttonColor() {
     if (role == CardRole.kepsek) {
       if (jenisSurat.toLowerCase() == 'surat masuk') {
-        return AppColors.orangePrimary;
-      } else {
         return AppColors.bluePrimary;
+      } else {
+        return AppColors.orangePrimary;
       }
     }
 
@@ -185,67 +185,67 @@ class SuratCard extends StatelessWidget {
               children: [
                 /// ===== ROLE TU =====
                 if (role == CardRole.tu) ...[
-                  OutlinedButton.icon(
-                    onPressed: onDelete,
-                    icon: Icon(Icons.delete_outline, size: w * 0.045),
-                    label: Text("Hapus", style: TextStyle(fontSize: w * 0.032)),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: w * 0.04,
-                        vertical: w * 0.025,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(w * 0.04),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(width: w * 0.03),
-
-                  CircleAvatar(
-                    radius: w * 0.055,
-                    backgroundColor: _buttonColor(),
-                    child: Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Colors.white,
-                      size: w * 0.055,
-                    ),
-                  ),
-                ]
-                /// ===== ROLE KEPSEK & OTHER =====
-                else ...[
-                  SizedBox(
-                    height: w * 0.085,
-                    child: ElevatedButton(
-                      onPressed: onDetail,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _buttonColor(),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(w * 0.03),
+                    OutlinedButton.icon(
+                      onPressed: onDelete,
+                      icon: Icon(Icons.delete_outline, size: w * 0.045),
+                      label: Text("Hapus", style: TextStyle(fontSize: w * 0.032)),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: w * 0.04,
+                          vertical: w * 0.025,
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: w * 0.05),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Detail",
-                            style: TextStyle(
-                              fontSize: w * 0.032,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(width: w * 0.02),
-                          Icon(Icons.arrow_forward_rounded, size: w * 0.045),
-                        ],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(w * 0.04),
+                        ),
                       ),
                     ),
-                  ),
+
+                    SizedBox(width: w * 0.03),
+
+                    CircleAvatar(
+                      radius: w * 0.055,
+                      backgroundColor: _buttonColor(),
+                      child: Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Colors.white,
+                        size: w * 0.055,
+                      ),
+                    ),
+                  ]
+                  /// ===== ROLE KEPSEK & OTHER =====
+                  else ...[
+                    SizedBox(
+                      height: w * 0.085,
+                      child: ElevatedButton(
+                        onPressed: onDetail,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _buttonColor(),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(w * 0.03),
+                          ),
+                          padding: EdgeInsets.symmetric(horizontal: w * 0.05),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Detail",
+                              style: TextStyle(
+                                fontSize: w * 0.032,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(width: w * 0.02),
+                            Icon(Icons.arrow_forward_rounded, size: w * 0.045),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
             ),
           ],
         ),

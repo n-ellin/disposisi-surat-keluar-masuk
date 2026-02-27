@@ -12,6 +12,8 @@ import 'modules/tata_usaha/approval.dart';
 import 'modules/kepsek/menuukepsek.dart';
 import 'modules/other/menuother.dart';
 
+import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
+
 import 'shared/auth/pages/profile.dart';
 import 'shared/auth/pages/notif.dart';
 
@@ -29,7 +31,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
 
       /// HALAMAN AWAL
-      initialRoute: '/home',
+      initialRoute: '/input_suratmasuk',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
@@ -50,6 +52,7 @@ class MyApp extends StatelessWidget {
         ),
 
         '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
+        '/input_suratmasuk': (context) => const InputSuratMasuk(),
       },
     );
   }

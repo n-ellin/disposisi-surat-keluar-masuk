@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/modules/kepsek/menuukepsek.dart';
 
+import 'package:ta_mobile_disposisi_surat/shared/auth/pages/notif.dart';
+
 import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart'; // pastikan path sesuai
 import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/navigation_helper.dart';
@@ -10,7 +12,6 @@ import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/menuTU.dart';
 
 class Home extends StatefulWidget {
   final NavbarRole role;
-
   const Home({super.key, required this.role});
 
   @override
@@ -57,41 +58,53 @@ class _HomeState extends State<Home> {
                           height: w * 0.1,
                         ),
 
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Icon(
-                              Icons.notifications_none,
-                              size: w * 0.075,
-                              color: AppColors.bluePrimary,
-                            ),
-
-                            Positioned(
-                              right: -2, // ⬅️ keluar dikit biar nempel pojok
-                              top: -2, // ⬅️ keluar dikit biar rapi
-                              child: Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
-                                ),
-                                constraints: const BoxConstraints(
-                                  minWidth: 16,
-                                  minHeight: 16,
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "12",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    NotificationPage(
+                                      role: widget.role,
+                                    ), // sesuaikan nama class
+                              ),
+                            );
+                          },
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Icon(
+                                Icons.notifications_none,
+                                size: w * 0.075,
+                                color: AppColors.bluePrimary,
+                              ),
+                              Positioned(
+                                right: -2,
+                                top: -2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 16,
+                                    minHeight: 16,
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      "12",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ta_mobile_disposisi_surat/modules/kepsek/detail_surat/input_suratkeluar.dart';
 
 import 'shared/models/navbar_role.dart';
 
@@ -13,6 +14,7 @@ import 'modules/kepsek/menuukepsek.dart';
 import 'modules/other/menuother.dart';
 
 import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
+import 'modules/kepsek/detail_surat/input_suratkeluar.dart';
 
 import 'shared/auth/pages/profile.dart';
 import 'shared/auth/pages/notif.dart';
@@ -53,6 +55,7 @@ class MyApp extends StatelessWidget {
 
         '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
         '/input_suratmasuk': (context) => const InputSuratMasuk(),
+        '/input_suratkeluar': (context) => const InputSuratKeluar(),
       },
     );
   }

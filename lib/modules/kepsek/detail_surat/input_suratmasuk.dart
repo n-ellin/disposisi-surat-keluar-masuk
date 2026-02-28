@@ -88,42 +88,44 @@ class InputSuratMasuk extends StatelessWidget {
               // BUTTONS
               Row(
                 children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(0, 36),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 6,
+                      ), // kecilin sisi kiri
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: const Text("Terima"),
                       ),
                     ),
-                    onPressed: () {},
-                    child: const Text("Terima"),
                   ),
                   const SizedBox(width: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(0, 36),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        right: 6,
+                      ), // kecilin sisi kanan
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: const Text("Tolak"),
                       ),
                     ),
-                    onPressed: () {},
-                    child: const Text("Tolak"),
                   ),
                 ],
               ),
@@ -162,7 +164,7 @@ class InputSuratMasuk extends StatelessWidget {
             Builder(
               builder: (context) {
                 const List<String> attachmentUrls = [
-                  'assets/images/ino.png',
+                  'assets/images/undangan.png',
                   'assets/images/undangan.png',
                   'assets/images/logo.png',
                 ];
@@ -287,7 +289,7 @@ class InputSuratMasuk extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 16),
             ...children,
           ],
         ),
@@ -334,8 +336,16 @@ class InputSuratMasuk extends StatelessWidget {
             maxLines: 3,
             decoration: InputDecoration(
               hintText: "Masukkan $label...",
-              border: OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: AppColors.bluePrimary,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -379,8 +389,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
         children: [
           PageView.builder(
             controller: _pageController,
-            onPageChanged: (int index) =>
-                setState(() => _currentIndex = index),
+            onPageChanged: (int index) => setState(() => _currentIndex = index),
             itemCount: attachmentUrls.length,
             itemBuilder: (context, index) {
               final path = attachmentUrls[index];

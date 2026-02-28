@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-
-import 'package:ta_mobile_disposisi_surat/core/constants/full_screen_image_viewer.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/full-img-viewer.dart';
 
 class InputSuratKeluar extends StatelessWidget {
   const InputSuratKeluar({super.key});

@@ -1,4 +1,4 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 /// Reusable full-screen image viewer with pinch-to-zoom, pan, and close overlay.
@@ -8,7 +8,9 @@ class FullScreenImageViewer extends StatelessWidget {
   const FullScreenImageViewer({
     super.key,
     this.imageAssetPath,
-    this.imageUrl, required List<String> imageUrls, required int initialIndex,
+    this.imageUrl,
+    this.imageUrls,
+    this.initialIndex = 0,
   });
 
   /// Local asset path (e.g. 'assets/images/logo.png'). Must be listed in pubspec.yaml.
@@ -17,19 +19,43 @@ class FullScreenImageViewer extends StatelessWidget {
   /// Network image URL.
   final String? imageUrl;
 
+  /// List of multiple images for carousel (optional)
+  final List<String>? imageUrls;
+
+  /// Initial index if using multiple images
+  final int initialIndex;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          InteractiveViewer(
-            minScale: 0.5,
-            maxScale: 4.0,
-            child: Center(
-              child: _buildImage(context),
+          if (imageUrls != null && imageUrls!.isNotEmpty)
+            PageView.builder(
+              controller: PageController(initialPage: initialIndex),
+              itemCount: imageUrls!.length,
+              itemBuilder: (context, index) {
+                return InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 4.0,
+                  child: Center(
+                    child: Image.asset(
+                      imageUrls![index],
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) =>
+                          _placeholder(context),
+                    ),
+                  ),
+                );
+              },
+            )
+          else
+            InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Center(child: _buildImage(context)),
             ),
-          ),
           Positioned(
             top: MediaQuery.of(context).padding.top + 8,
             right: 16,

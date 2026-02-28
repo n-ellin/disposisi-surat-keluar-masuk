@@ -92,10 +92,10 @@ class InputSuratMasuk extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      minimumSize: const Size(0, 40),
+                      minimumSize: const Size(0, 36),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
+                        horizontal: 12,
+                        vertical: 6,
                       ),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity: VisualDensity.compact,
@@ -111,10 +111,10 @@ class InputSuratMasuk extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
-                      minimumSize: const Size(0, 40),
+                      minimumSize: const Size(0, 36),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 8,
+                        horizontal: 12,
+                        vertical: 6,
                       ),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity: VisualDensity.compact,

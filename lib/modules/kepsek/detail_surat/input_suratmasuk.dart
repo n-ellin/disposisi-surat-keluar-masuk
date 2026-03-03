@@ -196,7 +196,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                               isApproved: true,
                               catatan: catatanController.text,
                               tujuan: tujuanController.text,
-                              instruksi: instruksiController.text,
+                              instruksi: instruksiController.text, koordinasi: '', diteruskanKe: '', sifat: '',
                             ),
                           ),
                         );
@@ -206,7 +206,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                           MaterialPageRoute(
                             builder: (_) => OutputSuratmasuk(
                               isApproved: false,
-                              catatan: catatanController.text,
+                              catatan: catatanController.text, tujuan: '', instruksi: '', koordinasi: '', diteruskanKe: '', sifat: '',
                             ),
                           ),
                         );

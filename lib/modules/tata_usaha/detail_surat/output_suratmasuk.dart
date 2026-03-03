@@ -1,46 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
+
 import 'package:ta_mobile_disposisi_surat/core/constants/full-img-viewer.dart';
 
-class OutputSuratmasuk extends StatelessWidget {
+class OutputSuratmasuk extends StatefulWidget {
   final bool isApproved;
   final String catatan;
-  final String? tujuan;
-  final String? instruksi;
+  final String tujuan;
+  final String instruksi;
+  final String koordinasi;
+  final String diteruskanKe;
+  final String sifat;
 
   const OutputSuratmasuk({
     super.key,
     required this.isApproved,
     required this.catatan,
-    this.tujuan,
-    this.instruksi,
+    required this.tujuan,
+    required this.instruksi,
+    required this.koordinasi,
+    required this.diteruskanKe,
+    required this.sifat,
   });
 
+  @override
+  State<OutputSuratmasuk> createState() => _OutputSuratmasukState();
+}
+
+class _OutputSuratmasukState extends State<OutputSuratmasuk> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
-
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.bluePrimary,
-        icon: Icon(
-          isApproved ? Icons.forward : Icons.check,
-          color: Colors.white,
-        ),
-        label: Text(
-          isApproved ? "Teruskan" : "Konfirmasi",
-          style: const TextStyle(color: Colors.white),
-        ),
-        onPressed: () {
-          if (isApproved) {
-            // TODO: logic TERUSKAN
-          } else {
-            // TODO: logic KONFIRMASI
-          }
-        },
-      ),
-
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -78,7 +69,7 @@ class OutputSuratmasuk extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // CHIP
+              // CHIP SURAT MASUK
               Center(
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -101,13 +92,10 @@ class OutputSuratmasuk extends StatelessWidget {
 
               const SizedBox(height: 20),
 
+              // CARD DETAIL SURAT
               _detailCard(context),
 
               const SizedBox(height: 20),
-
-              _formDisposisi(),
-
-              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -135,14 +123,62 @@ class OutputSuratmasuk extends StatelessWidget {
               "Perihal",
               "Permohonan Izin Menghadiri Rapat",
             ),
-            const SizedBox(height: 16),
-            _AttachmentCarousel(
-              attachmentUrls: const [
-                'assets/images/undangan.png',
-                'assets/images/logo.png',
-              ],
+            const SizedBox(height: 20),
+
+            _readOnlyField("Diteruskan Ke", widget.diteruskanKe, Icons.send),
+            _readOnlyField("Sifat", widget.sifat, Icons.info),
+            _readOnlyField("Catatan", widget.catatan, Icons.note),
+            _readOnlyField("Tanggapan", widget.tujuan, Icons.comment),
+            _readOnlyField("Proses Lanjut", widget.instruksi, Icons.work),
+            _readOnlyField("Koordinasi", widget.koordinasi, Icons.phone),
+            const SizedBox(height: 20),
+            Builder(
+              builder: (context) {
+                const List<String> attachmentUrls = [
+                  'assets/images/undangan.png',
+                  'assets/images/undangan.png',
+                  'assets/images/logo.png',
+                ];
+                if (attachmentUrls.isEmpty) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      width: double.infinity,
+                      color: Colors.grey.shade200,
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Column(
+                        children: const [
+                          Icon(Icons.insert_drive_file, size: 50),
+                          SizedBox(height: 10),
+                          Text(
+                            "Tidak ada lampiran",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return _AttachmentCarousel(attachmentUrls: attachmentUrls);
+              },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _readOnlyField(String label, String value, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: TextFormField(
+        initialValue: value,
+        readOnly: true,
+        maxLines: null,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
       ),
     );
@@ -155,7 +191,7 @@ class OutputSuratmasuk extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 14),
+            padding: const EdgeInsets.only(top: 14), // ⬅️ bikin ikon turun
             child: Icon(icon, size: 24, color: Colors.grey.shade600),
           ),
           const SizedBox(width: 14),
@@ -187,7 +223,7 @@ class OutputSuratmasuk extends StatelessWidget {
     );
   }
 
-  Widget _formDisposisi() {
+  Widget _sectionCard({required String title, required List<Widget> children}) {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -197,6 +233,7 @@ class OutputSuratmasuk extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   width: 4,
@@ -207,56 +244,28 @@ class OutputSuratmasuk extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  "Form Disposisi",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-
-            // Jika Disetujui → tampil full data
-            if (isApproved) ...[
-              _readOnlyField("Tujuan", tujuan ?? "-"),
-              const SizedBox(height: 12),
-              _readOnlyField("Instruksi", instruksi ?? "-"),
-              const SizedBox(height: 12),
-            ],
-
-            // Catatan selalu ada
-            _readOnlyField("Catatan", catatan),
+            ...children,
           ],
         ),
       ),
     );
   }
-}
 
-Widget _readOnlyField(String label, String value) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-      ),
-      const SizedBox(height: 8),
-      Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.grey.shade400),
-          color: Colors.grey.shade200,
-        ),
-        child: Text(value, style: const TextStyle(fontSize: 14)),
-      ),
-    ],
-  );
 }
 
 class _AttachmentCarousel extends StatefulWidget {
   const _AttachmentCarousel({required this.attachmentUrls});
+
   final List<String> attachmentUrls;
 
   @override
@@ -270,7 +279,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.85);
+    _pageController = PageController();
   }
 
   @override
@@ -282,57 +291,80 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
   @override
   Widget build(BuildContext context) {
     final attachmentUrls = widget.attachmentUrls;
-
-    return SizedBox(
-      height: 220,
+    return AspectRatio(
+      aspectRatio: 3 / 4,
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
           PageView.builder(
             controller: _pageController,
-            itemCount: attachmentUrls.length,
-            onPageChanged: (index) {
-              setState(() => _currentIndex = index);
+            onPageChanged: (int index) {
+              setState(() {
+                _currentIndex = index;
+              });
             },
+            itemCount: attachmentUrls.length,
             itemBuilder: (context, index) {
-              final imagePath = attachmentUrls[index];
-
+              final path = attachmentUrls[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: GestureDetector(
+                padding: const EdgeInsets.only(right: 8),
+                child: InkWell(
                   onTap: () {
-                    Navigator.push(
-                      context,
+                    Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => FullScreenImageViewer(
+                          imageAssetPath: path,
                           imageUrls: attachmentUrls,
                           initialIndex: index,
                         ),
                       ),
                     );
                   },
+                  borderRadius: BorderRadius.circular(12),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(imagePath, fit: BoxFit.contain),
+                    child: Container(
+                      width: double.infinity,
+                      color: Colors.grey.shade200,
+                      child: Image.asset(
+                        path,
+                        fit: BoxFit.fitWidth,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.broken_image,
+                                  size: 50,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 10),
+                                Text("Gagal memuat gambar"),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
               );
             },
           ),
-
-          // DOT INDICATOR
           Positioned(
             bottom: 12,
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: List.generate(attachmentUrls.length, (index) {
-                final active = index == _currentIndex;
+                final isActive = index == _currentIndex;
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: active ? 10 : 6,
-                  height: active ? 10 : 6,
+                  width: isActive ? 10 : 6,
+                  height: isActive ? 10 : 6,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: active
+                    color: isActive
                         ? AppColors.bluePrimary
                         : Colors.grey.shade400,
                   ),

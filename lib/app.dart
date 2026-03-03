@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
 
       /// HALAMAN AWAL
-      initialRoute: '/output_suratmasuk',
+      initialRoute: '/input_suratmasuk',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           isApproved: true,
           catatan: "iya",
           tujuan: "Waka Kurikulum",
-          instruksi: "Tindak lanjuti",
+          instruksi: "Tindak lanjuti", koordinasi: '', diteruskanKe: '', sifat: '',
         ),
       },
     );

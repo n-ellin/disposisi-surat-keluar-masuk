@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 
 class HistoryKepsek extends StatefulWidget {
   const HistoryKepsek({super.key});
@@ -10,149 +8,185 @@ class HistoryKepsek extends StatefulWidget {
 }
 
 class _HistoryKepsekState extends State<HistoryKepsek> {
-  String _searchQuery = '';
-  String _selectedFilter = 'semua'; // semua | Surat Masuk | Surat Keluar
+  int selectedIndex = 0;
 
-  final List<Map<String, dynamic>> _allSurat = [
-    {
-      'jenisSurat': 'Surat Masuk',
-      'tanggal': '12 Okt 2026',
-      'status': 'menunggu',
-      'data': {'Dari': 'Tata Usaha', 'Perihal': 'Permohonan Rapat SIKAP'},
-    },
-    {
-      'jenisSurat': 'Surat Keluar',
-      'tanggal': '12 Okt 2026',
-      'status': 'disetujui',
-      'data': {'Dari': 'Tata Usaha', 'Perihal': 'Permohonan Rapat SIKAP'},
-    },
-  ];
-
-  List<Map<String, dynamic>> get _filteredSurat {
-    var result = _allSurat.where((s) {
-      if (_selectedFilter == 'semua') return true;
-      return (s['jenisSurat'] ?? '') == _selectedFilter;
-    }).toList();
-
-    if (_searchQuery.isNotEmpty) {
-      final query = _searchQuery.toLowerCase();
-      result = result.where((s) {
-        final dari = (s['data']?['Dari'] ?? '').toString().toLowerCase();
-        final perihal = (s['data']?['Perihal'] ?? '').toString().toLowerCase();
-        return dari.contains(query) || perihal.contains(query);
-      }).toList();
-    }
-
-    return result;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final w = size.width;
-    final h = size.height;
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-
-      /// ================= APPBAR =================
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        title: const Text(
-          'Riwayat',
-          style: TextStyle(
-            color: AppColors.bluePrimary,
-            fontWeight: FontWeight.bold,
-          ),
+  Widget buildFilterButton(String text, int index) {
+    bool isActive = selectedIndex == index;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedIndex = index;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? const Color(0xFF2C8CA0) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFF2C8CA0)),
         ),
-        centerTitle: true,
-      ),
-
-      /// ================= BODY =================
-      body: Padding(
-        padding: EdgeInsets.all(w * 0.04),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// SEARCH
-            TextField(
-              onChanged: (value) => setState(() => _searchQuery = value),
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: "Cari surat...",
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                contentPadding: EdgeInsets.symmetric(vertical: h * 0.018),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(w * 0.06),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-
-            SizedBox(height: h * 0.02),
-
-            /// FILTER: Semua | Surat Masuk | Surat Keluar (blue primary bg, white text)
-            Row(
-              children: [
-                _filterChip('Semua', 'semua', w, h),
-                SizedBox(width: w * 0.02),
-                _filterChip('Surat Masuk', 'Surat Masuk', w, h),
-                SizedBox(width: w * 0.02),
-                _filterChip('Surat Keluar', 'Surat Keluar', w, h),
-              ],
-            ),
-
-            SizedBox(height: h * 0.02),
-
-            /// UNIFIED LIST SURAT
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.only(bottom: h * 0.12),
-                itemCount: _filteredSurat.length,
-                itemBuilder: (context, index) {
-                  final surat = _filteredSurat[index];
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: h * 0.015),
-                    child: SuratCard(
-                      jenisSurat: surat['jenisSurat'],
-                      tanggal: surat['tanggal'],
-                      status: surat['status'],
-                      data: Map<String, String>.from(surat['data']),
-                      role: CardRole.kepsek,
-                      onDetail: () {},
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isActive ? Colors.white : const Color(0xFF2C8CA0),
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
   }
 
-  Widget _filterChip(String label, String value, double w, double h) {
-    final isSelected = _selectedFilter == value;
-    return Material(
-      color: isSelected ? AppColors.bluePrimary : Colors.grey.shade200,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: () => setState(() => _selectedFilter = value),
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: w * 0.04, vertical: h * 0.012),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Colors.grey.shade700,
-              fontWeight: FontWeight.w600,
-              fontSize: w * 0.032,
-            ),
+  Widget buildCard({
+    required String title,
+    required String date,
+    required String from,
+    required String subject,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                date,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text("Dari : $from", style: const TextStyle(fontSize: 12)),
+          Text("Perihal : $subject", style: const TextStyle(fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF4F4F4),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(
+                child: Text(
+                  "Riwayat",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2C8CA0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    )
+                  ],
+                ),
+                child: const TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.search, color: Colors.grey),
+                    hintText: "Cari surat...",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  buildFilterButton("Semua", 0),
+                  buildFilterButton("Surat Masuk", 1),
+                  buildFilterButton("Surat Keluar", 2),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              Expanded(
+                child: ListView(
+                  children: [
+                    buildCard(
+                      title: "Surat Masuk",
+                      date: "12 Okt 2026",
+                      from: "Tata Usaha",
+                      subject: "Permohonan Rapat SIKAP",
+                    ),
+                    buildCard(
+                      title: "Surat Keluar",
+                      date: "12 Okt 2026",
+                      from: "Tata Usaha",
+                      subject: "Permohonan Rapat SIKAP",
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Icon(Icons.home, color: Colors.grey),
+            Icon(Icons.assignment_turned_in, color: Color(0xFF2C8CA0)),
+            Icon(Icons.person, color: Colors.grey),
+          ],
         ),
       ),
     );

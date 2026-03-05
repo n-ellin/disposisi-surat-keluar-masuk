@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ta_mobile_disposisi_surat/modules/kepsek/history_kepsek.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/history_tu.dart';
 
 import 'shared/models/navbar_role.dart';
 
@@ -13,10 +15,10 @@ import 'modules/kepsek/menuukepsek.dart';
 import 'modules/other/menuother.dart';
 
 import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
+import 'modules/kepsek/history_kepsek.dart';
 
 import 'shared/auth/pages/profile.dart';
 import 'shared/auth/pages/notif.dart';
-
 import 'shared/auth/pages/home.dart';
 import 'shared/auth/share/welcome.dart';
 
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
 
       /// HALAMAN AWAL
-      initialRoute: '/input_suratmasuk',
+      initialRoute: '/History_Kepsek',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
@@ -53,6 +55,7 @@ class MyApp extends StatelessWidget {
 
         '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
         '/input_suratmasuk': (context) => const InputSuratMasuk(),
+        '/history_kepsek': (context) => const HistoryKepsek(), 
       },
     );
   }

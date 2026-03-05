@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
 
       /// HALAMAN AWAL
-      initialRoute: '/input_suratmasuk',
+      initialRoute: '',
 
       /// SEMUA ROUTE APLIKASI
       routes: {

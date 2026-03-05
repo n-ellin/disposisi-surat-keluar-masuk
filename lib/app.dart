@@ -51,7 +51,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
 
       /// HALAMAN AWAL
+<<<<<<< HEAD
       initialRoute: '/History_Kepsek',
+=======
+      initialRoute: '',
+>>>>>>> fb7b0a5d920aa2600811b2fe05d9c091b1bc80c2
 
       /// SEMUA ROUTE APLIKASI
       routes: {

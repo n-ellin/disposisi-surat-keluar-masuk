@@ -1,10 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
-import 'package:ta_mobile_disposisi_surat/core/constants/full_screen_image_viewer.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/full-img-viewer.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratmasuk.dart';
 
-class InputSuratMasuk extends StatelessWidget {
+class InputSuratMasuk extends StatefulWidget {
   const InputSuratMasuk({super.key});
+
+  @override
+  State<InputSuratMasuk> createState() => _InputSuratMasukState();
+}
+
+class _InputSuratMasukState extends State<InputSuratMasuk> {
+  bool? isApproved;
+
+  final TextEditingController catatanController = TextEditingController();
+  final TextEditingController tujuanController = TextEditingController();
+  final TextEditingController instruksiController =
+      TextEditingController(); // null = belum pilih, true = terima, false = tolak
+
+  @override
+  void dispose() {
+    catatanController.dispose();
+    tujuanController.dispose();
+    instruksiController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,57 +97,125 @@ class InputSuratMasuk extends StatelessWidget {
               const SizedBox(height: 20),
 
               // FORM DISPOSISI
-              _formDisposisi(),
-
-              const SizedBox(height: 20),
-
-              // DENGAN HORMAT
-              _formTambahan(),
-
-              const SizedBox(height: 30),
-
               // BUTTONS
               Row(
                 children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(0, 36),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (isApproved == true) {
+                              isApproved = null; // batal
+                            } else {
+                              isApproved = true;
+                            }
+                          });
+                        },
+                        child: const Text("Terima"),
                       ),
                     ),
-                    onPressed: () {},
-                    child: const Text("Terima"),
                   ),
                   const SizedBox(width: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(0, 36),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (isApproved == false) {
+                              isApproved = null; // batal
+                            } else {
+                              isApproved = false;
+                            }
+                          });
+                        },
+                        child: const Text("Tolak"),
                       ),
                     ),
-                    onPressed: () {},
-                    child: const Text("Tolak"),
                   ),
                 ],
               ),
+
+              const SizedBox(height: 20),
+
+              // FORM DISPOSISI
+              if (isApproved == true) ...[
+                _formDisposisi(),
+                const SizedBox(height: 20),
+                _formTambahan(),
+              ],
+
+              if (isApproved == false) ...[
+                _sectionCard(
+                  title: "Form Disposisi",
+                  children: [
+                    _textField("Catatan", controller: catatanController),
+                  ],
+                ),
+              ],
+              if (isApproved != null) ...[
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.bluePrimary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 28,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (isApproved == true) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => OutputSuratmasuk(
+                              isApproved: true,
+                              catatan: catatanController.text,
+                              tujuan: tujuanController.text,
+                              instruksi: instruksiController.text, koordinasi: '', diteruskanKe: '', sifat: '',
+                            ),
+                          ),
+                        );
+                      } else if (isApproved == false) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => OutputSuratmasuk(
+                              isApproved: false,
+                              catatan: catatanController.text, tujuan: '', instruksi: '', koordinasi: '', diteruskanKe: '', sifat: '',
+                            ),
+                          ),
+                        );
+                      }
+                    }, // ← TAMBAH KOMA DI SINI
+                    child: const Text("Kirim"),
+                  ),
+                ),
+              ],
 
               const SizedBox(height: 30),
             ],
@@ -162,7 +251,7 @@ class InputSuratMasuk extends StatelessWidget {
             Builder(
               builder: (context) {
                 const List<String> attachmentUrls = [
-                  'assets/images/ino.png',
+                  'assets/images/undangan.png',
                   'assets/images/undangan.png',
                   'assets/images/logo.png',
                 ];
@@ -250,8 +339,8 @@ class InputSuratMasuk extends StatelessWidget {
     return _sectionCard(
       title: "Dengan Hormat Harap",
       children: [
-        _textField("Tanggapan dan Saran"),
-        _textField("Proses Lebih Lanjut"),
+        _textField("Tanggapan dan Saran", controller: tujuanController),
+        _textField("Proses Lebih Lanjut", controller: instruksiController),
         _textField("Koordinasi atau Konfirmasi"),
       ],
     );
@@ -287,7 +376,7 @@ class InputSuratMasuk extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 16),
             ...children,
           ],
         ),
@@ -319,7 +408,7 @@ class InputSuratMasuk extends StatelessWidget {
     );
   }
 
-  Widget _textField(String label) {
+  Widget _textField(String label, {TextEditingController? controller}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -331,11 +420,17 @@ class InputSuratMasuk extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           TextField(
+            controller: controller,
             maxLines: 3,
             decoration: InputDecoration(
               hintText: "Masukkan $label...",
-              border: OutlineInputBorder(
+              enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey.shade400),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppColors.bluePrimary, width: 2),
               ),
             ),
           ),
@@ -379,8 +474,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
         children: [
           PageView.builder(
             controller: _pageController,
-            onPageChanged: (int index) =>
-                setState(() => _currentIndex = index),
+            onPageChanged: (int index) => setState(() => _currentIndex = index),
             itemCount: attachmentUrls.length,
             itemBuilder: (context, index) {
               final path = attachmentUrls[index];

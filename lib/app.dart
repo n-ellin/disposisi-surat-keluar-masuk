@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:ta_mobile_disposisi_surat/modules/kepsek/history_kepsek.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/history_tu.dart';
+=======
+import 'package:ta_mobile_disposisi_surat/modules/kepsek/detail_surat/input_suratkeluar.dart';
+>>>>>>> 293fda59359deb02d28177c87dfc696da746d769
 
 import 'shared/models/navbar_role.dart';
 
@@ -9,6 +13,7 @@ import 'shared/auth/share/splash_screen.dart';
 import 'shared/auth/share/signin_page.dart';
 import 'shared/auth/share/signup_page.dart';
 
+<<<<<<< HEAD
 import 'modules/tata_usaha/menuTU.dart';
 import 'modules/tata_usaha/approval.dart';
 import 'modules/kepsek/menuukepsek.dart';
@@ -17,10 +22,23 @@ import 'modules/other/menuother.dart';
 import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
 import 'modules/kepsek/history_kepsek.dart';
 
+=======
+>>>>>>> 293fda59359deb02d28177c87dfc696da746d769
 import 'shared/auth/pages/profile.dart';
 import 'shared/auth/pages/notif.dart';
 import 'shared/auth/pages/home.dart';
 import 'shared/auth/share/welcome.dart';
+
+import 'modules/tata_usaha/menuTU.dart';
+import 'modules/tata_usaha/detail_surat/output_suratkeluar.dart';
+import 'modules/tata_usaha/detail_surat/output_suratmasuk.dart';
+import 'modules/tata_usaha/approval.dart';
+
+import 'modules/kepsek/menuukepsek.dart';
+import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
+import 'modules/kepsek/detail_surat/input_suratkeluar.dart';
+
+import 'modules/other/menuother.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -54,8 +72,22 @@ class MyApp extends StatelessWidget {
         ),
 
         '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
+
         '/input_suratmasuk': (context) => const InputSuratMasuk(),
+<<<<<<< HEAD
         '/history_kepsek': (context) => const HistoryKepsek(), 
+=======
+        '/input_suratkeluar': (context) => const InputSuratKeluar(),
+        '/output_suratkeluar': (context) =>
+            const OutputSuratkeluar(catatan: "iya"),
+
+        '/output_suratmasuk': (context) => const OutputSuratmasuk(
+          isApproved: true,
+          catatan: "iya",
+          tujuan: "Waka Kurikulum",
+          instruksi: "Tindak lanjuti", koordinasi: '', diteruskanKe: '', sifat: '',
+        ),
+>>>>>>> 293fda59359deb02d28177c87dfc696da746d769
       },
     );
   }

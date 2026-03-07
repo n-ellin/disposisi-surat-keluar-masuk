@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:ta_mobile_disposisi_surat/modules/kepsek/history_kepsek.dart';
-import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/history_tu.dart';
-=======
-import 'package:ta_mobile_disposisi_surat/modules/kepsek/detail_surat/input_suratkeluar.dart';
->>>>>>> 293fda59359deb02d28177c87dfc696da746d769
 
 import 'shared/models/navbar_role.dart';
 
@@ -13,17 +8,6 @@ import 'shared/auth/share/splash_screen.dart';
 import 'shared/auth/share/signin_page.dart';
 import 'shared/auth/share/signup_page.dart';
 
-<<<<<<< HEAD
-import 'modules/tata_usaha/menuTU.dart';
-import 'modules/tata_usaha/approval.dart';
-import 'modules/kepsek/menuukepsek.dart';
-import 'modules/other/menuother.dart';
-
-import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
-import 'modules/kepsek/history_kepsek.dart';
-
-=======
->>>>>>> 293fda59359deb02d28177c87dfc696da746d769
 import 'shared/auth/pages/profile.dart';
 import 'shared/auth/pages/notif.dart';
 import 'shared/auth/pages/home.dart';
@@ -33,6 +17,7 @@ import 'modules/tata_usaha/menuTU.dart';
 import 'modules/tata_usaha/detail_surat/output_suratkeluar.dart';
 import 'modules/tata_usaha/detail_surat/output_suratmasuk.dart';
 import 'modules/tata_usaha/approval.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/history_tu.dart';
 
 import 'modules/kepsek/menuukepsek.dart';
 import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
@@ -50,12 +35,7 @@ class MyApp extends StatelessWidget {
       title: "Simdis",
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
 
-      /// HALAMAN AWAL
-<<<<<<< HEAD
-      initialRoute: '/History_Kepsek',
-=======
-      initialRoute: '',
->>>>>>> fb7b0a5d920aa2600811b2fe05d9c091b1bc80c2
+        initialRoute: 'history_kepsek',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
@@ -64,7 +44,6 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignUp(),
 
         '/home': (context) => const Home(role: NavbarRole.tu),
-        '/history': (context) => const MenuOther(),
         '/approval': (context) => const ApprovalPage(role: NavbarRole.tu),
 
         '/profile': (context) => const ProfilePage(
@@ -78,9 +57,7 @@ class MyApp extends StatelessWidget {
         '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
 
         '/input_suratmasuk': (context) => const InputSuratMasuk(),
-<<<<<<< HEAD
         '/history_kepsek': (context) => const HistoryKepsek(), 
-=======
         '/input_suratkeluar': (context) => const InputSuratKeluar(),
         '/output_suratkeluar': (context) =>
             const OutputSuratkeluar(catatan: "iya"),
@@ -91,7 +68,6 @@ class MyApp extends StatelessWidget {
           tujuan: "Waka Kurikulum",
           instruksi: "Tindak lanjuti", koordinasi: '', diteruskanKe: '', sifat: '',
         ),
->>>>>>> 293fda59359deb02d28177c87dfc696da746d769
       },
     );
   }

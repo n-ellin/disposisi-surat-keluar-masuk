@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:ta_mobile_disposisi_surat/core/constants/navigation_helper.dart';
-import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
-import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
 
 class ProfilePage extends StatelessWidget {
   final String nama;
@@ -33,10 +33,6 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: Text(
           "Profile",
           style: TextStyle(

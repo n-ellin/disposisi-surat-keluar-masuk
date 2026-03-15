@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/modules/kepsek/history_kepsek.dart';
 
-import 'shared/models/navbar_role.dart';
+import 'shared/navbar/navbar_role.dart';
 
 // import halaman di sini, bukan di main
 import 'shared/auth/share/splash_screen.dart';
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       title: "Simdis",
       theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
 
-        initialRoute: 'history_kepsek',
+        initialRoute: '/history_tu',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
@@ -56,12 +56,13 @@ class MyApp extends StatelessWidget {
 
         '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
 
-        '/input_suratmasuk': (context) => const InputSuratMasuk(),
-        '/history_kepsek': (context) => const HistoryKepsek(), 
+
+        '/input_suratmasuk': (context) => const InputSuratMasuk(), 
         '/input_suratkeluar': (context) => const InputSuratKeluar(),
         '/output_suratkeluar': (context) =>
             const OutputSuratkeluar(catatan: "iya"),
 
+        '/history_tu' : (context) => const HistoryTUPage(),
         '/output_suratmasuk': (context) => const OutputSuratmasuk(
           isApproved: true,
           catatan: "iya",

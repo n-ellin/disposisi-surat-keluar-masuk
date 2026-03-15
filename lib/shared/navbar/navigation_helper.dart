@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
-import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
 
 void handleNavbarTap(
   BuildContext context,
@@ -16,19 +15,33 @@ void handleNavbarTap(
         Navigator.pushReplacementNamed(context, '/approval');
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/history');
+        Navigator.pushReplacementNamed(context, '/history_tu');
         break;
       case 3:
         Navigator.pushReplacementNamed(context, '/profile');
         break;
     }
-  } else {
+  } else if (role == NavbarRole.kepsek){
     switch (index) {
       case 0:
         Navigator.pushReplacementNamed(context, '/home');
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/history');
+        Navigator.pushReplacementNamed(context, '/history_kepsek');
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, '/profile');
+        break;
+    }
+  }
+
+  else{ 
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/home');
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/history_other');
         break;
       case 2:
         Navigator.pushReplacementNamed(context, '/profile');

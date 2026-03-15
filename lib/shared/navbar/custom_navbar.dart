@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'notched_custom.dart';
-import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
 
 class CustomNavbar extends StatelessWidget {
   final NavbarRole role;
@@ -15,7 +14,6 @@ class CustomNavbar extends StatelessWidget {
     required this.onTap,
   });
 
-  bool get _hasFab => role == NavbarRole.tu;
 
   @override
   Widget build(BuildContext context) {

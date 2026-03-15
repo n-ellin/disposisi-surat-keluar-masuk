@@ -27,21 +27,23 @@ class FullScreenImageViewer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final multipleImages = imageUrls ?? const <String>[];
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          if (imageUrls != null && imageUrls!.isNotEmpty)
+          if (multipleImages.isNotEmpty)
             PageView.builder(
               controller: PageController(initialPage: initialIndex),
-              itemCount: imageUrls!.length,
+              itemCount: multipleImages.length,
               itemBuilder: (context, index) {
                 return InteractiveViewer(
                   minScale: 0.5,
                   maxScale: 4.0,
                   child: Center(
                     child: Image.asset(
-                      imageUrls![index],
+                      multipleImages[index],
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) =>
                           _placeholder(context),
@@ -78,16 +80,19 @@ class FullScreenImageViewer extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context) {
-    if (imageAssetPath != null && imageAssetPath!.isNotEmpty) {
+    final assetPath = imageAssetPath ?? '';
+    final networkUrl = imageUrl ?? '';
+
+    if (assetPath.isNotEmpty) {
       return Image.asset(
-        imageAssetPath!,
+        assetPath,
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) => _placeholder(context),
       );
     }
-    if (imageUrl != null && imageUrl!.isNotEmpty) {
+    if (networkUrl.isNotEmpty) {
       return Image.network(
-        imageUrl!,
+        networkUrl,
         fit: BoxFit.contain,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;

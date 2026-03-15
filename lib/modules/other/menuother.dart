@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
 import 'package:ta_mobile_disposisi_surat/shared/auth/pages/notif.dart';
 import '../../shared/widgets/surat_card.dart';
 import '../../shared/auth/pages/profile.dart';

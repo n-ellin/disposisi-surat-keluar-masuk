@@ -5,9 +5,9 @@ import 'package:ta_mobile_disposisi_surat/modules/kepsek/menuukepsek.dart';
 
 import 'package:ta_mobile_disposisi_surat/shared/auth/pages/notif.dart';
 
-import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart'; // pastikan path sesuai
-import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
-import 'package:ta_mobile_disposisi_surat/core/constants/navigation_helper.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart'; // pastikan path sesuai
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/menuTU.dart';
 
 class Home extends StatefulWidget {
@@ -19,13 +19,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _currentIndex = 0;
 
-  void _onNavbarTap(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

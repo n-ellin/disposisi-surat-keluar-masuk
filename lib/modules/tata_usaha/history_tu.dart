@@ -1,96 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
-import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
-class HistoryTU extends StatefulWidget {
-  const HistoryTU({super.key});
+class HistoryTUPage extends StatefulWidget {
+  const HistoryTUPage({super.key});
 
   @override
-  State<HistoryTU> createState() => _HistoryTUState();
+  State<HistoryTUPage> createState() => _HistoryTUPageState();
 }
 
-class _HistoryTUState extends State<HistoryTU> {
-  int _currentIndex = 0;
-  String _selectedFilter = 'semua';
+class _HistoryTUPageState extends State<HistoryTUPage> {
   String _searchQuery = '';
+  String _statusFilter = 'semua';
 
-  final List<Map<String, dynamic>> _allSurat = [
+  final List<Map<String, dynamic>> _historySurat = [
+    {
+      'jenisSurat': 'Surat Masuk',
+      'tanggal': '10 Oktober 2025',
+      'status': 'disetujui',
+      'data': {'Dari': 'Dinas Pendidikan', 'Perihal': 'Undangan Rapat'},
+    },
     {
       'jenisSurat': 'Surat Keluar',
-      'tanggal': 'Senin, 12 Oktober 2025',
-      'status': 'disetujui',
-      'data': {'Dari': 'Tata Usaha', 'Perihal': 'Permohonan Izin Kegiatan'},
-    },
-    {
-      'jenisSurat': 'Surat Masuk',
-      'tanggal': 'Senin, 12 Oktober 2025',
+      'tanggal': '8 Oktober 2025',
       'status': 'ditolak',
-      'data': {
-        'Dari': 'Dinas Pendidikan',
-        'Perihal': 'Undangan Rapat Koordinasi',
-      },
-    },
-    {
-      'jenisSurat': 'Surat Masuk',
-      'tanggal': 'Senin, 12 Oktober 2025',
-      'status': 'menunggu',
-      'data': {
-        'Dari': 'Dinas Pendidikan',
-        'Perihal': 'Undangan Rapat Koordinasi',
-      },
+      'data': {'Dari': 'Tata Usaha', 'Perihal': 'Permohonan Izin'},
     },
   ];
 
   List<Map<String, dynamic>> get _filteredSurat {
-    List<Map<String, dynamic>> result = List.from(_allSurat);
+    return _historySurat.where((s) {
+      final query = _searchQuery.toLowerCase();
 
-    if (_selectedFilter != 'semua') {
-      result = result
-          .where((s) =>
-              (s['status'] ?? '').toString().toLowerCase() ==
-              _selectedFilter.toLowerCase())
-          .toList();
-    }
+      final jenis = s['jenisSurat'].toString().toLowerCase();
+      final tanggal = s['tanggal'].toString().toLowerCase();
+      final dari = s['data']['Dari'].toString().toLowerCase();
+      final perihal = s['data']['Perihal'].toString().toLowerCase();
+      final status = s['status'].toString().toLowerCase();
 
-    if (_searchQuery.isNotEmpty) {
-      result = result.where((s) {
-        final query = _searchQuery.toLowerCase();
-        final jenisSurat = (s['jenisSurat'] ?? '').toString().toLowerCase();
-        final tanggal = (s['tanggal'] ?? '').toString().toLowerCase();
-        final status = (s['status'] ?? '').toString().toLowerCase();
-        final dari = (s['data']?['Dari'] ?? '').toString().toLowerCase();
-        final perihal = (s['data']?['Perihal'] ?? '').toString().toLowerCase();
+      final matchSearch =
+          _searchQuery.isEmpty ||
+          jenis.contains(query) ||
+          tanggal.contains(query) ||
+          dari.contains(query) ||
+          perihal.contains(query);
 
-        return jenisSurat.contains(query) ||
-            tanggal.contains(query) ||
-            status.contains(query) ||
-            dari.contains(query) ||
-            perihal.contains(query);
-      }).toList();
-    }
+      final matchStatus = _statusFilter == 'semua' || status == _statusFilter;
 
-    return result;
-  }
-
-  final Map<String, Color> filterColors = {
-    'semua': const Color(0xFF6F7A83),
-    'disetujui': const Color(0xFF3F9142),
-    'ditolak': const Color(0xFFB63A3A),
-  };
-
-  String _label(String key) {
-    switch (key) {
-      case 'semua':
-        return 'Semua';
-      case 'disetujui':
-        return 'Disetujui';
-      case 'ditolak':
-        return 'Ditolak';
-      default:
-        return key;
-    }
+      return matchSearch && matchStatus;
+    }).toList();
   }
 
   @override
@@ -102,116 +63,125 @@ class _HistoryTUState extends State<HistoryTU> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      /// ================= APPBAR =================
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        centerTitle: true,
-        title: const Text(
-          'Riwayat',
-          style: TextStyle(
-            color: AppColors.bluePrimary,
-            fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(w * 0.04),
+          child: Column(
+            children: [
+              SizedBox(height: h * 0.02),
+
+              /// TITLE
+              Center(
+                child: Text(
+                  "History Surat",
+                  style: TextStyle(
+                    fontSize: w * 0.065,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.bluePrimary,
+                  ),
+                ),
+              ),
+
+              SizedBox(height: h * 0.02),
+
+              /// SEARCH
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: "Cari Surat...",
+                  prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              SizedBox(height: h * 0.02),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _filterButton("semua"),
+                  _filterButton("disetujui"),
+                  _filterButton("ditolak"),
+                ],
+              ),
+
+              SizedBox(height: h * 0.02),
+
+              /// LIST HISTORY
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _filteredSurat.length,
+                  itemBuilder: (context, index) {
+                    final surat = _filteredSurat[index];
+
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: h * 0.015),
+                      child: SuratCard(
+                        jenisSurat: surat['jenisSurat'],
+                        tanggal: surat['tanggal'],
+                        status: surat['status'],
+                        role: CardRole.tu,
+                        data: Map<String, String>.from(surat['data']),
+                        onDetail: () {},
+                        showAction: false,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),
 
-      /// ================= BODY =================
-      body: Padding(
-        padding: EdgeInsets.all(w * 0.04),
-        child: Column(
-          children: [
-            /// SEARCH
-            TextField(
-              onChanged: (value) => setState(() => _searchQuery = value),
-              style: TextStyle(fontSize: w * 0.04),
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search, size: w * 0.055),
-                hintText: 'Cari Surat...',
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                contentPadding: EdgeInsets.symmetric(vertical: h * 0.018),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(w * 0.06),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            SizedBox(height: h * 0.015),
-
-            /// FILTER
-            Row(
-              children: filterColors.keys.map((key) {
-                final isSelected = _selectedFilter == key;
-                final color = filterColors[key]!;
-
-                return Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: w * 0.01),
-                    child: ChoiceChip(
-                      label: Center(
-                        child: Text(
-                          _label(key),
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : color,
-                            fontWeight: FontWeight.w600,
-                            fontSize: w * 0.028,
-                          ),
-                        ),
-                      ),
-                      selected: isSelected,
-                      showCheckmark: false,
-                      selectedColor: color,
-                      backgroundColor: Colors.white,
-                      side: BorderSide(color: color, width: 1.5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      onSelected: (_) =>
-                          setState(() => _selectedFilter = key),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-
-            SizedBox(height: h * 0.02),
-
-            /// LIST SURAT
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.only(bottom: h * 0.12),
-                itemCount: _filteredSurat.length,
-                itemBuilder: (context, index) {
-                  final surat = _filteredSurat[index];
-
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: h * 0.015),
-                    child: SuratCard(
-                      jenisSurat: surat['jenisSurat'],
-                      tanggal: surat['tanggal'],
-                      status: surat['status'],
-                      role: CardRole.tu,
-                      data: Map<String, String>.from(surat['data']), onDetail: () {  },
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-
-      /// ================= NAVBAR =================
       bottomNavigationBar: CustomNavbar(
         role: NavbarRole.tu,
-        currentIndex: _currentIndex,
+        currentIndex: 2,
         onTap: (index) {
-          setState(() => _currentIndex = index);
+          handleNavbarTap(context, index, NavbarRole.tu);
         },
       ),
+    );
+  }
+
+  Widget _filterButton(String label) {
+    final isActive = _statusFilter == label;
+
+    Color activeColor;
+
+    switch (label) {
+      case 'disetujui':
+        activeColor = const Color(0xFF3F9142); // hijau
+        break;
+      case 'ditolak':
+        activeColor = const Color(0xFFB63A3A); // merah
+        break;
+      default:
+        activeColor = AppColors.bluePrimary; // semua
+    }
+
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _statusFilter = label;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isActive ? activeColor : Colors.grey.shade200,
+        foregroundColor: isActive ? Colors.white : Colors.black87,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      ),
+      child: Text(label[0].toUpperCase() + label.substring(1)),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
-import 'package:ta_mobile_disposisi_surat/shared/models/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
+import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
 
 class ApprovalPage extends StatefulWidget {
   final NavbarRole role;

@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/detail_suratOther',
+      initialRoute: '/output_suratkeluar',
 
       /// SEMUA ROUTE APLIKASI
       routes: {

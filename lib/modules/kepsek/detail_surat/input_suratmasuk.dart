@@ -14,16 +14,22 @@ class InputSuratMasuk extends StatefulWidget {
 class _InputSuratMasukState extends State<InputSuratMasuk> {
   bool? isApproved;
 
-  final TextEditingController catatanController = TextEditingController();
+  final TextEditingController catatanTerimaController = TextEditingController();
+    final TextEditingController catatanTolakController = TextEditingController();
+
   final TextEditingController tujuanController = TextEditingController();
-  final TextEditingController instruksiController =
+  final TextEditingController instruksiController = TextEditingController();
+  final TextEditingController koordinasiController =
       TextEditingController(); // null = belum pilih, true = terima, false = tolak
+  List<String> selectedTujuan = [];
 
   @override
   void dispose() {
-    catatanController.dispose();
+    catatanTerimaController.dispose();
+    catatanTolakController.dispose();
     tujuanController.dispose();
     instruksiController.dispose();
+    koordinasiController.dispose();
     super.dispose();
   }
 
@@ -167,7 +173,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                 _sectionCard(
                   title: "Form Disposisi",
                   children: [
-                    _textField("Catatan", controller: catatanController),
+                    _textField("Catatan", controller: catatanTolakController),
                   ],
                 ),
               ],
@@ -194,9 +200,12 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                           MaterialPageRoute(
                             builder: (_) => OutputSuratmasuk(
                               isApproved: true,
-                              catatan: catatanController.text,
+                              catatan: catatanTerimaController.text,
                               tujuan: tujuanController.text,
-                              instruksi: instruksiController.text, koordinasi: '', diteruskanKe: '', sifat: '',
+                              instruksi: instruksiController.text,
+                              koordinasi: koordinasiController.text,
+                              diteruskanKe: selectedTujuan.join(", "),
+                              sifat: '',
                             ),
                           ),
                         );
@@ -206,7 +215,12 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                           MaterialPageRoute(
                             builder: (_) => OutputSuratmasuk(
                               isApproved: false,
-                              catatan: catatanController.text, tujuan: '', instruksi: '', koordinasi: '', diteruskanKe: '', sifat: '',
+                              catatan: catatanTolakController.text,
+                              tujuan: '',
+                              instruksi: '',
+                              koordinasi: '',
+                              diteruskanKe: '',
+                              sifat: '',
                             ),
                           ),
                         );
@@ -328,9 +342,9 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     return _sectionCard(
       title: "Form Disposisi",
       children: [
-        _dropdownField("Di Teruskan Ke"),
+        _multiSelectField(),
         _dropdownField("Sifat"),
-        _textField("Catatan"),
+        _textField("Catatan", controller: catatanTerimaController),
       ],
     );
   }
@@ -341,7 +355,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       children: [
         _textField("Tanggapan dan Saran", controller: tujuanController),
         _textField("Proses Lebih Lanjut", controller: instruksiController),
-        _textField("Koordinasi atau Konfirmasi"),
+        _textField("Koordinasi atau Konfirmasi", controller: koordinasiController),
       ],
     );
   }
@@ -387,28 +401,44 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
   Widget _dropdownField(String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
-      child: DropdownButtonFormField(
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: Theme.of(context).colorScheme.copyWith(
+            primary:
+                AppColors.bluePrimary, // ✅ ganti semua warna ungu jadi biru
+          ),
         ),
-        items: const [
-          DropdownMenuItem(value: "1", child: Text("Waka Kurikulum")),
-          DropdownMenuItem(value: "2", child: Text("Waka Kesiswaan")),
-          DropdownMenuItem(value: "3", child: Text("Waka Humas")),
-          DropdownMenuItem(value: "4", child: Text("Waka Sarpras")),
-          DropdownMenuItem(value: "5", child: Text("Ketua Konsli")),
-          DropdownMenuItem(value: "6", child: Text("Koordinator")),
-          DropdownMenuItem(value: "7", child: Text("BK")),
-          DropdownMenuItem(value: "8", child: Text("BKK")),
-          DropdownMenuItem(value: "9", child: Text("Prakerin")),
-        ],
-        onChanged: (value) {},
+        child: DropdownButtonFormField<String>(
+          decoration: InputDecoration(
+            labelText: label,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: AppColors.bluePrimary, width: 2),
+            ),
+            labelStyle: TextStyle(
+              color: Colors.grey.shade600,
+            ), // ✅ warna label normal
+            floatingLabelStyle: TextStyle(
+              color: AppColors.bluePrimary,
+            ), // ✅ warna label floating
+          ),
+          items: const [
+            DropdownMenuItem(value: "1", child: Text("Sangat Rahasia")),
+            DropdownMenuItem(value: "2", child: Text("Segera")),
+            DropdownMenuItem(value: "3", child: Text("Rahasia")),
+          ],
+          onChanged: (String? value) {},
+        ),
       ),
     );
   }
 
-  Widget _textField(String label, {TextEditingController? controller}) {
+  Widget _textField(
+    String label, {
+    TextEditingController? controller,
+    String? hint,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -422,8 +452,9 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
           TextField(
             controller: controller,
             maxLines: 3,
+            cursorColor: Colors.black,
             decoration: InputDecoration(
-              hintText: "Masukkan $label...",
+              hintText: hint ?? "Masukkan $label...",
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: Colors.grey.shade400),
@@ -435,6 +466,100 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _multiSelectField() {
+    final List<String> options = [
+      "Waka Kurikulum",
+      "Waka Kesiswaan",
+      "Waka Humas",
+      "Waka Sarpras",
+      "Ketua Konsli",
+      "Koordinator",
+      "BK",
+      "BKK",
+      "Prakerin",
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: GestureDetector(
+        onTap: () async {
+          final List<String>? result = await showDialog(
+            context: context,
+            builder: (context) {
+              List<String> tempSelected = List.from(selectedTujuan);
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: Theme.of(
+                    context,
+                  ).colorScheme.copyWith(primary: AppColors.bluePrimary),
+                ),
+                child: AlertDialog(
+                  title: const Text("Di Teruskan Ke"),
+                  content: StatefulBuilder(
+                    builder: (context, setStateDialog) {
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: options.map((item) {
+                            final isSelected = tempSelected.contains(item);
+                            return CheckboxListTile(
+                              value: isSelected,
+                              title: Text(item),
+                              onChanged: (value) {
+                                setStateDialog(() {
+                                  if (value == true) {
+                                    tempSelected.add(item);
+                                  } else {
+                                    tempSelected.remove(item);
+                                  }
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    },
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Batal"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context, tempSelected),
+                      child: const Text("OK"),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+
+          if (result != null) {
+            setState(() {
+              selectedTujuan = result;
+            });
+          }
+        },
+        child: AbsorbPointer(
+          child: TextFormField(
+            decoration: InputDecoration(
+              labelText: "Di Teruskan Ke",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: AppColors.bluePrimary, width: 2),
+              ),
+              suffixIcon: const Icon(Icons.arrow_drop_down),
+            ),
+            controller: TextEditingController(text: selectedTujuan.join(", ")),
+          ),
+        ),
       ),
     );
   }

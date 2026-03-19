@@ -1,9 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/full-img-viewer.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratkeluar.dart';
 
-class InputSuratKeluar extends StatelessWidget {
+class InputSuratKeluar extends StatefulWidget {
   const InputSuratKeluar({super.key});
+
+  @override
+  State<InputSuratKeluar> createState() => _InputSuratKeluarState();
+}
+
+class _InputSuratKeluarState extends State<InputSuratKeluar> {
+  final TextEditingController catatanController = TextEditingController();
+
+  @override
+  void dispose() {
+    catatanController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +30,6 @@ class InputSuratKeluar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-
-              // BACK + TITLE
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -43,16 +55,10 @@ class InputSuratKeluar extends StatelessWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
-
-              // CHIP SURAT MASUK
               Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 8,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     border: Border.all(color: AppColors.orangePrimary),
@@ -66,17 +72,10 @@ class InputSuratKeluar extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // CARD DETAIL SURAT
               _detailCard(context),
-
               const SizedBox(height: 20),
-
-              // FORM DISPOSISI
               _formDisposisi(),
-
               const SizedBox(height: 20),
 
               // BUTTONS
@@ -84,9 +83,7 @@ class InputSuratKeluar extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 6,
-                      ), // kecilin sisi kiri
+                      padding: const EdgeInsets.only(left: 6),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
@@ -96,7 +93,16 @@ class InputSuratKeluar extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => OutputSuratkeluar(
+                                catatan: catatanController.text, // ✅
+                              ),
+                            ),
+                          );
+                        },
                         child: const Text("Terima"),
                       ),
                     ),
@@ -104,9 +110,7 @@ class InputSuratKeluar extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                        right: 6,
-                      ), // kecilin sisi kanan
+                      padding: const EdgeInsets.only(right: 6),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
@@ -116,14 +120,22 @@ class InputSuratKeluar extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => OutputSuratkeluar(
+                                catatan: catatanController.text, // ✅
+                              ),
+                            ),
+                          );
+                        },
                         child: const Text("Tolak"),
                       ),
                     ),
                   ),
                 ],
               ),
-
               const SizedBox(height: 30),
             ],
           ),
@@ -140,21 +152,11 @@ class InputSuratKeluar extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _detailItem(
-              Icons.numbers,
-              "Nomor Surat",
-              "421.3/045/SMK-TI/VI/2026",
-            ),
+            _detailItem(Icons.numbers, "Nomor Surat", "421.3/045/SMK-TI/VI/2026"),
             _detailItem(Icons.calendar_today, "Tanggal", "24 Juni 2026"),
             _detailItem(Icons.person, "Pengirim", "SMKN 1 Singosari"),
-            _detailItem(
-              Icons.description,
-              "Perihal",
-              "Permohonan Izin Menghadiri Rapat",
-            ),
-
+            _detailItem(Icons.description, "Perihal", "Permohonan Izin Menghadiri Rapat"),
             const SizedBox(height: 16),
-
             Builder(
               builder: (context) {
                 const List<String> attachmentUrls = [
@@ -169,14 +171,11 @@ class InputSuratKeluar extends StatelessWidget {
                       width: double.infinity,
                       color: Colors.grey.shade200,
                       padding: const EdgeInsets.symmetric(vertical: 40),
-                      child: Column(
-                        children: const [
+                      child: const Column(
+                        children: [
                           Icon(Icons.insert_drive_file, size: 50),
                           SizedBox(height: 10),
-                          Text(
-                            "Tidak ada lampiran",
-                            style: TextStyle(color: Colors.grey),
-                          ),
+                          Text("Tidak ada lampiran", style: TextStyle(color: Colors.grey)),
                         ],
                       ),
                     ),
@@ -198,31 +197,20 @@ class InputSuratKeluar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 14), // ⬅️ bikin ikon turun
+            padding: const EdgeInsets.only(top: 14),
             child: Icon(icon, size: 24, color: Colors.grey.shade600),
           ),
           const SizedBox(width: 14),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               ],
             ),
           ),
@@ -234,7 +222,7 @@ class InputSuratKeluar extends StatelessWidget {
   Widget _formDisposisi() {
     return _sectionCard(
       title: "Form Disposisi",
-      children: [_textField("Catatan")],
+      children: [_textField("Catatan", controller: catatanController)], // ✅
     );
   }
 
@@ -248,7 +236,6 @@ class InputSuratKeluar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   width: 4,
@@ -259,13 +246,7 @@ class InputSuratKeluar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ],
             ),
             const SizedBox(height: 16),
@@ -276,43 +257,18 @@ class InputSuratKeluar extends StatelessWidget {
     );
   }
 
-  Widget _dropdownField(String label) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: DropdownButtonFormField(
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-        items: const [
-          DropdownMenuItem(value: "1", child: Text("Waka Kurikulum")),
-          DropdownMenuItem(value: "2", child: Text("Waka Kesiswaan")),
-          DropdownMenuItem(value: "3", child: Text("Waka Humas")),
-          DropdownMenuItem(value: "4", child: Text("Waka Sarpras")),
-          DropdownMenuItem(value: "5", child: Text("Ketua Konsli")),
-          DropdownMenuItem(value: "6", child: Text("Koordinator")),
-          DropdownMenuItem(value: "7", child: Text("BK")),
-          DropdownMenuItem(value: "8", child: Text("BKK")),
-          DropdownMenuItem(value: "9", child: Text("Prakerin")),
-        ],
-        onChanged: (value) {},
-      ),
-    );
-  }
-
-  Widget _textField(String label) {
+  Widget _textField(String label, {TextEditingController? controller}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-          ),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           const SizedBox(height: 8),
           TextField(
+            controller: controller, // ✅
             maxLines: 3,
+            cursorColor: Colors.black,
             decoration: InputDecoration(
               hintText: "Masukkan $label...",
               enabledBorder: OutlineInputBorder(
@@ -321,10 +277,7 @@ class InputSuratKeluar extends StatelessWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: AppColors.orangePrimary,
-                  width: 2,
-                ),
+                borderSide: BorderSide(color: AppColors.orangePrimary, width: 2),
               ),
             ),
           ),
@@ -400,11 +353,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                             padding: EdgeInsets.symmetric(vertical: 40),
                             child: Column(
                               children: [
-                                Icon(
-                                  Icons.broken_image,
-                                  size: 50,
-                                  color: Colors.grey,
-                                ),
+                                Icon(Icons.broken_image, size: 50, color: Colors.grey),
                                 SizedBox(height: 10),
                                 Text("Gagal memuat gambar"),
                               ],
@@ -430,9 +379,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                   height: isActive ? 10 : 6,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isActive
-                        ? AppColors.orangePrimary
-                        : Colors.grey.shade400,
+                    color: isActive ? AppColors.orangePrimary : Colors.grey.shade400,
                   ),
                 );
               }),

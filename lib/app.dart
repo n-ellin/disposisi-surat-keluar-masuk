@@ -22,8 +22,11 @@ import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/history_tu.dart';
 import 'modules/kepsek/menuukepsek.dart';
 import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
 import 'modules/kepsek/detail_surat/input_suratkeluar.dart';
+import 'modules/kepsek/history_kepsek.dart';
 
 import 'modules/other/menuother.dart';
+import 'modules/other/history_other.dart';
+import 'modules/other/detailsurat.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -33,9 +36,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Simdis",
-      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+        textSelectionTheme: TextSelectionThemeData(
+          // ✅ tambah ini
+          cursorColor: Colors.black,
+          selectionColor: Colors.black26,
+          selectionHandleColor: Colors.black,
+        ),
+      ),
 
-        initialRoute: '/history_tu',
+      initialRoute: '/detail_suratOther',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
@@ -47,28 +59,34 @@ class MyApp extends StatelessWidget {
         '/approval': (context) => const ApprovalPage(role: NavbarRole.tu),
 
         '/profile': (context) => const ProfilePage(
-          role: NavbarRole.tu,
+          role: NavbarRole.kepsek,
           nama: 'Nama User',
           email: 'user@email.com',
           jabatan: 'Tata Usaha',
           imagePath: 'assets/images/profile.jpg',
         ),
 
-        '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
+        '/notif': (context) => const NotificationPage(role: NavbarRole.kepsek),
 
-
-        '/input_suratmasuk': (context) => const InputSuratMasuk(), 
+        '/history_kepsek': (context) => const HistoryKepsekPage(),
+        '/input_suratmasuk': (context) => const InputSuratMasuk(),
         '/input_suratkeluar': (context) => const InputSuratKeluar(),
         '/output_suratkeluar': (context) =>
             const OutputSuratkeluar(catatan: "iya"),
 
-        '/history_tu' : (context) => const HistoryTUPage(),
+        '/history_tu': (context) => const HistoryTUPage(),
         '/output_suratmasuk': (context) => const OutputSuratmasuk(
           isApproved: true,
           catatan: "iya",
           tujuan: "Waka Kurikulum",
-          instruksi: "Tindak lanjuti", koordinasi: '', diteruskanKe: '', sifat: '',
+          instruksi: "Tindak lanjuti",
+          koordinasi: '',
+          diteruskanKe: '',
+          sifat: '',
         ),
+
+        '/history_other': (context) => const HistoryOtherPage(),
+        '/detail_suratOther': (context) => const DetailSuratOther(),
       },
     );
   }

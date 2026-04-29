@@ -39,18 +39,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
-        textSelectionTheme: TextSelectionThemeData(
-          // ✅ tambah ini
+        textSelectionTheme: TextSelectionThemeData(     
           cursorColor: Colors.black,
           selectionColor: Colors.black26,
           selectionHandleColor: Colors.black,
         ),
       ),
 
-      initialRoute: '/output_suratkeluar',
+      initialRoute: '/welcome',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
+        '/splash_screen':(context) => const SplashScreen(),
         '/welcome': (context) => const Welcome(),
         '/signin': (context) => const SignIn(),
         '/signup': (context) => const SignUp(),

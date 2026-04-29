@@ -30,10 +30,9 @@ class _SignUpPageState extends State<SignUp> {
     super.initState();
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, // transparan
-        statusBarIconBrightness:
-            Brightness.dark, // icon hitam (karena atas putih)
-        statusBarBrightness: Brightness.light, // iOS support
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
       ),
     );
   }
@@ -61,14 +60,10 @@ class _SignUpPageState extends State<SignUp> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFEBF4F5), // atas
-                  Color(0xFF147A94), // bawah
-                ],
-                stops: [0.32, 0.83],
+                colors: [Color(0xFFEBF4F5), Color(0xFF147A94)],
+                stops: [0.18, 0.65],
               ),
             ),
-
             child: SafeArea(
               child: SingleChildScrollView(
                 child: Form(
@@ -186,7 +181,7 @@ class _SignUpPageState extends State<SignUp> {
                                   height: height * 0.065,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color(0XFF2575A0),
+                                      backgroundColor: const Color(0XFF2575A0),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -261,25 +256,194 @@ class _SignUpPageState extends State<SignUp> {
         MaterialPageRoute(builder: (_) => const SignIn()),
       );
     } else {
-      _showPopup("Tunggu persetujuan admin dalam waktu 2 jam", () {
-        Navigator.pop(context);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const Welcome()),
-        );
-      });
+      // Tampilkan custom popup untuk jabatan lainnya
+      _showPendingApprovalPopup();
     }
   }
 
-  // ================= POPUP SUCCESS =================
-  void _showPopup(String message, VoidCallback onOk) {
+  // ================= CUSTOM POPUP =================
+  void _showPendingApprovalPopup() {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Informasi"),
-        content: Text(message),
-        actions: [TextButton(onPressed: onOk, child: const Text("OK"))],
-      ),
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (context) {
+        final width = MediaQuery.of(context).size.width;
+        final height = MediaQuery.of(context).size.height;
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.symmetric(horizontal: width * 0.08),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 30,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ── Header berwarna dengan ikon ──
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: height * 0.025),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF147A94), Color(0xFF2575A0)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      // Ikon utama (lingkaran putih dengan ikon jam/pending)
+                      Container(
+                        width: width * 0.18,
+                        height: width * 0.18,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.15),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.hourglass_top_rounded,
+                          size: width * 0.10,
+                          color: const Color(0xFFF5A623),
+                        ),
+                      ),
+                      SizedBox(height: height * 0.015),
+                      Text(
+                        "Pendaftaran Telah\nDiajukan",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: width * 0.052,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ── Body / pesan ──
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.07,
+                    vertical: height * 0.025,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Akun kamu sudah berhasil didaftarkan. Silakan menunggu konfirmasi dan aktivasi dari admin dalam waktu",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: width * 0.036,
+                          color: Colors.black54,
+                          height: 1.5,
+                        ),
+                      ),
+                      SizedBox(height: height * 0.01),
+                      // Badge waktu
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: width * 0.05,
+                          vertical: height * 0.008,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF3E0),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFFF5A623).withOpacity(0.5),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.access_time_rounded,
+                              color: Color(0xFFF5A623),
+                              size: 18,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              "Maks. 2 × 24 jam",
+                              style: TextStyle(
+                                fontSize: width * 0.036,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFFF5A623),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: height * 0.008),
+                      Text(
+                        "Kamu akan mendapat notifikasi setelah akun diaktifkan.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: width * 0.033,
+                          color: Colors.black45,
+                          height: 1.5,
+                        ),
+                      ),
+                      SizedBox(height: height * 0.025),
+
+                      // ── Tombol Mengerti ──
+                      SizedBox(
+                        width: double.infinity,
+                        height: height * 0.058,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2575A0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context); // tutup dialog
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const Welcome(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Mengerti",
+                            style: TextStyle(
+                              fontSize: width * 0.042,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -307,22 +471,17 @@ class _SignUpPageState extends State<SignUp> {
         filled: true,
         fillColor: Colors.white,
         prefixIcon: Icon(icon, color: Colors.black54, size: width * 0.06),
-
         labelText: label,
         labelStyle: const TextStyle(color: Colors.black26),
-
         floatingLabelStyle: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.w600,
         ),
-
         errorStyle: const TextStyle(color: Colors.red),
-
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
           borderSide: const BorderSide(color: Colors.black26),
         ),
-
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
           borderSide: const BorderSide(color: Colors.black),
@@ -353,13 +512,11 @@ class _SignUpPageState extends State<SignUp> {
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,
-
         prefixIcon: Icon(
           Icons.lock_outline,
           color: Colors.black54,
           size: width * 0.06,
         ),
-
         suffixIcon: IconButton(
           icon: Icon(
             obscure ? Icons.visibility_off : Icons.visibility,
@@ -368,22 +525,17 @@ class _SignUpPageState extends State<SignUp> {
           ),
           onPressed: onTap,
         ),
-
         labelText: label,
         labelStyle: const TextStyle(color: Colors.black26),
-
         floatingLabelStyle: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.w600,
         ),
-
         errorStyle: const TextStyle(color: Colors.red),
-
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
           borderSide: const BorderSide(color: Colors.black26),
         ),
-
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
           borderSide: const BorderSide(color: Colors.black),
@@ -398,33 +550,24 @@ class _SignUpPageState extends State<SignUp> {
       validator: (value) => value == null ? "Silakan pilih jabatan" : null,
       decoration: InputDecoration(
         labelText: "Jabatan",
-        labelStyle: const TextStyle(color: Colors.black26),
-
-        floatingLabelStyle: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.w600,
-        ),
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
 
         prefixIcon: Icon(
           Icons.person_2_outlined,
           color: Colors.black54,
           size: width * 0.06,
         ),
-
         filled: true,
         fillColor: Colors.white,
-
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
           borderSide: const BorderSide(color: Colors.black26),
         ),
-
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(13),
           borderSide: const BorderSide(color: Colors.black),
         ),
       ),
-
       items: const [
         DropdownMenuItem(
           value: "Kepala Tata Usaha",
@@ -458,7 +601,6 @@ class _SignUpPageState extends State<SignUp> {
           child: Text("Kepala Perpustakaan"),
         ),
       ],
-      hint: Text("Jabatan", style: TextStyle(fontSize: width * 0.038)),
       value: selectedRole,
       onChanged: (value) {
         setState(() {

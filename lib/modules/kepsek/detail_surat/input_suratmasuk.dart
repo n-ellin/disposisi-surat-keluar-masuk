@@ -13,9 +13,10 @@ class InputSuratMasuk extends StatefulWidget {
 
 class _InputSuratMasukState extends State<InputSuratMasuk> {
   bool? isApproved;
+  String? selectedSifat;
 
   final TextEditingController catatanTerimaController = TextEditingController();
-    final TextEditingController catatanTolakController = TextEditingController();
+  final TextEditingController catatanTolakController = TextEditingController();
 
   final TextEditingController tujuanController = TextEditingController();
   final TextEditingController instruksiController = TextEditingController();
@@ -205,7 +206,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                               instruksi: instruksiController.text,
                               koordinasi: koordinasiController.text,
                               diteruskanKe: selectedTujuan.join(", "),
-                              sifat: '',
+                              sifat: selectedSifat ?? '',
                             ),
                           ),
                         );
@@ -355,7 +356,10 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       children: [
         _textField("Tanggapan dan Saran", controller: tujuanController),
         _textField("Proses Lebih Lanjut", controller: instruksiController),
-        _textField("Koordinasi atau Konfirmasi", controller: koordinasiController),
+        _textField(
+          "Koordinasi atau Konfirmasi",
+          controller: koordinasiController,
+        ),
       ],
     );
   }
@@ -423,12 +427,20 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               color: AppColors.bluePrimary,
             ), // ✅ warna label floating
           ),
+          value: selectedSifat,
           items: const [
-            DropdownMenuItem(value: "1", child: Text("Sangat Rahasia")),
-            DropdownMenuItem(value: "2", child: Text("Segera")),
-            DropdownMenuItem(value: "3", child: Text("Rahasia")),
+            DropdownMenuItem(
+              value: "Sangat Rahasia",
+              child: Text("Sangat Rahasia"),
+            ),
+            DropdownMenuItem(value: "Segera", child: Text("Segera")),
+            DropdownMenuItem(value: "Rahasia", child: Text("Rahasia")),
           ],
-          onChanged: (String? value) {},
+          onChanged: (String? value) {
+            setState(() {
+              selectedSifat = value;
+            });
+          },
         ),
       ),
     );

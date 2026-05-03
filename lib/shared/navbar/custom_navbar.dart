@@ -41,16 +41,13 @@ class CustomNavbar extends StatelessWidget {
     );
   }
 
-  // ================= ITEMS BASED ON ROLE =================
+  
   List<Widget> _buildItems() {
     if (role == NavbarRole.tu) {
       return [
         Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
-        Expanded(
-          child: _navIcon('assets/icons/ic_approval.svg', 1),
-        ), // FAB slot
-        Expanded(child: _navIcon('assets/icons/ic_history.svg', 2)),
-        Expanded(child: _navIcon('assets/icons/ic_profile.svg', 3)),
+        Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
+        Expanded(child: _navIcon('assets/icons/ic_profile.svg', 2)),
       ];
     }
 

@@ -4,6 +4,7 @@ import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratmasuk.dart';
 
 class HistoryTUPage extends StatefulWidget {
   const HistoryTUPage({super.key});
@@ -131,7 +132,23 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                         status: surat['status'],
                         role: CardRole.tu,
                         data: Map<String, String>.from(surat['data']),
-                        onDetail: () {},
+                        onDetail: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => OutputSuratmasuk(
+                                isApproved: surat['status'] == 'disetujui',
+                                catatan: "....",
+                                tujuan: "...",
+                                instruksi: "...",
+                                koordinasi: "...",
+                                diteruskanKe: "...",
+                                sifat: "...",
+                                isReadOnly: true,
+                              ),
+                            ),
+                          );
+                        },
                         showAction: false,
                       ),
                     );

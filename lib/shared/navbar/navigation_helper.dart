@@ -12,12 +12,9 @@ void handleNavbarTap(
         Navigator.pushReplacementNamed(context, '/home');
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/approval');
-        break;
-      case 2:
         Navigator.pushReplacementNamed(context, '/history_tu');
         break;
-      case 3:
+      case 2:
         Navigator.pushReplacementNamed(context, '/profile');
         break;
     }

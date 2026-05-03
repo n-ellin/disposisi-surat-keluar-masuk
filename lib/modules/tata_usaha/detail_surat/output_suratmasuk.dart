@@ -10,6 +10,7 @@ class OutputSuratmasuk extends StatelessWidget {
   final String koordinasi;
   final String diteruskanKe;
   final String sifat;
+  final bool isReadOnly;
 
   const OutputSuratmasuk({
     super.key,
@@ -20,6 +21,7 @@ class OutputSuratmasuk extends StatelessWidget {
     required this.koordinasi,
     required this.diteruskanKe,
     required this.sifat,
+    this.isReadOnly = false,
   });
 
   @override
@@ -66,7 +68,10 @@ class OutputSuratmasuk extends StatelessWidget {
               // CHIP
               Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     border: Border.all(color: AppColors.bluePrimary),
@@ -83,33 +88,6 @@ class OutputSuratmasuk extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // ✅ CARD DETAIL SURAT + LAMPIRAN
-              Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      _detailItem(Icons.numbers, "Nomor Surat", "421.3/045/SMK-TI/VI/2026"),
-                      _detailItem(Icons.calendar_today, "Tanggal", "24 Juni 2026"),
-                      _detailItem(Icons.person, "Pengirim", "SMKN 1 Singosari"),
-                      _detailItem(Icons.description, "Perihal", "Permohonan Izin Menghadiri Rapat"),
-                      const SizedBox(height: 16),
-                      const _AttachmentCarousel(
-                        attachmentUrls: [
-                          'assets/images/undangan.png',
-                          'assets/images/undangan.png',
-                          'assets/images/logo.png',
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
               // KONTEN SESUAI STATUS
               if (isApproved) ...[
                 _sectionCard(
@@ -119,9 +97,7 @@ class OutputSuratmasuk extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                _sectionCard(
-                  children: [_labeledTextArea("Catatan", catatan)],
-                ),
+                _sectionCard(children: [_labeledTextArea("Catatan", catatan)]),
                 const SizedBox(height: 16),
                 _sectionCard(
                   children: [
@@ -133,23 +109,83 @@ class OutputSuratmasuk extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.bluePrimary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // LIHAT SURAT (outline)
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 44),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        side: BorderSide(
+                          color: AppColors.bluePrimary,
+                          width: 1.2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        alignment: Alignment.center,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => FullScreenImageViewer(
+                              imageAssetPath: 'assets/images/undangan.png',
+                              imageUrls: const [
+                                'assets/images/undangan.png',
+                                'assets/images/logo.png',
+                              ],
+                              initialIndex: 0,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.remove_red_eye,
+                        color: AppColors.bluePrimary,
+                        size: 18,
+                      ),
+                      label: Text(
+                        "Lihat Surat",
+                        style: TextStyle(
+                          color: AppColors.bluePrimary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text("Teruskan"),
-                  ),
+
+                    const SizedBox(width: 12),
+
+                    // TERUSKAN (filled)
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(0, 44),
+                        backgroundColor: AppColors.bluePrimary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                        alignment: Alignment.center,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.send, size: 18),
+                      label: const Text(
+                        "Teruskan",
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ],
                 ),
               ] else ...[
-                _sectionCard(
-                  children: [_labeledTextArea("Catatan", catatan)],
-                ),
+                _sectionCard(children: [_labeledTextArea("Catatan", catatan)]),
                 const SizedBox(height: 20),
                 Align(
                   alignment: Alignment.centerRight,
@@ -157,8 +193,13 @@ class OutputSuratmasuk extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.bluePrimary,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 28,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                     onPressed: () => Navigator.of(context).pop(),
                     child: const Text("OK"),
@@ -188,42 +229,20 @@ class OutputSuratmasuk extends StatelessWidget {
     );
   }
 
-  Widget _detailItem(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 14),
-            child: Icon(icon, size: 24, color: Colors.grey.shade600),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 4),
-                Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _readOnlyField(String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.bluePrimary)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: AppColors.bluePrimary,
+            ),
+          ),
           const SizedBox(height: 6),
           Container(
             width: double.infinity,
@@ -232,7 +251,10 @@ class OutputSuratmasuk extends StatelessWidget {
               border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(value.isEmpty ? "-" : value, style: const TextStyle(fontSize: 14)),
+            child: Text(
+              value.isEmpty ? "-" : value,
+              style: const TextStyle(fontSize: 14),
+            ),
           ),
         ],
       ),
@@ -243,7 +265,14 @@ class OutputSuratmasuk extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.bluePrimary)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: AppColors.bluePrimary,
+          ),
+        ),
         const SizedBox(height: 6),
         Container(
           width: double.infinity,
@@ -253,7 +282,10 @@ class OutputSuratmasuk extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(value.isEmpty ? "-" : value, style: const TextStyle(fontSize: 14)),
+          child: Text(
+            value.isEmpty ? "-" : value,
+            style: const TextStyle(fontSize: 14),
+          ),
         ),
       ],
     );
@@ -328,7 +360,11 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                                Icon(
+                                  Icons.broken_image,
+                                  size: 50,
+                                  color: Colors.grey,
+                                ),
                                 SizedBox(height: 10),
                                 Text("Gagal memuat gambar"),
                               ],
@@ -354,7 +390,9 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                   height: isActive ? 10 : 6,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isActive ? AppColors.bluePrimary : Colors.grey.shade400,
+                    color: isActive
+                        ? AppColors.bluePrimary
+                        : Colors.grey.shade400,
                   ),
                 );
               }),

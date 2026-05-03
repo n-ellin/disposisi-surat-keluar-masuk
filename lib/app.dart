@@ -16,7 +16,6 @@ import 'shared/auth/share/welcome.dart';
 import 'modules/tata_usaha/menuTU.dart';
 import 'modules/tata_usaha/detail_surat/output_suratkeluar.dart';
 import 'modules/tata_usaha/detail_surat/output_suratmasuk.dart';
-import 'modules/tata_usaha/approval.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/history_tu.dart';
 
 import 'modules/kepsek/menuukepsek.dart';
@@ -46,7 +45,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/welcome',
+      initialRoute: '/profile',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
@@ -56,7 +55,6 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => const SignUp(),
 
         '/home': (context) => const Home(role: NavbarRole.tu),
-        '/approval': (context) => const ApprovalPage(role: NavbarRole.tu),
 
         '/profile': (context) => const ProfilePage(
           role: NavbarRole.kepsek,

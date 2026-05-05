@@ -1,11 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
 import '../pages/home.dart';
-import 'signup_page.dart';
-import 'welcome.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -30,29 +27,11 @@ class _SignInPageState extends State<SignIn> {
   bool _showEmptyPassError = false;
   bool _showEmptyEmailError = false;
   bool _showEmailNotFoundError = false;
-  bool _showRoleMismatchError = false;
 
   final TextEditingController emailC = TextEditingController();
   final TextEditingController passwordC = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode(); // ← ZONA 1
   final FocusNode _passwordFocusNode = FocusNode();
-
-  String? selectedRole;
-  final List<String> roles = [
-    "Kepala Tata Usaha",
-    "Kepala Sekolah",
-    "Tata Usaha",
-    "Waka Kurikulum",
-    "Waka Kesiswaan",
-    "Waka Humas",
-    "Waka Sarpras",
-    "Ketua Konsli",
-    "BK",
-    "BKK",
-    "Koordinator",
-    "Prakerin",
-    "Kepala Perpustakaan",
-  ];
 
   // ── ZONA 2: initState ──
   @override
@@ -97,11 +76,7 @@ class _SignInPageState extends State<SignIn> {
       ),
       child: WillPopScope(
         onWillPop: () async {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const Welcome()),
-          );
-          return false;
+          return true;
         },
         child: Scaffold(
           resizeToAvoidBottomInset: false,
@@ -211,15 +186,7 @@ class _SignInPageState extends State<SignIn> {
                                       _errorMessage("Kata sandi salah", width),
 
                                     SizedBox(height: height * 0.02),
-                                    _buildDropdown(width),
 
-                                    if (_showRoleMismatchError)
-                                      _errorMessage(
-                                        "Jabatan tidak sesuai",
-                                        width,
-                                      ),
-
-                                    SizedBox(height: height * 0.03),
                                     SizedBox(
                                       width: double.infinity,
                                       height: height * 0.065,
@@ -244,37 +211,6 @@ class _SignInPageState extends State<SignIn> {
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(height: height * 0.03),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Belum memiliki akun? ",
-                                          style: TextStyle(
-                                            fontSize: width * 0.035,
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) => const SignUp(),
-                                              ),
-                                            );
-                                          },
-                                          child: Text(
-                                            "Daftar",
-                                            style: TextStyle(
-                                              color: const Color(0xFFE75321),
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: width * 0.038,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
                                     ),
                                   ],
                                 ),
@@ -388,7 +324,8 @@ class _SignInPageState extends State<SignIn> {
     required String label,
     required bool obscure,
     required VoidCallback onTap,
-    required TextEditingController controller, required FocusNode focusNode,
+    required TextEditingController controller,
+    required FocusNode focusNode,
   }) {
     return TextField(
       controller: controller,
@@ -431,47 +368,15 @@ class _SignInPageState extends State<SignIn> {
     );
   }
 
-  Widget _buildDropdown(double width) {
-    return DropdownButtonFormField<String>(
-      value: selectedRole,
-      decoration: InputDecoration(
-        labelText: "Jabatan",
-        labelStyle: const TextStyle(color: Colors.black26),
-        floatingLabelStyle: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.w600,
-        ),
-        prefixIcon: const Icon(Icons.person_2_outlined, color: Colors.black54),
-        filled: true,
-        fillColor: Colors.white,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: Colors.black26),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(13),
-          borderSide: const BorderSide(color: Colors.black),
-        ),
-      ),
-      icon: const Icon(Icons.keyboard_arrow_down, color: Colors.black54),
-      items: roles.map((role) {
-        return DropdownMenuItem(value: role, child: Text(role));
-      }).toList(),
-      onChanged: (value) => setState(() => selectedRole = value),
-    );
-  }
-
   Future<void> loginUser() async {
     final email = emailC.text.trim();
     final password = passwordC.text.trim();
-    final role = selectedRole;
 
     setState(() {
       _showEmptyEmailError = false;
       _showEmptyPassError = false;
       _showError = false;
       _showEmailNotFoundError = false;
-      _showRoleMismatchError = false;
     });
 
     if (email.isEmpty) {
@@ -480,12 +385,6 @@ class _SignInPageState extends State<SignIn> {
     }
     if (password.isEmpty) {
       setState(() => _showEmptyPassError = true);
-      return;
-    }
-    if (role == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih jabatan terlebih dahulu')),
-      );
       return;
     }
 
@@ -502,14 +401,22 @@ class _SignInPageState extends State<SignIn> {
       setState(() => _showError = true);
       return;
     }
-    if (userByEmail["role"] != role) {
-      setState(() => _showRoleMismatchError = true);
-      return;
+
+    final role = userByEmail['role'];
+
+    NavbarRole navbarRole;
+
+    if (role == "Tata Usaha" || role == "Kepala Tata Usaha") {
+      navbarRole = NavbarRole.tu;
+    } else if (role == "Kepala Sekolah") {
+      navbarRole = NavbarRole.kepsek;
+    } else {
+      navbarRole = NavbarRole.other;
     }
 
-    NavbarRole navRole;
-    if (role == "Tata Usaha" || role == "Kepala Tata Usaha") {
-      navRole = NavbarRole.tu;
-    } else if (role == "Kepala Sekolah") {}
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => Home(role: navbarRole)),
+    );
   }
 }

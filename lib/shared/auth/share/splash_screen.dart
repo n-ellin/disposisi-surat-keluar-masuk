@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // <-- TAMBAHKAN INI
-import 'welcome.dart'; // pastikan path ini sesuai
+import 'package:flutter/services.dart'; // <-- TAMBAHKAN INI// pastikan path ini sesuai
+import 'package:ta_mobile_disposisi_surat/shared/auth/share/signin_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const Welcome()),
+        MaterialPageRoute(builder: (context) => const SignIn()),
       );
     });
   }

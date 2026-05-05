@@ -6,12 +6,10 @@ import 'shared/navbar/navbar_role.dart';
 // import halaman di sini, bukan di main
 import 'shared/auth/share/splash_screen.dart';
 import 'shared/auth/share/signin_page.dart';
-import 'shared/auth/share/signup_page.dart';
 
 import 'shared/auth/pages/profile.dart';
 import 'shared/auth/pages/notif.dart';
 import 'shared/auth/pages/home.dart';
-import 'shared/auth/share/welcome.dart';
 
 import 'modules/tata_usaha/menuTU.dart';
 import 'modules/tata_usaha/detail_surat/output_suratkeluar.dart';
@@ -45,19 +43,17 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/profile',
+      initialRoute: '/home',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
         '/splash_screen':(context) => const SplashScreen(),
-        '/welcome': (context) => const Welcome(),
         '/signin': (context) => const SignIn(),
-        '/signup': (context) => const SignUp(),
 
         '/home': (context) => const Home(role: NavbarRole.tu),
 
         '/profile': (context) => const ProfilePage(
-          role: NavbarRole.kepsek,
+          role: NavbarRole.tu,
           nama: 'Nama User',
           email: 'user@email.com',
           jabatan: 'Tata Usaha',

@@ -11,6 +11,7 @@ class OutputSuratmasuk extends StatelessWidget {
   final String diteruskanKe;
   final String sifat;
   final bool isReadOnly;
+  final List<String> lampiranUrls; // ✅ TAMBAH
 
   const OutputSuratmasuk({
     super.key,
@@ -22,6 +23,7 @@ class OutputSuratmasuk extends StatelessWidget {
     required this.diteruskanKe,
     required this.sifat,
     this.isReadOnly = false,
+    this.lampiranUrls = const [], // ✅ default kosong
   });
 
   @override
@@ -88,7 +90,7 @@ class OutputSuratmasuk extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // KONTEN SESUAI STATUS
+              // FORM KONTEN
               if (isApproved) ...[
                 _sectionCard(
                   children: [
@@ -97,7 +99,9 @@ class OutputSuratmasuk extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                _sectionCard(children: [_labeledTextArea("Catatan", catatan)]),
+                _sectionCard(
+                  children: [_labeledTextArea("Catatan", catatan)],
+                ),
                 const SizedBox(height: 16),
                 _sectionCard(
                   children: [
@@ -105,106 +109,132 @@ class OutputSuratmasuk extends StatelessWidget {
                     const SizedBox(height: 12),
                     _labeledTextArea("Proses Lebih Lanjut", instruksi),
                     const SizedBox(height: 12),
-                    _labeledTextArea("Koordinasi / Konfrimasikan", koordinasi),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    // LIHAT SURAT (outline)
-                    OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 44),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        side: BorderSide(
-                          color: AppColors.bluePrimary,
-                          width: 1.2,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        alignment: Alignment.center,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => FullScreenImageViewer(
-                              imageAssetPath: 'assets/images/undangan.png',
-                              imageUrls: const [
-                                'assets/images/undangan.png',
-                                'assets/images/logo.png',
-                              ],
-                              initialIndex: 0,
-                            ),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.remove_red_eye,
-                        color: AppColors.bluePrimary,
-                        size: 18,
-                      ),
-                      label: Text(
-                        "Lihat Surat",
-                        style: TextStyle(
-                          color: AppColors.bluePrimary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    // TERUSKAN (filled)
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(0, 44),
-                        backgroundColor: AppColors.bluePrimary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                        alignment: Alignment.center,
-                      ),
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.send, size: 18),
-                      label: const Text(
-                        "Teruskan",
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                    ),
+                    _labeledTextArea("Koordinasi / Konfirmasikan", koordinasi),
                   ],
                 ),
               ] else ...[
-                _sectionCard(children: [_labeledTextArea("Catatan", catatan)]),
-                const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.bluePrimary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 28,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text("OK"),
+                _sectionCard(
+                  children: [_labeledTextArea("Catatan", catatan)],
+                ),
+              ],
+
+              const SizedBox(height: 20),
+
+              // ✅ LAMPIRAN — hanya tampil saat isReadOnly (dari history)
+              if (isReadOnly && lampiranUrls.isNotEmpty) ...[
+                Text(
+                  "Lampiran Surat",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.bluePrimary,
                   ),
                 ),
+                const SizedBox(height: 10),
+                _sectionCard(
+                  children: [
+                    _AttachmentCarousel(attachmentUrls: lampiranUrls),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+
+              // ✅ TOMBOL — hanya tampil saat bukan isReadOnly (dari output)
+              if (!isReadOnly) ...[
+                if (isApproved) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      // LIHAT SURAT
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 44),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          side: BorderSide(
+                            color: AppColors.bluePrimary,
+                            width: 1.2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => FullScreenImageViewer(
+                                imageAssetPath: 'assets/images/undangan.png',
+                                imageUrls: const [
+                                  'assets/images/undangan.png',
+                                  'assets/images/logo.png',
+                                ],
+                                initialIndex: 0,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.remove_red_eye,
+                          color: AppColors.bluePrimary,
+                          size: 18,
+                        ),
+                        label: Text(
+                          "Lihat Surat",
+                          style: TextStyle(
+                            color: AppColors.bluePrimary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      // TERUSKAN
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(0, 44),
+                          backgroundColor: AppColors.bluePrimary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.send, size: 18),
+                        label: const Text(
+                          "Teruskan",
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.bluePrimary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 28,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text("OK"),
+                    ),
+                  ),
+                ],
               ],
 
               const SizedBox(height: 30),
@@ -327,12 +357,12 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
         children: [
           PageView.builder(
             controller: _pageController,
-            onPageChanged: (int index) => setState(() => _currentIndex = index),
+            onPageChanged: (i) => setState(() => _currentIndex = i),
             itemCount: attachmentUrls.length,
             itemBuilder: (context, index) {
               final path = attachmentUrls[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 8, bottom: 28),
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).push(
@@ -354,23 +384,17 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                       child: Image.asset(
                         path,
                         fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 40),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.broken_image,
-                                  size: 50,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(height: 10),
-                                Text("Gagal memuat gambar"),
-                              ],
-                            ),
-                          );
-                        },
+                        errorBuilder: (_, __, ___) => const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 40),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                              SizedBox(height: 10),
+                              Text("Gagal memuat gambar"),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -379,20 +403,19 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
             },
           ),
           Positioned(
-            bottom: 12,
+            bottom: 4,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: List.generate(attachmentUrls.length, (index) {
                 final isActive = index == _currentIndex;
-                return Container(
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   width: isActive ? 10 : 6,
                   height: isActive ? 10 : 6,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isActive
-                        ? AppColors.bluePrimary
-                        : Colors.grey.shade400,
+                    color: isActive ? AppColors.bluePrimary : Colors.grey.shade400,
                   ),
                 );
               }),

@@ -161,8 +161,7 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
       ),
 
       bottomNavigationBar: CustomNavbar(
-        role: NavbarRole.tu,
-        currentIndex: 2,
+        currentIndex: 1,
         onTap: (index) {
           handleNavbarTap(context, index, NavbarRole.tu);
         },

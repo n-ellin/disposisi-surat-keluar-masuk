@@ -122,7 +122,6 @@ class _HistoryOtherPageState extends State<HistoryOtherPage> {
       ),
 
       bottomNavigationBar: CustomNavbar(
-        role: NavbarRole.kepsek,
         currentIndex: 1,
         onTap: (index) {
           handleNavbarTap(context, index, NavbarRole.kepsek);

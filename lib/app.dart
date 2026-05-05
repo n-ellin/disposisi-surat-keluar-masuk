@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/profile',
+      initialRoute: '/welcome',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
@@ -57,14 +57,14 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const Home(role: NavbarRole.tu),
 
         '/profile': (context) => const ProfilePage(
-          role: NavbarRole.kepsek,
+          role: NavbarRole.tu,
           nama: 'Nama User',
           email: 'user@email.com',
           jabatan: 'Tata Usaha',
           imagePath: 'assets/images/profile.jpg',
         ),
 
-        '/notif': (context) => const NotificationPage(role: NavbarRole.kepsek),
+        '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
 
         '/history_kepsek': (context) => const HistoryKepsekPage(),
         '/input_suratmasuk': (context) => const InputSuratMasuk(),

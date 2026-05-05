@@ -33,7 +33,7 @@ class AuthController {
       ));
     } else {
       currentRole = 'other';
-      _goToDashboard(context, const MenuOther());
+      _goToDashboard(context, const MenuOther(jenisSurat: '',));
     }
   }
 

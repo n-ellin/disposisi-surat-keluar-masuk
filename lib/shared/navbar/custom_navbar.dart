@@ -3,13 +3,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
 
 class CustomNavbar extends StatelessWidget {
-  final NavbarRole role;
   final int currentIndex;
   final Function(int) onTap;
 
   const CustomNavbar({
     super.key,
-    required this.role,
     required this.currentIndex,
     required this.onTap,
   });
@@ -43,15 +41,7 @@ class CustomNavbar extends StatelessWidget {
 
   
   List<Widget> _buildItems() {
-    if (role == NavbarRole.tu) {
-      return [
-        Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
-        Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
-        Expanded(child: _navIcon('assets/icons/ic_profile.svg', 2)),
-      ];
-    }
 
-    // Kepsek & Other (tanpa approval & tanpa FAB)
     return [
       Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
       Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),

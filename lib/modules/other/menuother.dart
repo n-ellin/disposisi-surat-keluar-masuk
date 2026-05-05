@@ -5,7 +5,7 @@ import '../../shared/widgets/surat_card.dart';
 import '../../shared/auth/pages/profile.dart';
 
 class MenuOther extends StatefulWidget {
-  const MenuOther({super.key});
+  const MenuOther({super.key, required String jenisSurat});
 
   @override
   State<MenuOther> createState() => _MenuOtherState();

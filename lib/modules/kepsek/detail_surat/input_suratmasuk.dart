@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-
 import 'package:ta_mobile_disposisi_surat/core/constants/full-img-viewer.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratmasuk.dart';
 
@@ -12,17 +11,25 @@ class InputSuratMasuk extends StatefulWidget {
 }
 
 class _InputSuratMasukState extends State<InputSuratMasuk> {
-  bool? isApproved;
+  String? _selectedStatus;
   String? selectedSifat;
 
   final TextEditingController catatanTerimaController = TextEditingController();
   final TextEditingController catatanTolakController = TextEditingController();
-
   final TextEditingController tujuanController = TextEditingController();
   final TextEditingController instruksiController = TextEditingController();
-  final TextEditingController koordinasiController =
-      TextEditingController(); // null = belum pilih, true = terima, false = tolak
+  final TextEditingController koordinasiController = TextEditingController();
   List<String> selectedTujuan = [];
+
+  bool get _isApproved => _selectedStatus == 'terima';
+  bool get _isRejected => _selectedStatus == 'tolak';
+
+  // ✅ dummy lampiran — nanti ganti dari API
+  static const List<String> _attachmentUrls = [
+    'assets/images/undangan.png',
+    'assets/images/undangan.png',
+    'assets/images/logo.png',
+  ];
 
   @override
   void dispose() {
@@ -46,7 +53,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
             children: [
               const SizedBox(height: 20),
 
-              // BACK + TITLE
+              // ── BACK + TITLE ──
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -75,7 +82,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
               const SizedBox(height: 20),
 
-              // CHIP SURAT MASUK
+              // ── CHIP ──
               Center(
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -98,87 +105,112 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
               const SizedBox(height: 20),
 
-              // CARD DETAIL SURAT
+              // ── CARD DETAIL SURAT ──
               _detailCard(context),
 
               const SizedBox(height: 20),
 
-              // FORM DISPOSISI
-              // BUTTONS
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 6),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            if (isApproved == true) {
-                              isApproved = null; // batal
-                            } else {
-                              isApproved = true;
-                            }
-                          });
-                        },
-                        child: const Text("Terima"),
-                      ),
+              // ── DROPDOWN STATUS ──
+              const Text(
+                "Status",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                value: _selectedStatus,
+                decoration: InputDecoration(
+                  hintText: "Pilih status...",
+                  hintStyle: TextStyle(color: Colors.grey.shade400),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.bluePrimary,
+                      width: 2,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
+                ),
+                iconEnabledColor: _selectedStatus == 'terima'
+                    ? Colors.green
+                    : _selectedStatus == 'tolak'
+                        ? Colors.red
+                        : Colors.grey,
+                items: const [
+                  DropdownMenuItem(
+                    value: 'terima',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline,
+                          color: Colors.green,
+                          size: 18,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            if (isApproved == false) {
-                              isApproved = null; // batal
-                            } else {
-                              isApproved = false;
-                            }
-                          });
-                        },
-                        child: const Text("Tolak"),
-                      ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Terima',
+                          style: TextStyle(color: Colors.green),
+                        ),
+                      ],
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: 'tolak',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.cancel_outlined,
+                          color: Colors.red,
+                          size: 18,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Tolak',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ],
                     ),
                   ),
                 ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedStatus = value;
+                  });
+                },
               ),
 
               const SizedBox(height: 20),
 
-              // FORM DISPOSISI
-              if (isApproved == true) ...[
+              // ── FORM TERIMA ──
+              if (_isApproved) ...[
                 _formDisposisi(),
                 const SizedBox(height: 20),
                 _formTambahan(),
               ],
 
-              if (isApproved == false) ...[
+              // ── FORM TOLAK ──
+              if (_isRejected) ...[
                 _sectionCard(
                   title: "Form Disposisi",
                   children: [
-                    _textField("Catatan", controller: catatanTolakController),
+                    _textField(
+                      "Catatan",
+                      controller: catatanTolakController,
+                    ),
                   ],
                 ),
               ],
-              if (isApproved != null) ...[
+
+              // ── TOMBOL KIRIM ──
+              if (_selectedStatus != null) ...[
                 const SizedBox(height: 20),
                 Align(
                   alignment: Alignment.centerRight,
@@ -195,7 +227,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                       ),
                     ),
                     onPressed: () {
-                      if (isApproved == true) {
+                      if (_isApproved) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -210,7 +242,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                             ),
                           ),
                         );
-                      } else if (isApproved == false) {
+                      } else if (_isRejected) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -226,7 +258,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                           ),
                         );
                       }
-                    }, // ← TAMBAH KOMA DI SINI
+                    },
                     child: const Text("Kirim"),
                   ),
                 ),
@@ -240,6 +272,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     );
   }
 
+  // ── DETAIL CARD ──
   Widget _detailCard(BuildContext context) {
     return Card(
       elevation: 3,
@@ -247,6 +280,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _detailItem(
               Icons.numbers,
@@ -261,38 +295,99 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               "Permohonan Izin Menghadiri Rapat",
             ),
 
-            const SizedBox(height: 16),
+            // ── LABEL LAMPIRAN ──
+            Text(
+              "Lampiran",
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
 
-            Builder(
-              builder: (context) {
-                const List<String> attachmentUrls = [
-                  'assets/images/undangan.png',
-                  'assets/images/undangan.png',
-                  'assets/images/logo.png',
-                ];
-                if (attachmentUrls.isEmpty) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      width: double.infinity,
-                      color: Colors.grey.shade200,
-                      padding: const EdgeInsets.symmetric(vertical: 40),
-                      child: Column(
-                        children: const [
-                          Icon(Icons.insert_drive_file, size: 50),
-                          SizedBox(height: 10),
-                          Text(
-                            "Tidak ada lampiran",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
+            // ✅ BUTTON LAMPIRAN
+            if (_attachmentUrls.isNotEmpty)
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => FullScreenImageViewer(
+                        imageAssetPath: _attachmentUrls.first,
+                        imageUrls: _attachmentUrls,
+                        initialIndex: 0,
                       ),
                     ),
                   );
-                }
-                return _AttachmentCarousel(attachmentUrls: attachmentUrls);
-              },
-            ),
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.attach_file,
+                        color: AppColors.bluePrimary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          "${_attachmentUrls.length} File Lampiran",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 14,
+                        color: Colors.grey.shade500,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              // ✅ TIDAK ADA LAMPIRAN
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 14,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.attach_file,
+                      color: Colors.grey.shade400,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      "Tidak ada lampiran",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -306,11 +401,10 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 14), // ⬅️ bikin ikon turun
+            padding: const EdgeInsets.only(top: 14),
             child: Icon(icon, size: 24, color: Colors.grey.shade600),
           ),
           const SizedBox(width: 14),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -364,7 +458,10 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     );
   }
 
-  Widget _sectionCard({required String title, required List<Widget> children}) {
+  Widget _sectionCard({
+    required String title,
+    required List<Widget> children,
+  }) {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -374,7 +471,6 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                   width: 4,
@@ -408,24 +504,21 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       child: Theme(
         data: Theme.of(context).copyWith(
           colorScheme: Theme.of(context).colorScheme.copyWith(
-            primary:
-                AppColors.bluePrimary, // ✅ ganti semua warna ungu jadi biru
+            primary: AppColors.bluePrimary,
           ),
         ),
         child: DropdownButtonFormField<String>(
           decoration: InputDecoration(
             labelText: label,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(color: AppColors.bluePrimary, width: 2),
             ),
-            labelStyle: TextStyle(
-              color: Colors.grey.shade600,
-            ), // ✅ warna label normal
-            floatingLabelStyle: TextStyle(
-              color: AppColors.bluePrimary,
-            ), // ✅ warna label floating
+            labelStyle: TextStyle(color: Colors.grey.shade600),
+            floatingLabelStyle: TextStyle(color: AppColors.bluePrimary),
           ),
           value: selectedSifat,
           items: const [
@@ -505,9 +598,9 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               List<String> tempSelected = List.from(selectedTujuan);
               return Theme(
                 data: Theme.of(context).copyWith(
-                  colorScheme: Theme.of(
-                    context,
-                  ).colorScheme.copyWith(primary: AppColors.bluePrimary),
+                  colorScheme: Theme.of(context).colorScheme.copyWith(
+                    primary: AppColors.bluePrimary,
+                  ),
                 ),
                 child: AlertDialog(
                   title: const Text("Di Teruskan Ke"),
@@ -569,119 +662,11 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               ),
               suffixIcon: const Icon(Icons.arrow_drop_down),
             ),
-            controller: TextEditingController(text: selectedTujuan.join(", ")),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _AttachmentCarousel extends StatefulWidget {
-  const _AttachmentCarousel({required this.attachmentUrls});
-  final List<String> attachmentUrls;
-
-  @override
-  State<_AttachmentCarousel> createState() => _AttachmentCarouselState();
-}
-
-class _AttachmentCarouselState extends State<_AttachmentCarousel> {
-  late PageController _pageController;
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final attachmentUrls = widget.attachmentUrls;
-    return SizedBox(
-      height: 220,
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          PageView.builder(
-            controller: _pageController,
-            onPageChanged: (int index) => setState(() => _currentIndex = index),
-            itemCount: attachmentUrls.length,
-            itemBuilder: (context, index) {
-              final path = attachmentUrls[index];
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => FullScreenImageViewer(
-                          imageAssetPath: path,
-                          imageUrls: attachmentUrls,
-                          initialIndex: index,
-                        ),
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      width: double.infinity,
-                      color: Colors.grey.shade200,
-                      child: Image.asset(
-                        path,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 40),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.broken_image,
-                                  size: 50,
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(height: 10),
-                                Text("Gagal memuat gambar"),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-          Positioned(
-            bottom: 12,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(attachmentUrls.length, (index) {
-                final isActive = index == _currentIndex;
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: isActive ? 10 : 6,
-                  height: isActive ? 10 : 6,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isActive
-                        ? AppColors.bluePrimary
-                        : Colors.grey.shade400,
-                  ),
-                );
-              }),
+            controller: TextEditingController(
+              text: selectedTujuan.join(", "),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

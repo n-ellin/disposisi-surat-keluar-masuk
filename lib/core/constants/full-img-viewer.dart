@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
-/// Reusable full-screen image viewer with pinch-to-zoom, pan, and close overlay.
-/// Supports local asset via [imageAssetPath] or network URL via [imageUrl].
-/// Asset path takes priority if both are set.
-class FullScreenImageViewer extends StatelessWidget {
+class FullScreenImageViewer extends StatefulWidget {
   const FullScreenImageViewer({
     super.key,
     this.imageAssetPath,
@@ -13,30 +10,50 @@ class FullScreenImageViewer extends StatelessWidget {
     this.initialIndex = 0,
   });
 
-  /// Local asset path (e.g. 'assets/images/logo.png'). Must be listed in pubspec.yaml.
   final String? imageAssetPath;
-
-  /// Network image URL.
   final String? imageUrl;
-
-  /// List of multiple images for carousel (optional)
   final List<String>? imageUrls;
-
-  /// Initial index if using multiple images
   final int initialIndex;
 
   @override
+  State<FullScreenImageViewer> createState() => _FullScreenImageViewerState();
+}
+
+class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
+  late PageController _pageController;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final multipleImages = imageUrls ?? const <String>[];
+    final multipleImages = widget.imageUrls ?? const <String>[];
+    final total = multipleImages.isNotEmpty ? multipleImages.length : 1;
 
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
+
+          // ── KONTEN GAMBAR ──
           if (multipleImages.isNotEmpty)
             PageView.builder(
-              controller: PageController(initialPage: initialIndex),
+              controller: _pageController,
               itemCount: multipleImages.length,
+              onPageChanged: (index) {
+                setState(() => _currentIndex = index);
+              },
               itemBuilder: (context, index) {
                 return InteractiveViewer(
                   minScale: 0.5,
@@ -45,8 +62,7 @@ class FullScreenImageViewer extends StatelessWidget {
                     child: Image.asset(
                       multipleImages[index],
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                          _placeholder(context),
+                      errorBuilder: (_, __, ___) => _placeholder(),
                     ),
                   ),
                 );
@@ -56,8 +72,10 @@ class FullScreenImageViewer extends StatelessWidget {
             InteractiveViewer(
               minScale: 0.5,
               maxScale: 4.0,
-              child: Center(child: _buildImage(context)),
+              child: Center(child: _buildImage()),
             ),
+
+          // ── TOMBOL CLOSE ──
           Positioned(
             top: MediaQuery.of(context).padding.top + 8,
             right: 16,
@@ -74,20 +92,134 @@ class FullScreenImageViewer extends StatelessWidget {
               ),
             ),
           ),
+
+          // ✅ INDICATOR HALAMAN "1/3"
+          if (total > 1)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    "${_currentIndex + 1} / $total",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // ✅ ARROW KIRI — kalau bukan halaman pertama
+          if (total > 1 && _currentIndex > 0)
+            Positioned(
+              left: 8,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: Material(
+                  color: Colors.black38,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    onTap: () {
+                      _pageController.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                    customBorder: const CircleBorder(),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // ✅ ARROW KANAN — kalau bukan halaman terakhir
+          if (total > 1 && _currentIndex < total - 1)
+            Positioned(
+              right: 8,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: Material(
+                  color: Colors.black38,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    onTap: () {
+                      _pageController.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                    customBorder: const CircleBorder(),
+                    child: const Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // ✅ DOT INDICATOR DI BAWAH
+          if (total > 1)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 20,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(total, (index) {
+                  final isActive = index == _currentIndex;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: isActive ? 10 : 6,
+                    height: isActive ? 10 : 6,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isActive ? Colors.white : Colors.white38,
+                    ),
+                  );
+                }),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildImage(BuildContext context) {
-    final assetPath = imageAssetPath ?? '';
-    final networkUrl = imageUrl ?? '';
+  Widget _buildImage() {
+    final assetPath = widget.imageAssetPath ?? '';
+    final networkUrl = widget.imageUrl ?? '';
 
     if (assetPath.isNotEmpty) {
       return Image.asset(
         assetPath,
         fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => _placeholder(context),
+        errorBuilder: (_, __, ___) => _placeholder(),
       );
     }
     if (networkUrl.isNotEmpty) {
@@ -106,13 +238,13 @@ class FullScreenImageViewer extends StatelessWidget {
             ),
           );
         },
-        errorBuilder: (context, error, stackTrace) => _placeholder(context),
+        errorBuilder: (_, __, ___) => _placeholder(),
       );
     }
-    return _placeholder(context);
+    return _placeholder();
   }
 
-  Widget _placeholder(BuildContext context) {
+  Widget _placeholder() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

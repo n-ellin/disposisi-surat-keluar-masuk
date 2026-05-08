@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
 class CustomNavbar extends StatelessWidget {
-  final NavbarRole role;
+  final Role role;
   final int currentIndex;
   final Function(int) onTap;
 
@@ -43,7 +43,7 @@ class CustomNavbar extends StatelessWidget {
 
   
   List<Widget> _buildItems() {
-    if (role == NavbarRole.tu) {
+    if (role == Role.tu) {
       return [
         Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
         Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),

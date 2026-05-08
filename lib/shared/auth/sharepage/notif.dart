@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
 class NotificationPage extends StatelessWidget {
-  final NavbarRole role;
+  final Role role;
 
   const NotificationPage({
     super.key,
@@ -75,9 +75,9 @@ class NotificationPage extends StatelessWidget {
     );
   }
 
-  List<Map<String, dynamic>> _getNotificationsByRole(NavbarRole role) {
+  List<Map<String, dynamic>> _getNotificationsByRole(Role role) {
     switch (role) {
-      case NavbarRole.tu:
+      case Role.tu:
         return [
           {
             "title": "Surat Masuk Ditolak",
@@ -116,7 +116,7 @@ class NotificationPage extends StatelessWidget {
           },
         ];
 
-      case NavbarRole.kepsek:
+      case Role.kepsek:
         return [
           {
             "title": "Pemberitahuan Pengajuan Surat Keluar",
@@ -131,7 +131,7 @@ class NotificationPage extends StatelessWidget {
           },
         ];
 
-      case NavbarRole.other:
+      case Role.other:
         return [
           {
             "title": "Pemberitahuan Surat Masuk",

@@ -1,4 +1,4 @@
-enum NavbarRole {
+enum Role {
   tu,
   kepsek,
   other,

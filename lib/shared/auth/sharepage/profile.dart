@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
 class ProfilePage extends StatelessWidget {
   final String nama;
   final String email;
   final String jabatan;
   final String imagePath;
-  final NavbarRole role;
+  final Role role;
 
   const ProfilePage({
     super.key,
@@ -161,7 +161,7 @@ class ProfilePage extends StatelessWidget {
       ),
 
       bottomNavigationBar: CustomNavbar(
-        currentIndex: role == NavbarRole.tu ? 3 : 2,
+        currentIndex: role == Role.tu ? 3 : 2,
         role: role,
         onTap: (index) {
           handleNavbarTap(context, index, role);

@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/modules/kepsek/menuukepsek.dart';
-import 'package:ta_mobile_disposisi_surat/shared/auth/pages/notif.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/notif.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/menuTU.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratmasuk.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratkeluar.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
 class Home extends StatefulWidget {
-  final NavbarRole role;
+  final Role role;
   const Home({super.key, required this.role});
 
   @override
@@ -176,7 +177,7 @@ class _HomeState extends State<Home> {
                       child: GestureDetector(
                         onTap: () {
                           // ✅ navigasi ke menu surat masuk
-                          if (widget.role == NavbarRole.tu) {
+                          if (widget.role == Role.tu) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -185,7 +186,7 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             );
-                          } else if (widget.role == NavbarRole.kepsek) {
+                          } else if (widget.role == Role.kepsek) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -201,7 +202,7 @@ class _HomeState extends State<Home> {
                             colors: [Color(0xFF6DA8B4), Color(0xFF0F6E7A)],
                           ),
                           iconPath: "assets/icons/ic_inmail.svg",
-                          jumlah: "10",
+                          jumlah: "2",
                           label: "Surat Masuk",
                         ),
                       ),
@@ -211,7 +212,7 @@ class _HomeState extends State<Home> {
                       child: GestureDetector(
                         onTap: () {
                           // ✅ navigasi ke menu surat keluar
-                          if (widget.role == NavbarRole.tu) {
+                          if (widget.role == Role.tu) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -220,7 +221,7 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             );
-                          } else if (widget.role == NavbarRole.kepsek) {
+                          } else if (widget.role == Role.kepsek) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -236,7 +237,7 @@ class _HomeState extends State<Home> {
                             colors: [Color(0xFFD6A66B), Color(0xFFDA7B17)],
                           ),
                           iconPath: "assets/icons/ic_outmail.svg",
-                          jumlah: "10",
+                          jumlah: "2",
                           label: "Surat Keluar",
                         ),
                       ),

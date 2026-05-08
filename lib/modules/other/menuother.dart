@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
-import 'package:ta_mobile_disposisi_surat/shared/auth/pages/notif.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/notif.dart';
 import '../../shared/widgets/surat_card.dart';
-import '../../shared/auth/pages/profile.dart';
+import '../../shared/auth/sharepage/profile.dart';
 
 class MenuOther extends StatefulWidget {
   const MenuOther({super.key});
@@ -52,7 +52,7 @@ class _MenuOtherState extends State<MenuOther> {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      const NotificationPage(role: NavbarRole.other),
+                      const NotificationPage(role: Role.other),
                 ),
               );
             },

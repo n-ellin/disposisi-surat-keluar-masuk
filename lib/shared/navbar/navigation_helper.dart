@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
 void handleNavbarTap(
   BuildContext context,
   int index,
-  NavbarRole role,
+  Role role,
 ) {
-  if (role == NavbarRole.tu) {
+  if (role == Role.tu) {
     switch (index) {
       case 0:
         Navigator.pushReplacementNamed(context, '/home');
@@ -18,7 +18,7 @@ void handleNavbarTap(
         Navigator.pushReplacementNamed(context, '/profile');
         break;
     }
-  } else if (role == NavbarRole.kepsek){
+  } else if (role == Role.kepsek){
     switch (index) {
       case 0:
         Navigator.pushReplacementNamed(context, '/home');

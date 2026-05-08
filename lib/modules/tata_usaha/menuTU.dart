@@ -20,7 +20,13 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
       'jenisSurat': 'Surat Keluar',
       'tanggal': 'Senin, 12 Oktober 2025',
       'status': 'disetujui',
-      'data': {'Dari': 'Tata Usaha', 'Perihal': 'Permohonan Izin Kegiatan'},
+      'data': {'Dari': 'SMKN 2 SINGOSARI', 'Perihal': 'Rapat Pleno'},
+    },
+    {
+      'jenisSurat': 'Surat Keluar',
+      'tanggal': 'Senin, 15 Oktober 2025',
+      'status': 'disetujui',
+      'data': {'Dari': 'SMKN 2 SINGOSARI', 'Perihal': 'Rapat Korodinasi'},
     },
     {
       'jenisSurat': 'Surat Masuk',
@@ -36,8 +42,8 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
       'tanggal': 'Senin, 12 Oktober 2025',
       'status': 'menunggu',
       'data': {
-        'Dari': 'Dinas Pendidikan',
-        'Perihal': 'Undangan Rapat Koordinasi',
+        'Dari': 'SMKN 1 SINGOSARI',
+        'Perihal': 'Undangan Rapat',
       },
     },
   ];

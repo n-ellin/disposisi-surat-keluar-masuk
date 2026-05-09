@@ -7,7 +7,6 @@ class ProfilePage extends StatelessWidget {
   final String nama;
   final String email;
   final String jabatan;
-  final String imagePath;
   final Role role;
 
   const ProfilePage({
@@ -15,7 +14,6 @@ class ProfilePage extends StatelessWidget {
     required this.nama,
     required this.email,
     required this.jabatan,
-    required this.imagePath,
     required this.role,
   });
 
@@ -66,21 +64,32 @@ class ProfilePage extends StatelessWidget {
             SizedBox(height: h * 0.05),
 
             // ✅ EMAIL + PASSWORD
+            // ✅ DATA PROFILE
             Container(
               padding: const EdgeInsets.all(16),
               decoration: _cardDecoration(),
               child: Column(
                 children: [
                   _inputTile(
-                    icon: Icons.email_outlined,
-                    value: email,
-                    isPassword: false,
+                    icon: Icons.work_outline,
+                    label: "Jabatan",
+                    value: jabatan,
                   ),
+
                   const SizedBox(height: 12),
+
                   _inputTile(
-                    icon: Icons.key,
-                    value: "••••••••",
-                    isPassword: true,
+                    icon: Icons.person_outline,
+                    label: "Nama",
+                    value: nama,
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  _inputTile(
+                    icon: Icons.email_outlined,
+                    label: "Email",
+                    value: email,
                   ),
                 ],
               ),
@@ -93,14 +102,11 @@ class ProfilePage extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: _cardDecoration(),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text(
                     "Keamanan",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
                   ),
                   const SizedBox(height: 12),
 
@@ -116,10 +122,7 @@ class ProfilePage extends StatelessWidget {
                             color: primary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(
-                            Icons.lock_reset,
-                            color: primary,
-                          ),
+                          child: const Icon(Icons.lock_reset, color: primary),
                         ),
                         const SizedBox(width: 12),
                         const Expanded(child: Text("Ubah Kata Sandi")),
@@ -188,29 +191,51 @@ class ProfilePage extends StatelessWidget {
   // ✅ INPUT TILE
   Widget _inputTile({
     required IconData icon,
+    required String label,
     required String value,
-    required bool isPassword,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, color: Colors.grey.shade600),
-          const SizedBox(width: 10),
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Icon(icon, color: Colors.grey.shade600, size: 22),
+          ),
+
+          const SizedBox(width: 12),
+
           Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
             ),
           ),
-          if (isPassword)
-            Icon(Icons.visibility_off, color: Colors.grey.shade500)
-          else
-            Icon(Icons.lock, color: Colors.grey.shade400),
         ],
       ),
     );

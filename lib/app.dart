@@ -43,21 +43,20 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/menuother',
+      initialRoute: '/home',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
         '/splash_screen':(context) => const SplashScreen(),
         '/signin': (context) => const SignIn(),
 
-        '/home': (context) => const Home(role: Role.tu),
+        '/home': (context) => const Home(role: Role.kepsek),
 
         '/profile': (context) => const ProfilePage(
           role: Role.tu,
           nama: 'Nama User',
           email: 'user@email.com',
           jabatan: 'Tata Usaha',
-          imagePath: 'assets/images/profile.jpg',
         ),
 
         '/notif': (context) => const NotificationPage(role: Role.tu),

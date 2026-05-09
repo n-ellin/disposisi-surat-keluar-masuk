@@ -357,12 +357,12 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
         children: [
           PageView.builder(
             controller: _pageController,
-            onPageChanged: (i) => setState(() => _currentIndex = i),
+            onPageChanged: (int index) => setState(() => _currentIndex = index),
             itemCount: attachmentUrls.length,
             itemBuilder: (context, index) {
               final path = attachmentUrls[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 8, bottom: 28),
+                padding: const EdgeInsets.only(right: 8),
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).push(
@@ -384,17 +384,23 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                       child: Image.asset(
                         path,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 40),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.broken_image, size: 50, color: Colors.grey),
-                              SizedBox(height: 10),
-                              Text("Gagal memuat gambar"),
-                            ],
-                          ),
-                        ),
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.broken_image,
+                                  size: 50,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 10),
+                                Text("Gagal memuat gambar"),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -403,19 +409,20 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
             },
           ),
           Positioned(
-            bottom: 4,
+            bottom: 12,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: List.generate(attachmentUrls.length, (index) {
                 final isActive = index == _currentIndex;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
+                return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   width: isActive ? 10 : 6,
                   height: isActive ? 10 : 6,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isActive ? AppColors.bluePrimary : Colors.grey.shade400,
+                    color: isActive
+                        ? AppColors.bluePrimary
+                        : Colors.grey.shade400,
                   ),
                 );
               }),

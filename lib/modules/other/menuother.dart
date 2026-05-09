@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
-import 'package:ta_mobile_disposisi_surat/shared/auth/pages/notif.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/notif.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 import '../../shared/widgets/surat_card.dart';
-import '../../shared/auth/pages/profile.dart';
 
 class MenuOther extends StatefulWidget {
   const MenuOther({super.key, required String jenisSurat});
@@ -13,21 +13,37 @@ class MenuOther extends StatefulWidget {
 
 class _MenuOtherState extends State<MenuOther> {
   int selectedIndex = 0;
+  String searchQuery = '';
 
-  final List<Map<String, dynamic>> suratMasukList = [
-    {
-      "jenisSurat": "Surat Masuk",
-      "tanggal": "12 Okt 2026",
-      "status": "menunggu",
-      "data": {"Dari": "Tata Usaha", "Perihal": "Undangan Rapat"},
-    },
-    {
-      "jenisSurat": "Surat Keluar",
-      "tanggal": "13 Okt 2026",
-      "status": "disetujui",
-      "data": {"Dari": "Kepala Sekolah", "Perihal": "Surat Tugas"},
-    },
-  ];
+  /// ambil semua data dari dummy pusat
+  List<Map<String, dynamic>> get suratMasukList => DummySurat.allSurat;
+
+  /// filter search
+  List<Map<String, dynamic>> get filteredSurat {
+    if (searchQuery.isEmpty) {
+      return suratMasukList;
+    }
+
+    return suratMasukList.where((surat) {
+      final query = searchQuery.toLowerCase();
+
+      final jenis = surat["jenisSurat"].toString().toLowerCase();
+
+      final tanggal = surat["tanggal"].toString().toLowerCase();
+
+      final status = surat["status"].toString().toLowerCase();
+
+      final dari = surat["data"]["Dari"].toString().toLowerCase();
+
+      final perihal = surat["data"]["Perihal"].toString().toLowerCase();
+
+      return jenis.contains(query) ||
+          tanggal.contains(query) ||
+          status.contains(query) ||
+          dari.contains(query) ||
+          perihal.contains(query);
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,21 +60,12 @@ class _MenuOtherState extends State<MenuOther> {
         elevation: 0,
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none, size: 26),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const NotificationPage(role: NavbarRole.other),
-                ),
-              );
-            },
-          ),
-          Padding(
-            padding: EdgeInsets.only(right: w * 0.04),
+
+        /// LOGO KIRI
+        leadingWidth: 80,
+        leading: Padding(
+          padding: EdgeInsets.only(left: w * 0.04),
+          child: Center(
             child: SizedBox(
               width: w * 0.1,
               height: w * 0.1,
@@ -70,6 +77,24 @@ class _MenuOtherState extends State<MenuOther> {
               ),
             ),
           ),
+        ),
+
+        /// NOTIF KANAN
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none, size: 26),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      const NotificationPage(role: Role.other),
+                ),
+              );
+            },
+          ),
+
+          SizedBox(width: w * 0.02),
         ],
       ),
 
@@ -92,6 +117,11 @@ class _MenuOtherState extends State<MenuOther> {
 
             /// SEARCH BAR
             TextField(
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value;
+                });
+              },
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: "Cari surat...",
@@ -111,9 +141,9 @@ class _MenuOtherState extends State<MenuOther> {
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.only(bottom: h * 0.12),
-                itemCount: suratMasukList.length,
+                itemCount: filteredSurat.length,
                 itemBuilder: (context, index) {
-                  final surat = suratMasukList[index];
+                  final surat = filteredSurat[index];
 
                   return Padding(
                     padding: EdgeInsets.only(bottom: h * 0.015),

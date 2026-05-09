@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/modules/kepsek/menuukepsek.dart';
-import 'package:ta_mobile_disposisi_surat/shared/auth/pages/notif.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/notif.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/menuTU.dart';
 import 'package:ta_mobile_disposisi_surat/modules/kepsek/menuukepsek.dart';
 import 'package:ta_mobile_disposisi_surat/modules/other/menuother.dart';
 
 class Home extends StatefulWidget {
-  final NavbarRole role;
+  final Role role;
   const Home({super.key, required this.role});
 
   @override
@@ -61,7 +61,7 @@ class _HomeState extends State<Home> {
   /// ✅ Navigasi ke halaman menu sesuai role, dengan filter jenisSurat
   void _navigateToMenu(String jenisSurat) {
     switch (widget.role) {
-      case NavbarRole.tu:
+      case Role.tu:
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -70,7 +70,7 @@ class _HomeState extends State<Home> {
         );
         break;
 
-      case NavbarRole.kepsek:
+      case Role.kepsek:
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -257,6 +257,7 @@ class _HomeState extends State<Home> {
         ),
       ),
       bottomNavigationBar: CustomNavbar(
+        role: widget.role,
         currentIndex: 0,
         onTap: (index) {
           handleNavbarTap(context, index, widget.role);

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/modules/kepsek/history_kepsek.dart';
 
-import 'shared/navbar/navbar_role.dart';
+import 'core/constants/role.dart';
 
 // import halaman di sini, bukan di main
-import 'shared/auth/share/splash_screen.dart';
-import 'shared/auth/share/signin_page.dart';
-import 'shared/auth/share/signup_page.dart';
+import 'shared/auth/sharepage/splash_screen.dart';
+import 'shared/auth/sharepage/signin_page.dart';
 
-import 'shared/auth/pages/profile.dart';
-import 'shared/auth/pages/notif.dart';
-import 'shared/auth/pages/home.dart';
-import 'shared/auth/share/welcome.dart';
+import 'shared/auth/sharepage/profile.dart';
+import 'shared/auth/sharepage/notif.dart';
+import 'shared/auth/sharepage/home.dart';
 
 import 'modules/tata_usaha/menuTU.dart';
 import 'modules/tata_usaha/detail_surat/output_suratkeluar.dart';
@@ -38,33 +36,31 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
-        textSelectionTheme: TextSelectionThemeData(     
+        textSelectionTheme: TextSelectionThemeData(
           cursorColor: Colors.black,
           selectionColor: Colors.black26,
           selectionHandleColor: Colors.black,
         ),
       ),
 
-      initialRoute: '/welcome',
+      initialRoute: '/profile',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
-        '/splash_screen':(context) => const SplashScreen(),
-        '/welcome': (context) => const Welcome(),
+        '/splash_screen': (context) => const SplashScreen(),
         '/signin': (context) => const SignIn(),
-        '/signup': (context) => const SignUp(),
 
-        '/home': (context) => const Home(role: NavbarRole.tu),
+        '/home': (context) => const Home(role: Role.tu),
 
         '/profile': (context) => const ProfilePage(
-          role: NavbarRole.tu,
+          role: Role.tu,
           nama: 'Nama User',
           email: 'user@email.com',
           jabatan: 'Tata Usaha',
           imagePath: 'assets/images/profile.jpg',
         ),
 
-        '/notif': (context) => const NotificationPage(role: NavbarRole.tu),
+        '/notif': (context) => const NotificationPage(role: Role.tu),
 
         '/history_kepsek': (context) => const HistoryKepsekPage(),
         '/input_suratmasuk': (context) => const InputSuratMasuk(),

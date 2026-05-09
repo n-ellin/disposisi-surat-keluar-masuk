@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navbar_role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
@@ -122,9 +122,10 @@ class _HistoryOtherPageState extends State<HistoryOtherPage> {
       ),
 
       bottomNavigationBar: CustomNavbar(
+        role: Role.kepsek,
         currentIndex: 1,
         onTap: (index) {
-          handleNavbarTap(context, index, NavbarRole.kepsek);
+          handleNavbarTap(context, index, Role.kepsek);
         },
       ),
     );

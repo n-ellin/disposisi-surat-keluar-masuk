@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/home',
+      initialRoute: '/menuother',
 
       /// SEMUA ROUTE APLIKASI
       routes: {
@@ -81,6 +81,8 @@ class MyApp extends StatelessWidget {
 
         '/history_other': (context) => const HistoryOtherPage(),
         '/detail_suratOther': (context) => const DetailSuratOther(),
+
+        '/menuother' : (context) => const MenuOther(),
       },
     );
   }

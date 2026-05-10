@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 class ProfilePage extends StatelessWidget {
   final String nama;
   final String email;
   final String jabatan;
-  final String imagePath;
   final Role role;
 
   const ProfilePage({
@@ -15,7 +15,6 @@ class ProfilePage extends StatelessWidget {
     required this.nama,
     required this.email,
     required this.jabatan,
-    required this.imagePath,
     required this.role,
   });
 
@@ -24,144 +23,220 @@ class ProfilePage extends StatelessWidget {
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
 
-    const primary = Color(0xFF1E6D7B);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6F8),
+      backgroundColor: Colors.white,
 
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          "Profile",
-          style: TextStyle(
-            color: primary,
-            fontSize: w * 0.055,
-            fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: w * 0.055),
+
+          child: Column(
+            children: [
+              SizedBox(height: h * 0.02),
+
+              // HEADER
+              Text(
+                "Profile",
+                style: TextStyle(
+                  color: AppColors.bluePrimary,
+                  fontSize: w * 0.065,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              SizedBox(height: h * 0.03),
+
+              // AVATAR
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(w * 0.008),
+
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.grey.shade200,
+                        width: 2,
+                      ),
+                    ),
+
+                    child: CircleAvatar(
+                      radius: w * 0.13,
+                      backgroundColor: Colors.grey.shade200,
+
+                      child: Icon(
+                        Icons.person,
+                        size: w * 0.14,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: h * 0.035),
+
+              // PROFILE CARD
+              _cardWrapper(
+                child: Column(
+                  children: [
+                    _profileTile(
+                      context,
+                      icon: Icons.work_outline,
+                      label: "JABATAN",
+                      value: jabatan,
+                    ),
+
+                    SizedBox(height: h * 0.015),
+
+                    _profileTile(
+                      context,
+                      icon: Icons.person_outline,
+                      label: "NAMA",
+                      value: nama,
+                    ),
+
+                    SizedBox(height: h * 0.015),
+
+                    _profileTile(
+                      context,
+                      icon: Icons.email_outlined,
+                      label: "EMAIL",
+                      value: email,
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: h * 0.025),
+
+              // SECURITY CARD
+              _cardWrapper(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Keamanan",
+                      style: TextStyle(
+                        fontSize: w * 0.04,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    SizedBox(height: h * 0.02),
+
+                    InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: () {},
+
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(w * 0.03),
+
+                            decoration: BoxDecoration(
+                              color:
+                                  AppColors.bluePrimary.withOpacity(0.10),
+
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+
+                            child: Icon(
+                              Icons.lock_outline,
+                              color: AppColors.bluePrimary,
+                              size: w * 0.055,
+                            ),
+                          ),
+
+                          SizedBox(width: w * 0.04),
+
+                          Expanded(
+                            child: Text(
+                              "Ubah Kata Sandi",
+                              style: TextStyle(
+                                fontSize: w * 0.04,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+
+                          Icon(
+                            Icons.chevron_right,
+                            size: w * 0.07,
+                            color: Colors.grey.shade500,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: h * 0.035),
+
+              // LOGOUT
+              SizedBox(
+                width: double.infinity,
+
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      vertical: h * 0.018,
+                    ),
+
+                    side: BorderSide(
+                      color: Colors.red.shade400,
+                      width: 1.4,
+                    ),
+
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+
+                  onPressed: () {},
+
+                  icon: Icon(
+                    Icons.logout,
+                    color: Colors.red,
+                    size: w * 0.05,
+                  ),
+
+                  label: Text(
+                    "Logout",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: w * 0.04,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: h * 0.02),
+
+              // VERSION
+              Text(
+                "APP VERSION 2.4.1-STABLE",
+                textAlign: TextAlign.center,
+
+                style: TextStyle(
+                  fontSize: w * 0.026,
+                  color: Colors.grey.shade400,
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+              SizedBox(height: h * 0.03),
+            ],
           ),
         ),
       ),
 
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: w * 0.06),
-        child: Column(
-          children: [
-            SizedBox(height: h * 0.03),
-
-            // ✅ AVATAR
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 3),
-              ),
-              child: CircleAvatar(
-                radius: w * 0.14,
-                backgroundColor: Colors.grey.shade300,
-                child: Icon(Icons.person, size: w * 0.14, color: Colors.white),
-              ),
-            ),
-
-            SizedBox(height: h * 0.05),
-
-            // ✅ EMAIL + PASSWORD
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: _cardDecoration(),
-              child: Column(
-                children: [
-                  _inputTile(
-                    icon: Icons.email_outlined,
-                    value: email,
-                    isPassword: false,
-                  ),
-                  const SizedBox(height: 12),
-                  _inputTile(
-                    icon: Icons.key,
-                    value: "••••••••",
-                    isPassword: true,
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: h * 0.04),
-
-            // ✅ KEAMANAN
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: _cardDecoration(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Keamanan",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  InkWell(
-                    onTap: () {
-                      // TODO: ke halaman ubah password
-                    },
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: primary.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.lock_reset,
-                            color: primary,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Expanded(child: Text("Ubah Kata Sandi")),
-                        const Icon(Icons.chevron_right),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: h * 0.05),
-
-            // ✅ LOGOUT
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.red.shade300),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () {
-                  // TODO: logout
-                },
-                icon: const Icon(Icons.logout, color: Colors.red),
-                label: const Text(
-                  "Keluar",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ),
-
-            SizedBox(height: h * 0.12),
-          ],
-        ),
-      ),
-
       bottomNavigationBar: CustomNavbar(
-        currentIndex: role == Role.tu ? 3 : 2,
+        currentIndex: 2,
         role: role,
         onTap: (index) {
           handleNavbarTap(context, index, role);
@@ -170,47 +245,103 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // ✅ CARD STYLE BIAR CONSISTENT
-  BoxDecoration _cardDecoration() {
-    return BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.05),
-          blurRadius: 10,
-          offset: const Offset(0, 6),
+  Widget _cardWrapper({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+
+        border: Border.all(
+          color: Colors.grey.shade200,
         ),
-      ],
+
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+
+      child: child,
     );
   }
 
-  // ✅ INPUT TILE
-  Widget _inputTile({
+  Widget _profileTile(
+    BuildContext context, {
     required IconData icon,
+    required String label,
     required String value,
-    required bool isPassword,
   }) {
+    final w = MediaQuery.of(context).size.width;
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
+      padding: EdgeInsets.symmetric(
+        horizontal: w * 0.035,
+        vertical: w * 0.035,
       ),
+
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F8FA),
+        borderRadius: BorderRadius.circular(14),
+      ),
+
       child: Row(
         children: [
-          Icon(icon, color: Colors.grey.shade600),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 14),
+          Container(
+            padding: EdgeInsets.all(w * 0.022),
+
+            decoration: BoxDecoration(
+              color: const Color(0xFFEDEFF3),
+              borderRadius: BorderRadius.circular(10),
+            ),
+
+            child: Icon(
+              icon,
+              size: w * 0.045,
+              color: AppColors.bluePrimary,
             ),
           ),
-          if (isPassword)
-            Icon(Icons.visibility_off, color: Colors.grey.shade500)
-          else
-            Icon(Icons.lock, color: Colors.grey.shade400),
+
+          SizedBox(width: w * 0.03),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+
+                  overflow: TextOverflow.ellipsis,
+
+                  style: TextStyle(
+                    fontSize: w * 0.025,
+                    letterSpacing: 1,
+                    color: Colors.grey.shade500,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                SizedBox(height: w * 0.008),
+
+                Text(
+                  value,
+
+                  overflow: TextOverflow.ellipsis,
+
+                  style: TextStyle(
+                    fontSize: w * 0.04,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

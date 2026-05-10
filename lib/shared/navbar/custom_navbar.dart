@@ -20,7 +20,7 @@ class CustomNavbar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Material(
         color: Colors.transparent,
-        elevation: 8,
+        elevation: 4,
         shadowColor: Colors.black26,
         borderRadius: BorderRadius.circular(36),
         clipBehavior: Clip.antiAlias,
@@ -29,7 +29,7 @@ class CustomNavbar extends StatelessWidget {
           elevation: 0,
           shape: const _NoNotch(),
           child: SizedBox(
-            height: 70,
+            height: 55,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: _buildItems(),

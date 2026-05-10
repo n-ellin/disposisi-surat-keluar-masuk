@@ -155,7 +155,7 @@ class _HomeState extends State<Home> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => const TuDashboardPage(
-                                  jenisSurat: 'Surat Masuk',
+                                  jenisSurat: 'Masuk',
                                 ),
                               ),
                             );
@@ -166,7 +166,7 @@ class _HomeState extends State<Home> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => const KepsekDashboardPage(
-                                  jenisSurat: 'Surat Masuk',
+                                  jenisSurat: 'Masuk',
                                 ),
                               ),
                             );

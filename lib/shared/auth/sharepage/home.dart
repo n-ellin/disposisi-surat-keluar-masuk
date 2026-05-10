@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -26,6 +28,22 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  int notifCount = 12;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Timer.periodic(
+      const Duration(seconds: 5),
+      (timer) {
+        setState(() {
+          notifCount++;
+        });
+      },
+    );
+  }
 
   /// ================= ALL SURAT =================
   List<Map<String, dynamic>> get _allSurat => DummySurat.allSurat;
@@ -110,9 +128,9 @@ class _HomeState extends State<Home> {
                                 minHeight: 16,
                               ),
 
-                              child: const Center(
+                              child: Center(
                                 child: Text(
-                                  "12",
+                                  notifCount.toString(),
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 9,

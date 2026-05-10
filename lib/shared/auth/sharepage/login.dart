@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/home.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
+
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
 
@@ -31,7 +36,7 @@ class _SignInState extends State<SignIn> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: const Color(0xFFEFF3F7),
+        backgroundColor: const Color(0xFFF2F2F2),
 
         body: SafeArea(
           child: Center(
@@ -98,12 +103,12 @@ class _SignInState extends State<SignIn> {
                       children: [
                         // EMAIL LABEL
                         const Text(
-                          "ALAMAT EMAIL",
+                          "EMAIL",
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.5,
-                            color: Color(0xFF4D4D4D),
+                            color: AppColors.hinttext,
                           ),
                         ),
 
@@ -125,7 +130,7 @@ class _SignInState extends State<SignIn> {
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.5,
-                            color: Color(0xFF4D4D4D),
+                            color: AppColors.hinttext,
                           ),
                         ),
 
@@ -144,15 +149,14 @@ class _SignInState extends State<SignIn> {
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
                               minimumSize: Size.zero,
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: const Text(
                               "Lupa password?",
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F6E7A),
+                                color: AppColors.bluePrimary,
                               ),
                             ),
                           ),
@@ -163,18 +167,49 @@ class _SignInState extends State<SignIn> {
                         // BUTTON
                         SizedBox(
                           width: double.infinity,
-                          height: 58,
+                          height: 48,
                           child: ElevatedButton(
                             onPressed: () {
-                              // LOGIN
+                              final email = emailC.text.trim();
+                              final password = passwordC.text.trim();
+
+                              if (email == 'kepsek@gmail.com' &&
+                                  password == '123456') {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => Home(role: Role.kepsek),
+                                  ),
+                                );
+                              } else if (email == 'tu@gmail.com' &&
+                                  password == '123456') {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => Home(role: Role.tu),
+                                  ),
+                                );
+                              } else if (email == 'user@gmail.com' &&
+                                  password == '123456') {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => Home(role: Role.other),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Email atau password salah'),
+                                  ),
+                                );
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
-                              backgroundColor:
-                                  const Color(0xFF0F6E7A),
+                              backgroundColor: AppColors.bluePrimary,
                               shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(18),
+                                borderRadius: BorderRadius.circular(18),
                               ),
                             ),
                             child: const Text(
@@ -217,40 +252,36 @@ class _SignInState extends State<SignIn> {
   }) {
     return TextField(
       controller: controller,
-      cursorColor: const Color(0xFF0F6E7A),
-      style: const TextStyle(
-        fontWeight: FontWeight.w600,
-      ),
+      cursorColor: AppColors.bluePrimary,
+
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+
       decoration: InputDecoration(
+        isDense: true,
+
         hintText: hint,
 
         hintStyle: TextStyle(
           color: Colors.black.withOpacity(0.35),
+          fontSize: 14,
         ),
 
-        prefixIcon: Icon(
-          icon,
-          color: Colors.grey.shade600,
-        ),
+        prefixIcon: Icon(icon, color: Colors.grey.shade600, size: 20),
 
         filled: true,
-        fillColor: const Color(0xFFF7F8FA),
+        fillColor: const Color(0xFFF3F4F6),
 
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 18,
-        ),
+        contentPadding: const EdgeInsets.symmetric(vertical: 14),
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: Colors.grey.shade300,
-          ),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
 
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(
-            color: Color(0xFF0F6E7A),
+            color: AppColors.bluePrimary,
             width: 1.4,
           ),
         ),
@@ -262,20 +293,24 @@ class _SignInState extends State<SignIn> {
     return TextField(
       controller: passwordC,
       obscureText: obscure,
-      cursorColor: const Color(0xFF0F6E7A),
-      style: const TextStyle(
-        fontWeight: FontWeight.w600,
-      ),
+      cursorColor: AppColors.bluePrimary,
+
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+
       decoration: InputDecoration(
-        hintText: "••••••••",
+        isDense: true,
+
+        hintText: "Kata sandi",
 
         hintStyle: TextStyle(
           color: Colors.black.withOpacity(0.35),
+          fontSize: 14,
         ),
 
         prefixIcon: Icon(
           Icons.lock_outline_rounded,
           color: Colors.grey.shade600,
+          size: 20,
         ),
 
         suffixIcon: IconButton(
@@ -284,32 +319,29 @@ class _SignInState extends State<SignIn> {
               obscure = !obscure;
             });
           },
+
           icon: Icon(
-            obscure
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined,
+            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+
             color: Colors.grey.shade500,
+            size: 20,
           ),
         ),
 
         filled: true,
         fillColor: const Color(0xFFF7F8FA),
 
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 18,
-        ),
+        contentPadding: const EdgeInsets.symmetric(vertical: 14),
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: Colors.grey.shade300,
-          ),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
 
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(
-            color: Color(0xFF0F6E7A),
+            color: AppColors.bluePrimary,
             width: 1.4,
           ),
         ),

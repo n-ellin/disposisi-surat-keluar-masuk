@@ -185,7 +185,7 @@ class _HomeState extends State<Home> {
 
                           jumlah: jumlahSuratMasuk.toString(),
 
-                          label: "Surat Masuk",
+                          label: "Masuk",
                         ),
                       ),
                     ),
@@ -232,7 +232,7 @@ class _HomeState extends State<Home> {
 
                           jumlah: jumlahSuratKeluar.toString(),
 
-                          label: "Surat Keluar",
+                          label: "Keluar",
                         ),
                       ),
                     ),

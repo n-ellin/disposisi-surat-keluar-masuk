@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/login.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
@@ -24,7 +25,7 @@ class ProfilePage extends StatelessWidget {
     final h = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFF2F2F2),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -55,19 +56,16 @@ class ProfilePage extends StatelessWidget {
 
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.grey.shade200,
-                        width: 2,
-                      ),
+                      border: Border.all(color: Colors.grey.shade200, width: 2),
                     ),
 
                     child: CircleAvatar(
-                      radius: w * 0.13,
+                      radius: w * 0.10,
                       backgroundColor: Colors.grey.shade200,
 
                       child: Icon(
                         Icons.person,
-                        size: w * 0.14,
+                        size: w * 0.11,
                         color: Colors.grey.shade500,
                       ),
                     ),
@@ -136,8 +134,7 @@ class ProfilePage extends StatelessWidget {
                             padding: EdgeInsets.all(w * 0.03),
 
                             decoration: BoxDecoration(
-                              color:
-                                  AppColors.bluePrimary.withOpacity(0.10),
+                              color: AppColors.bluePrimary.withOpacity(0.10),
 
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -181,27 +178,24 @@ class ProfilePage extends StatelessWidget {
 
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      vertical: h * 0.018,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: h * 0.018),
 
-                    side: BorderSide(
-                      color: Colors.red.shade400,
-                      width: 1.4,
-                    ),
+                    side: BorderSide(color: Colors.red.shade400, width: 1.4),
 
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
 
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SignIn()),
+                      (route) => false,
+                    );
+                  },
 
-                  icon: Icon(
-                    Icons.logout,
-                    color: Colors.red,
-                    size: w * 0.05,
-                  ),
+                  icon: Icon(Icons.logout, color: Colors.red, size: w * 0.05),
 
                   label: Text(
                     "Logout",
@@ -215,21 +209,6 @@ class ProfilePage extends StatelessWidget {
               ),
 
               SizedBox(height: h * 0.02),
-
-              // VERSION
-              Text(
-                "APP VERSION 2.4.1-STABLE",
-                textAlign: TextAlign.center,
-
-                style: TextStyle(
-                  fontSize: w * 0.026,
-                  color: Colors.grey.shade400,
-                  letterSpacing: 1,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-
-              SizedBox(height: h * 0.03),
             ],
           ),
         ),
@@ -248,19 +227,17 @@ class ProfilePage extends StatelessWidget {
   Widget _cardWrapper({required Widget child}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(14),
 
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
 
-        border: Border.all(
-          color: Colors.grey.shade200,
-        ),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -280,31 +257,24 @@ class ProfilePage extends StatelessWidget {
     final w = MediaQuery.of(context).size.width;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: w * 0.035,
-        vertical: w * 0.035,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: w * 0.035, vertical: w * 0.025),
 
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F8FA),
+        color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(14),
       ),
 
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(w * 0.022),
+            padding: EdgeInsets.all(w * 0.018),
 
             decoration: BoxDecoration(
               color: const Color(0xFFEDEFF3),
               borderRadius: BorderRadius.circular(10),
             ),
 
-            child: Icon(
-              icon,
-              size: w * 0.045,
-              color: AppColors.bluePrimary,
-            ),
+            child: Icon(icon, size: w * 0.045, color: AppColors.bluePrimary),
           ),
 
           SizedBox(width: w * 0.03),
@@ -334,7 +304,7 @@ class ProfilePage extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
 
                   style: TextStyle(
-                    fontSize: w * 0.04,
+                    fontSize: w * 0.036,
                     fontWeight: FontWeight.w500,
                     color: Colors.black87,
                   ),

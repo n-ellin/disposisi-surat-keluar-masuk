@@ -76,7 +76,7 @@ class _HistoryKepsekPageState
     final h = size.height;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Colors.white,
 
       body: SafeArea(
         child: Padding(
@@ -115,7 +115,7 @@ class _HistoryKepsekPageState
                       const Icon(Icons.search),
 
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: const Color(0xFFF7F8FA),
 
                   contentPadding:
                       EdgeInsets.symmetric(
@@ -148,7 +148,7 @@ class _HistoryKepsekPageState
 
                   Expanded(
                     child: _filterButton(
-                      "Surat Masuk",
+                      "Masuk",
                       "masuk",
                     ),
                   ),
@@ -157,7 +157,7 @@ class _HistoryKepsekPageState
 
                   Expanded(
                     child: _filterButton(
-                      "Surat Keluar",
+                      "Keluar",
                       "keluar",
                     ),
                   ),
@@ -183,6 +183,7 @@ class _HistoryKepsekPageState
                       ),
 
                       child: SuratCard(
+                        isHistory: true,
                         jenisSurat:
                             surat['jenisSurat'],
 
@@ -253,10 +254,10 @@ class _HistoryKepsekPageState
       style: ElevatedButton.styleFrom(
         backgroundColor: isActive
             ? AppColors.bluePrimary
-            : Colors.white,
+            : const Color(0xFFF7F8FA),
 
         foregroundColor: isActive
-            ? Colors.white
+            ? const Color(0xFFF7F8FA)
             : AppColors.bluePrimary,
 
         elevation: isActive ? 2 : 0,

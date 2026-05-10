@@ -5,7 +5,7 @@ import 'core/constants/role.dart';
 
 // Shared Pages
 import 'shared/auth/sharepage/splash_screen.dart';
-import 'shared/auth/sharepage/signin_page.dart';
+import 'shared/auth/sharepage/login.dart';
 import 'shared/auth/sharepage/profile.dart';
 import 'shared/auth/sharepage/notif.dart';
 import 'shared/auth/sharepage/home.dart';
@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/profile',
+      initialRoute: '/signin',
 
       routes: {
         // Splash & Auth

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // <-- TAMBAHKAN INI// pastikan path ini sesuai
-import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/signin_page.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/login.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

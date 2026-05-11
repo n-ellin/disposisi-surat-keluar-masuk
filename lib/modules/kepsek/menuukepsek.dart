@@ -73,13 +73,13 @@ class _KepsekDashboardPageState
     final h = size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF2F2F2),
 
       /// APPBAR
       appBar: AppBar(
         automaticallyImplyLeading: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF2F2F2),
         surfaceTintColor:
             Colors.transparent,
 

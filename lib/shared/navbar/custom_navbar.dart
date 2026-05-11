@@ -17,19 +17,19 @@ class CustomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Material(
         color: Colors.transparent,
-        elevation: 4,
-        shadowColor: Colors.black26,
-        borderRadius: BorderRadius.circular(36),
+        elevation: 3,
+        shadowColor: Colors.black12,
+        borderRadius: BorderRadius.circular(30),
         clipBehavior: Clip.antiAlias,
         child: BottomAppBar(
           color: Colors.white,
           elevation: 0,
           shape: const _NoNotch(),
           child: SizedBox(
-            height: 55,
+            height: 48, // sebelumnya 55
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: _buildItems(),
@@ -41,15 +41,6 @@ class CustomNavbar extends StatelessWidget {
   }
 
   List<Widget> _buildItems() {
-    if (role == Role.tu) {
-      return [
-        Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
-        Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
-        Expanded(child: _navIcon('assets/icons/ic_profile.svg', 2)),
-      ];
-    }
-
-    // Kepsek & Other (tanpa approval & tanpa FAB)
     return [
       Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
       Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
@@ -64,7 +55,7 @@ class CustomNavbar extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap(index),
       child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 1, end: isActive ? 1.2 : 1.0),
+        tween: Tween<double>(begin: 1, end: isActive ? 1.1 : 1.0),
         duration: const Duration(milliseconds: 300),
         curve: Curves.elasticOut,
         builder: (context, scale, child) {
@@ -72,8 +63,8 @@ class CustomNavbar extends StatelessWidget {
             scale: scale,
             child: SvgPicture.asset(
               asset,
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
               colorFilter: ColorFilter.mode(
                 isActive ? const Color(0xFF2E8BC0) : Color(0xFF9FB8C2),
                 BlendMode.srcIn,

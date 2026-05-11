@@ -76,7 +76,7 @@ class _HistoryKepsekPageState
     final h = size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF2F2F2),
 
       body: SafeArea(
         child: Padding(

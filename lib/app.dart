@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/signin',
+      initialRoute: '/input_suratmasuk',
 
       routes: {
         // Splash & Auth
@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
 
         // Profile
         '/profile': (context) => const ProfilePage(
-              role: Role.tu,
+              role: Role.kepsek,
               nama: 'Nama User',
               email: 'user@email.com',
               jabatan: 'Tata Usaha',

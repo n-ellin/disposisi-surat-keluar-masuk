@@ -210,7 +210,7 @@ class ProfilePage extends StatelessWidget {
         currentIndex: 2,
         role: role,
         onTap: (index) {
-          handleNavbarTap(context, index, role);
+          handleNavbarTap(context, index, role, nama, email, jabatan);
         },
       ),
     );

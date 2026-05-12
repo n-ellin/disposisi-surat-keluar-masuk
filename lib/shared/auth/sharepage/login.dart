@@ -180,9 +180,9 @@ class _SignInState extends State<SignIn> {
                                   MaterialPageRoute(
                                     builder: (_) => Home(
                                       role: Role.kepsek,
-                                      nama: 'Kepala Sekolah',
+                                      nama: "Kepala Sekolah",
                                       email: email,
-                                      jabatan: 'Kepala Sekolah',
+                                      jabatan: "Kepala Sekolah",
                                     ),
                                   ),
                                 );
@@ -193,9 +193,9 @@ class _SignInState extends State<SignIn> {
                                   MaterialPageRoute(
                                     builder: (_) => Home(
                                       role: Role.tu,
-                                      nama: 'Tata Usaha',
+                                      nama: "Tata Usaha",
                                       email: email,
-                                      jabatan: 'Tata Usaha',
+                                      jabatan: "Tata Usaha",
                                     ),
                                   ),
                                 );
@@ -206,14 +206,20 @@ class _SignInState extends State<SignIn> {
                                   MaterialPageRoute(
                                     builder: (_) => Home(
                                       role: Role.other,
-                                      nama: 'User',
+                                      nama: "User",
                                       email: email,
-                                      jabatan: 'Pegawai',
+                                      jabatan: "User",
                                     ),
                                   ),
                                 );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Email atau password salah'),
+                                  ),
+                                );
                               }
-                            },
+                            }, // <- NAH INI YANG KURANG
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
                               backgroundColor: AppColors.bluePrimary,

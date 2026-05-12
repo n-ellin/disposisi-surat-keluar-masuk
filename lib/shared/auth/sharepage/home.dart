@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -35,6 +37,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  int notifCount = 12;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      setState(() {
+        notifCount++;
+      });
+    });
+  }
+
   /// ================= ALL SURAT =================
   List<Map<String, dynamic>> get _allSurat => DummySurat.allSurat;
 
@@ -112,10 +127,10 @@ class _HomeState extends State<Home> {
                                 minHeight: 16,
                               ),
 
-                              child: const Center(
+                              child: Center(
                                 child: Text(
-                                  "12",
-                                  style: TextStyle(
+                                  notifCount.toString(),
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 9,
                                     fontWeight: FontWeight.bold,
@@ -258,11 +273,16 @@ class _HomeState extends State<Home> {
       /// ================= NAVBAR =================
       bottomNavigationBar: CustomNavbar(
         role: widget.role,
-
         currentIndex: 0,
-
         onTap: (index) {
-          handleNavbarTap(context, index, widget.role);
+          handleNavbarTap(
+            context,
+            index,
+            widget.role,
+            widget.nama,
+            widget.email,
+            widget.jabatan,
+          );
         },
       ),
     );
@@ -296,19 +316,12 @@ class _HomeState extends State<Home> {
             builder: (_) => isMasuk
                 ? OutputSuratmasuk(
                     isApproved: surat['status'] == 'disetujui',
-
                     catatan: surat['catatan'] ?? '-',
-
                     tujuan: surat['tujuan'] ?? '-',
-
                     instruksi: surat['instruksi'] ?? '-',
-
                     koordinasi: surat['koordinasi'] ?? '-',
-
                     diteruskanKe: surat['diteruskanKe'] ?? '-',
-
                     sifat: surat['sifat'] ?? '-',
-
                     isReadOnly: true,
                   )
                 : OutputSuratkeluar(catatan: surat['catatan'] ?? '-'),
@@ -356,18 +369,11 @@ class _HomeState extends State<Home> {
 
                 width: 20,
                 height: 20,
-
-                colorFilter: ColorFilter.mode(
-                  isMasuk ? const Color(0xFF0F6E7A) : const Color(0xFFDA7B17),
-
-                  BlendMode.srcIn,
-                ),
               ),
             ),
 
             const SizedBox(width: 12),
 
-            /// ================= INFO =================
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -396,45 +402,6 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-
-            /// ================= STATUS =================
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-
-              children: [
-                Text(
-                  surat['tanggal'] ?? '-',
-
-                  style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
-                ),
-
-                const SizedBox(height: 6),
-
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 3,
-                  ),
-
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.12),
-
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-
-                  child: Text(
-                    surat['status'][0].toUpperCase() +
-                        surat['status'].substring(1),
-
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: statusColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -457,16 +424,6 @@ class _HomeState extends State<Home> {
         gradient: gradient,
 
         borderRadius: BorderRadius.circular(w * 0.05),
-
-        boxShadow: [
-          BoxShadow(
-            color: gradient.colors.last.withOpacity(0.3),
-
-            blurRadius: 10,
-
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
 
       child: Row(
@@ -476,17 +433,7 @@ class _HomeState extends State<Home> {
 
             backgroundColor: Colors.white.withOpacity(0.3),
 
-            child: SvgPicture.asset(
-              iconPath,
-
-              width: 24,
-              height: 24,
-
-              colorFilter: const ColorFilter.mode(
-                Colors.white,
-                BlendMode.srcIn,
-              ),
-            ),
+            child: SvgPicture.asset(iconPath, width: 24, height: 24),
           ),
 
           const SizedBox(width: 12),
@@ -506,13 +453,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
 
-                Text(
-                  label,
-
-                  style: const TextStyle(color: Colors.white),
-
-                  overflow: TextOverflow.ellipsis,
-                ),
+                Text(label, style: const TextStyle(color: Colors.white)),
               ],
             ),
           ),

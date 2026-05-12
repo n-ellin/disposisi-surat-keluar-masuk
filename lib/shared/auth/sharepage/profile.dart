@@ -25,7 +25,7 @@ class ProfilePage extends StatelessWidget {
     final h = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Color(0xFFF2F2F2),
+      backgroundColor: const Color(0xFFF2F2F2),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -35,7 +35,6 @@ class ProfilePage extends StatelessWidget {
             children: [
               SizedBox(height: h * 0.02),
 
-              // HEADER
               Text(
                 "Profile",
                 style: TextStyle(
@@ -47,7 +46,6 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(height: h * 0.03),
 
-              // AVATAR
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -75,7 +73,6 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(height: h * 0.035),
 
-              // PROFILE CARD
               _cardWrapper(
                 child: Column(
                   children: [
@@ -109,7 +106,6 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(height: h * 0.025),
 
-              // SECURITY CARD
               _cardWrapper(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +131,6 @@ class ProfilePage extends StatelessWidget {
 
                             decoration: BoxDecoration(
                               color: AppColors.bluePrimary.withOpacity(0.10),
-
                               borderRadius: BorderRadius.circular(12),
                             ),
 
@@ -172,16 +167,13 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(height: h * 0.035),
 
-              // LOGOUT
               SizedBox(
                 width: double.infinity,
 
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: h * 0.018),
-
                     side: BorderSide(color: Colors.red.shade400, width: 1.4),
-
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -285,9 +277,7 @@ class ProfilePage extends StatelessWidget {
               children: [
                 Text(
                   label,
-
                   overflow: TextOverflow.ellipsis,
-
                   style: TextStyle(
                     fontSize: w * 0.025,
                     letterSpacing: 1,
@@ -300,9 +290,7 @@ class ProfilePage extends StatelessWidget {
 
                 Text(
                   value,
-
                   overflow: TextOverflow.ellipsis,
-
                   style: TextStyle(
                     fontSize: w * 0.036,
                     fontWeight: FontWeight.w500,

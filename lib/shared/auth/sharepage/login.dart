@@ -178,7 +178,12 @@ class _SignInState extends State<SignIn> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => Home(role: Role.kepsek),
+                                    builder: (_) => Home(
+                                      role: Role.kepsek,
+                                      nama: 'Kepala Sekolah',
+                                      email: email,
+                                      jabatan: 'Kepala Sekolah',
+                                    ),
                                   ),
                                 );
                               } else if (email == 'tu@gmail.com' &&
@@ -186,7 +191,12 @@ class _SignInState extends State<SignIn> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => Home(role: Role.tu),
+                                    builder: (_) => Home(
+                                      role: Role.tu,
+                                      nama: 'Tata Usaha',
+                                      email: email,
+                                      jabatan: 'Tata Usaha',
+                                    ),
                                   ),
                                 );
                               } else if (email == 'user@gmail.com' &&
@@ -194,13 +204,12 @@ class _SignInState extends State<SignIn> {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => Home(role: Role.other),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Email atau password salah'),
+                                    builder: (_) => Home(
+                                      role: Role.other,
+                                      nama: 'User',
+                                      email: email,
+                                      jabatan: 'Pegawai',
+                                    ),
                                   ),
                                 );
                               }

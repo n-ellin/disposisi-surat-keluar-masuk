@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/input_suratmasuk',
+      initialRoute: '/signin',
 
       routes: {
         // Splash & Auth
@@ -69,22 +69,27 @@ class MyApp extends StatelessWidget {
         '/signin': (context) => const SignIn(),
 
         // Home
-        '/home': (context) => const Home(
-              role: Role.kepsek,
-            ),
+        '/home': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map;
+
+          return Home(
+            role: args['role'],
+            nama: args['nama'],
+            email: args['email'],
+            jabatan: args['jabatan'],
+          );
+        },
 
         // Profile
         '/profile': (context) => const ProfilePage(
-              role: Role.kepsek,
-              nama: 'Nama User',
-              email: 'user@email.com',
-              jabatan: 'Tata Usaha',
-            ),
+          role: Role.kepsek,
+          nama: 'Nama User',
+          email: 'user@email.com',
+          jabatan: 'Tata Usaha',
+        ),
 
         // Notification
-        '/notif': (context) => const NotificationPage(
-              role: Role.tu,
-            ),
+        '/notif': (context) => const NotificationPage(role: Role.tu),
 
         // Kepsek
         '/history_kepsek': (context) => const HistoryKepsekPage(),
@@ -97,25 +102,22 @@ class MyApp extends StatelessWidget {
         '/history_tu': (context) => const HistoryTUPage(),
 
         '/output_suratkeluar': (context) =>
-            const OutputSuratkeluar(
-              catatan: "iya",
-            ),
+            const OutputSuratkeluar(catatan: "iya"),
 
         '/output_suratmasuk': (context) => const OutputSuratmasuk(
-              isApproved: true,
-              catatan: "iya",
-              tujuan: "Waka Kurikulum",
-              instruksi: "Tindak lanjuti",
-              koordinasi: '',
-              diteruskanKe: '',
-              sifat: '',
-            ),
+          isApproved: true,
+          catatan: "iya",
+          tujuan: "Waka Kurikulum",
+          instruksi: "Tindak lanjuti",
+          koordinasi: '',
+          diteruskanKe: '',
+          sifat: '',
+        ),
 
         // Other
         '/history_other': (context) => const HistoryOtherPage(),
 
-        '/detail_suratOther': (context) =>
-            const DetailSuratOther(),
+        '/detail_suratOther': (context) => const DetailSuratOther(),
       },
     );
   }

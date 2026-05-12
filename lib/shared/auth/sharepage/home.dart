@@ -18,15 +18,23 @@ import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output
 
 class Home extends StatefulWidget {
   final Role role;
+  final String nama;
+  final String email;
+  final String jabatan;
 
-  const Home({super.key, required this.role});
+  const Home({
+    super.key,
+    required this.role,
+    required this.nama,
+    required this.email,
+    required this.jabatan,
+  });
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-
   /// ================= ALL SURAT =================
   List<Map<String, dynamic>> get _allSurat => DummySurat.allSurat;
 
@@ -35,13 +43,11 @@ class _HomeState extends State<Home> {
       DummySurat.allSurat.reversed.toList();
 
   /// ================= TOTAL =================
-  int get jumlahSuratMasuk => _allSurat
-      .where((s) => s['jenisSurat'] == 'Surat Masuk')
-      .length;
+  int get jumlahSuratMasuk =>
+      _allSurat.where((s) => s['jenisSurat'] == 'Surat Masuk').length;
 
-  int get jumlahSuratKeluar => _allSurat
-      .where((s) => s['jenisSurat'] == 'Surat Keluar')
-      .length;
+  int get jumlahSuratKeluar =>
+      _allSurat.where((s) => s['jenisSurat'] == 'Surat Keluar').length;
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +65,12 @@ class _HomeState extends State<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 SizedBox(height: h * 0.03),
 
                 /// ================= HEADER =================
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
                     Image.asset(
                       "assets/images/logosmk.jpg",
                       width: w * 0.1,
@@ -78,8 +82,7 @@ class _HomeState extends State<Home> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                                NotificationPage(role: widget.role),
+                            builder: (_) => NotificationPage(role: widget.role),
                           ),
                         );
                       },
@@ -87,7 +90,6 @@ class _HomeState extends State<Home> {
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
-
                           Icon(
                             Icons.notifications_none,
                             size: w * 0.075,
@@ -133,10 +135,7 @@ class _HomeState extends State<Home> {
                 /// ================= TITLE =================
                 const Text(
                   "Disposisi Surat",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
 
                 SizedBox(height: h * 0.03),
@@ -144,24 +143,19 @@ class _HomeState extends State<Home> {
                 /// ================= STAT CARD =================
                 Row(
                   children: [
-
                     /// SURAT MASUK
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-
                           if (widget.role == Role.tu) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const TuDashboardPage(
-                                  jenisSurat: 'Masuk',
-                                ),
+                                builder: (_) =>
+                                    const TuDashboardPage(jenisSurat: 'Masuk'),
                               ),
                             );
-                          }
-
-                          else if (widget.role == Role.kepsek) {
+                          } else if (widget.role == Role.kepsek) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -175,10 +169,7 @@ class _HomeState extends State<Home> {
 
                         child: _statCard(
                           gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFF6DA8B4),
-                              Color(0xFF0F6E7A),
-                            ],
+                            colors: [Color(0xFF6DA8B4), Color(0xFF0F6E7A)],
                           ),
 
                           iconPath: "assets/icons/ic_inmail.svg",
@@ -196,7 +187,6 @@ class _HomeState extends State<Home> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-
                           if (widget.role == Role.tu) {
                             Navigator.push(
                               context,
@@ -206,9 +196,7 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             );
-                          }
-
-                          else if (widget.role == Role.kepsek) {
+                          } else if (widget.role == Role.kepsek) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -222,10 +210,7 @@ class _HomeState extends State<Home> {
 
                         child: _statCard(
                           gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFD6A66B),
-                              Color(0xFFDA7B17),
-                            ],
+                            colors: [Color(0xFFD6A66B), Color(0xFFDA7B17)],
                           ),
 
                           iconPath: "assets/icons/ic_outmail.svg",
@@ -244,10 +229,7 @@ class _HomeState extends State<Home> {
                 /// ================= HEADER SURAT TERBARU =================
                 const Text(
                   "Surat Terbaru",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
 
                 SizedBox(height: h * 0.015),
@@ -260,7 +242,6 @@ class _HomeState extends State<Home> {
                   itemCount: _suratTerbaru.length,
 
                   itemBuilder: (context, index) {
-
                     final surat = _suratTerbaru[index];
 
                     return _suratTerbaruCard(surat);
@@ -289,14 +270,11 @@ class _HomeState extends State<Home> {
 
   /// ================= CARD SURAT =================
   Widget _suratTerbaruCard(Map<String, dynamic> surat) {
-
-    final isMasuk =
-        surat['jenisSurat'] == 'Surat Masuk';
+    final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
 
     Color statusColor;
 
     switch (surat['status']) {
-
       case 'disetujui':
         statusColor = const Color(0xFF3F9142);
         break;
@@ -310,44 +288,30 @@ class _HomeState extends State<Home> {
     }
 
     return GestureDetector(
-
       onTap: () {
-
         Navigator.push(
           context,
 
           MaterialPageRoute(
             builder: (_) => isMasuk
-
                 ? OutputSuratmasuk(
-                    isApproved:
-                        surat['status'] == 'disetujui',
+                    isApproved: surat['status'] == 'disetujui',
 
-                    catatan:
-                        surat['catatan'] ?? '-',
+                    catatan: surat['catatan'] ?? '-',
 
-                    tujuan:
-                        surat['tujuan'] ?? '-',
+                    tujuan: surat['tujuan'] ?? '-',
 
-                    instruksi:
-                        surat['instruksi'] ?? '-',
+                    instruksi: surat['instruksi'] ?? '-',
 
-                    koordinasi:
-                        surat['koordinasi'] ?? '-',
+                    koordinasi: surat['koordinasi'] ?? '-',
 
-                    diteruskanKe:
-                        surat['diteruskanKe'] ?? '-',
+                    diteruskanKe: surat['diteruskanKe'] ?? '-',
 
-                    sifat:
-                        surat['sifat'] ?? '-',
+                    sifat: surat['sifat'] ?? '-',
 
                     isReadOnly: true,
                   )
-
-                : OutputSuratkeluar(
-                    catatan:
-                        surat['catatan'] ?? '-',
-                  ),
+                : OutputSuratkeluar(catatan: surat['catatan'] ?? '-'),
           ),
         );
       },
@@ -373,17 +337,14 @@ class _HomeState extends State<Home> {
 
         child: Row(
           children: [
-
             /// ================= ICON =================
             Container(
               padding: const EdgeInsets.all(10),
 
               decoration: BoxDecoration(
                 color: isMasuk
-                    ? const Color(0xFF0F6E7A)
-                        .withOpacity(0.12)
-                    : const Color(0xFFDA7B17)
-                        .withOpacity(0.12),
+                    ? const Color(0xFF0F6E7A).withOpacity(0.12)
+                    : const Color(0xFFDA7B17).withOpacity(0.12),
 
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -397,9 +358,7 @@ class _HomeState extends State<Home> {
                 height: 20,
 
                 colorFilter: ColorFilter.mode(
-                  isMasuk
-                      ? const Color(0xFF0F6E7A)
-                      : const Color(0xFFDA7B17),
+                  isMasuk ? const Color(0xFF0F6E7A) : const Color(0xFFDA7B17),
 
                   BlendMode.srcIn,
                 ),
@@ -411,11 +370,9 @@ class _HomeState extends State<Home> {
             /// ================= INFO =================
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
-
                   Text(
                     surat['data']['Perihal'] ?? '-',
 
@@ -434,10 +391,7 @@ class _HomeState extends State<Home> {
                   Text(
                     surat['data']['Dari'] ?? '-',
 
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade500,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   ),
                 ],
               ),
@@ -445,18 +399,13 @@ class _HomeState extends State<Home> {
 
             /// ================= STATUS =================
             Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
 
               children: [
-
                 Text(
                   surat['tanggal'] ?? '-',
 
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey.shade400,
-                  ),
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
                 ),
 
                 const SizedBox(height: 6),
@@ -468,18 +417,14 @@ class _HomeState extends State<Home> {
                   ),
 
                   decoration: BoxDecoration(
-                    color:
-                        statusColor.withOpacity(0.12),
+                    color: statusColor.withOpacity(0.12),
 
-                    borderRadius:
-                        BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20),
                   ),
 
                   child: Text(
-                    surat['status'][0]
-                            .toUpperCase() +
-                        surat['status']
-                            .substring(1),
+                    surat['status'][0].toUpperCase() +
+                        surat['status'].substring(1),
 
                     style: TextStyle(
                       fontSize: 11,
@@ -503,7 +448,6 @@ class _HomeState extends State<Home> {
     required String jumlah,
     required String label,
   }) {
-
     final w = MediaQuery.of(context).size.width;
 
     return Container(
@@ -512,13 +456,11 @@ class _HomeState extends State<Home> {
       decoration: BoxDecoration(
         gradient: gradient,
 
-        borderRadius:
-            BorderRadius.circular(w * 0.05),
+        borderRadius: BorderRadius.circular(w * 0.05),
 
         boxShadow: [
           BoxShadow(
-            color:
-                gradient.colors.last.withOpacity(0.3),
+            color: gradient.colors.last.withOpacity(0.3),
 
             blurRadius: 10,
 
@@ -529,12 +471,10 @@ class _HomeState extends State<Home> {
 
       child: Row(
         children: [
-
           CircleAvatar(
             radius: 22,
 
-            backgroundColor:
-                Colors.white.withOpacity(0.3),
+            backgroundColor: Colors.white.withOpacity(0.3),
 
             child: SvgPicture.asset(
               iconPath,
@@ -553,11 +493,9 @@ class _HomeState extends State<Home> {
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-
                 Text(
                   jumlah,
 
@@ -571,8 +509,7 @@ class _HomeState extends State<Home> {
                 Text(
                   label,
 
-                  style:
-                      const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
 
                   overflow: TextOverflow.ellipsis,
                 ),

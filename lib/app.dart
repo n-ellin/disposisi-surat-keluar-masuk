@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
 
-      initialRoute: '/gantipw',
+      initialRoute: '/signin',
 
       /// SEMUA ROUTE APLIKASI
       routes: {

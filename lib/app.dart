@@ -2,25 +2,28 @@ import 'package:flutter/material.dart';
 
 import 'core/constants/role.dart';
 
-// import halaman di sini, bukan di main
+// AUTH
 import 'shared/auth/sharepage/splash_screen.dart';
 import 'shared/auth/sharepage/login.dart';
 import 'shared/auth/sharepage/password/gantipw.dart';
 
+// SHARED PAGE
 import 'shared/auth/sharepage/profile.dart';
 import 'shared/auth/sharepage/notif.dart';
-import 'shared/auth/sharepage/home.dart';
 
+// TATA USAHA
 import 'modules/tata_usaha/menuTU.dart';
 import 'modules/tata_usaha/history_tu.dart';
 import 'modules/tata_usaha/detail_surat/output_suratkeluar.dart';
 import 'modules/tata_usaha/detail_surat/output_suratmasuk.dart';
 
+// KEPSEK
 import 'modules/kepsek/menuukepsek.dart';
 import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
 import 'modules/kepsek/detail_surat/input_suratkeluar.dart';
 import 'modules/kepsek/history_kepsek.dart';
 
+// OTHER
 import 'modules/other/menuother.dart';
 import 'modules/other/history_other.dart';
 import 'modules/other/detailsurat.dart';
@@ -32,44 +35,54 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: "Simdis",
+
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
-        textSelectionTheme: TextSelectionThemeData(
+
+        textSelectionTheme: const TextSelectionThemeData(
           cursorColor: Colors.black,
           selectionColor: Colors.black26,
           selectionHandleColor: Colors.black,
         ),
       ),
 
-      initialRoute: '/gantipw',
+      /// HALAMAN PERTAMA
+      initialRoute: '/signin',
 
-      /// SEMUA ROUTE APLIKASI
+      /// ROUTES
       routes: {
+        // ================= AUTH =================
         '/splash_screen': (context) => const SplashScreen(),
+
         '/signin': (context) => const SignIn(),
+
         '/gantipw': (context) => const GantiKataSandiPage(),
 
-        '/home': (context) => const Home(
+        // ================= PROFILE =================
+        '/profile': (context) => const ProfilePage(
           role: Role.tu,
-          nama: 'Tata Usaha',
-          email: 'tu@gmail.com',
+          nama: 'Nama User',
+          email: 'user@email.com',
           jabatan: 'Tata Usaha',
         ),
 
+        // ================= NOTIFICATION =================
         '/notif': (context) => const NotificationPage(role: Role.tu),
+
+        // ================= HISTORY =================
+        '/history_tu': (context) => const HistoryTUPage(),
 
         '/history_kepsek': (context) => const HistoryKepsekPage(),
 
+        '/history_other': (context) => const HistoryOtherPage(),
+
+        // ================= DETAIL SURAT =================
         '/input_suratmasuk': (context) => const InputSuratMasuk(),
 
         '/input_suratkeluar': (context) => const InputSuratKeluar(),
-
-        '/output_suratkeluar': (context) =>
-            const OutputSuratkeluar(catatan: "iya"),
-
-        '/history_tu': (context) => const HistoryTUPage(),
 
         '/output_suratmasuk': (context) => const OutputSuratmasuk(
           isApproved: true,
@@ -81,8 +94,18 @@ class MyApp extends StatelessWidget {
           sifat: '',
         ),
 
-        '/history_other': (context) => const HistoryOtherPage(),
+        '/output_suratkeluar': (context) =>
+            const OutputSuratkeluar(catatan: "iya"),
 
+        // ================= MENU =================
+        '/menu_tu': (context) => const TuDashboardPage(jenisSurat: 'Masuk'),
+
+        '/menu_kepsek': (context) =>
+            const KepsekDashboardPage(jenisSurat: 'Masuk'),
+
+        '/menu_other': (context) => const MenuOther(),
+
+        // ================= OTHER =================
         '/detail_suratOther': (context) => const DetailSuratOther(),
       },
     );

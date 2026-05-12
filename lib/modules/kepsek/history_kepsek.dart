@@ -12,40 +12,26 @@ class HistoryKepsekPage extends StatefulWidget {
   const HistoryKepsekPage({super.key});
 
   @override
-  State<HistoryKepsekPage> createState() =>
-      _HistoryKepsekPageState();
+  State<HistoryKepsekPage> createState() => _HistoryKepsekPageState();
 }
 
-class _HistoryKepsekPageState
-    extends State<HistoryKepsekPage> {
-
+class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
   String _searchQuery = '';
   String _jenisFilter = 'semua';
 
   /// ================= DUMMY SURAT =================
-  List<Map<String, dynamic>> get _historySurat =>
-      DummySurat.allSurat;
+  List<Map<String, dynamic>> get _historySurat => DummySurat.allSurat;
 
   /// ================= FILTER =================
   List<Map<String, dynamic>> get _filteredSurat {
     return _historySurat.where((s) {
-
       final query = _searchQuery.toLowerCase();
 
-      final jenis =
-          s['jenisSurat']
-              .toString()
-              .toLowerCase();
+      final jenis = s['jenisSurat'].toString().toLowerCase();
 
-      final dari =
-          s['data']['Dari']
-              .toString()
-              .toLowerCase();
+      final dari = s['data']['Dari'].toString().toLowerCase();
 
-      final perihal =
-          s['data']['Perihal']
-              .toString()
-              .toLowerCase();
+      final perihal = s['data']['Perihal'].toString().toLowerCase();
 
       final matchSearch =
           _searchQuery.isEmpty ||
@@ -55,21 +41,15 @@ class _HistoryKepsekPageState
 
       final matchJenis =
           _jenisFilter == 'semua' ||
-
-          (_jenisFilter == 'masuk' &&
-              jenis.contains('masuk')) ||
-
-          (_jenisFilter == 'keluar' &&
-              jenis.contains('keluar'));
+          (_jenisFilter == 'masuk' && jenis.contains('masuk')) ||
+          (_jenisFilter == 'keluar' && jenis.contains('keluar'));
 
       return matchSearch && matchJenis;
-
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-
     final size = MediaQuery.of(context).size;
 
     final w = size.width;
@@ -84,7 +64,6 @@ class _HistoryKepsekPageState
 
           child: Column(
             children: [
-
               SizedBox(height: h * 0.02),
 
               /// ================= TITLE =================
@@ -111,20 +90,15 @@ class _HistoryKepsekPageState
                 decoration: InputDecoration(
                   hintText: "Cari surat...",
 
-                  prefixIcon:
-                      const Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
 
                   filled: true,
                   fillColor: const Color(0xFFF7F8FA),
 
-                  contentPadding:
-                      EdgeInsets.symmetric(
-                    vertical: h * 0.015,
-                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: h * 0.015),
 
                   border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(30),
 
                     borderSide: BorderSide.none,
                   ),
@@ -136,31 +110,15 @@ class _HistoryKepsekPageState
               /// ================= FILTER =================
               Row(
                 children: [
-
-                  Expanded(
-                    child: _filterButton(
-                      "Semua",
-                      "semua",
-                    ),
-                  ),
+                  Expanded(child: _filterButton("Semua", "semua")),
 
                   const SizedBox(width: 10),
 
-                  Expanded(
-                    child: _filterButton(
-                      "Masuk",
-                      "masuk",
-                    ),
-                  ),
+                  Expanded(child: _filterButton("Masuk", "masuk")),
 
                   const SizedBox(width: 10),
 
-                  Expanded(
-                    child: _filterButton(
-                      "Keluar",
-                      "keluar",
-                    ),
-                  ),
+                  Expanded(child: _filterButton("Keluar", "keluar")),
                 ],
               ),
 
@@ -169,45 +127,31 @@ class _HistoryKepsekPageState
               /// ================= LIST =================
               Expanded(
                 child: ListView.builder(
-                  itemCount:
-                      _filteredSurat.length,
+                  itemCount: _filteredSurat.length,
 
                   itemBuilder: (context, index) {
-
-                    final surat =
-                        _filteredSurat[index];
+                    final surat = _filteredSurat[index];
 
                     return Padding(
-                      padding: EdgeInsets.only(
-                        bottom: h * 0.02,
-                      ),
+                      padding: EdgeInsets.only(bottom: h * 0.02),
 
                       child: SuratCard(
                         isHistory: true,
-                        jenisSurat:
-                            surat['jenisSurat'],
+                        jenisSurat: surat['jenisSurat'],
 
-                        tanggal:
-                            surat['tanggal'],
+                        tanggal: surat['tanggal'],
 
-                        status:
-                            surat['status'],
+                        status: surat['status'],
 
                         role: CardRole.kepsek,
 
-                        data:
-                            Map<String, String>.from(
-                          surat['data'],
-                        ),
+                        data: Map<String, String>.from(surat['data']),
 
                         showAction: true,
 
                         onDetail: () {
-
                           /// PREVIEW SURAT
-                          print(
-                            "Preview Surat",
-                          );
+                          print("Preview Surat");
                         },
                       ),
                     );
@@ -229,6 +173,9 @@ class _HistoryKepsekPageState
             context,
             index,
             Role.kepsek,
+            "Kepala Sekolah",
+            "kepsek@gmail.com",
+            "Kepala Sekolah",
           );
         },
       ),
@@ -236,13 +183,8 @@ class _HistoryKepsekPageState
   }
 
   /// ================= FILTER BUTTON =================
-  Widget _filterButton(
-    String text,
-    String value,
-  ) {
-
-    final isActive =
-        _jenisFilter == value;
+  Widget _filterButton(String text, String value) {
+    final isActive = _jenisFilter == value;
 
     return ElevatedButton(
       onPressed: () {
@@ -262,14 +204,9 @@ class _HistoryKepsekPageState
 
         elevation: isActive ? 2 : 0,
 
-        side: BorderSide(
-          color: AppColors.bluePrimary,
-        ),
+        side: BorderSide(color: AppColors.bluePrimary),
 
-        shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(25),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       ),
 
       child: Text(text),

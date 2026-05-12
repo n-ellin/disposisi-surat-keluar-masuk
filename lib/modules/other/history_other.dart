@@ -125,7 +125,14 @@ class _HistoryOtherPageState extends State<HistoryOtherPage> {
         role: Role.kepsek,
         currentIndex: 1,
         onTap: (index) {
-          handleNavbarTap(context, index, Role.kepsek);
+          handleNavbarTap(
+            context,
+            index,
+            Role.other,
+            "User",
+            "user@gmail.com",
+            "User",
+          );
         },
       ),
     );

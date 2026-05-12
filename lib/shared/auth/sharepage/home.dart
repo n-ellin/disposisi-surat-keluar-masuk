@@ -369,6 +369,11 @@ class _HomeState extends State<Home> {
 
                 width: 20,
                 height: 20,
+
+                colorFilter: ColorFilter.mode(
+                  isMasuk ? const Color(0xFF0F6E7A) : const Color(0xFFDA7B17),
+                  BlendMode.srcIn,
+                ),
               ),
             ),
 
@@ -433,7 +438,15 @@ class _HomeState extends State<Home> {
 
             backgroundColor: Colors.white.withOpacity(0.3),
 
-            child: SvgPicture.asset(iconPath, width: 24, height: 24),
+            child: SvgPicture.asset(
+              iconPath,
+              width: 24,
+              height: 24,
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
 
           const SizedBox(width: 12),

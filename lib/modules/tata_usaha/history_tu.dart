@@ -5,6 +5,8 @@ import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratmasuk.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratkeluar.dart';
 
 class HistoryTUPage extends StatefulWidget {
   const HistoryTUPage({super.key});
@@ -15,22 +17,9 @@ class HistoryTUPage extends StatefulWidget {
 
 class _HistoryTUPageState extends State<HistoryTUPage> {
   String _searchQuery = '';
-  String _statusFilter = 'semua';
 
-  final List<Map<String, dynamic>> _historySurat = [
-    {
-      'jenisSurat': 'Surat Masuk',
-      'tanggal': '10 Oktober 2025',
-      'status': 'disetujui',
-      'data': {'Dari': 'Dinas Pendidikan', 'Perihal': 'Undangan Rapat'},
-    },
-    {
-      'jenisSurat': 'Surat Keluar',
-      'tanggal': '8 Oktober 2025',
-      'status': 'ditolak',
-      'data': {'Dari': 'Tata Usaha', 'Perihal': 'Permohonan Izin'},
-    },
-  ];
+  String _statusFilter = 'semua';
+  List<Map<String, dynamic>> get _historySurat => DummySurat.allSurat;
 
   List<Map<String, dynamic>> get _filteredSurat {
     return _historySurat.where((s) {
@@ -133,19 +122,24 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                         role: CardRole.tu,
                         data: Map<String, String>.from(surat['data']),
                         onDetail: () {
+                          final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => OutputSuratmasuk(
-                                isApproved: surat['status'] == 'disetujui',
-                                catatan: "....",
-                                tujuan: "...",
-                                instruksi: "...",
-                                koordinasi: "...",
-                                diteruskanKe: "...",
-                                sifat: "...",
-                                isReadOnly: true,
-                              ),
+                              builder: (_) => isMasuk
+                                  ? OutputSuratmasuk(
+                                      isApproved:
+                                          surat['status'] == 'disetujui',
+                                      catatan: "...",
+                                      tujuan: "...",
+                                      instruksi: "...",
+                                      koordinasi: "...",
+                                      diteruskanKe: "...",
+                                      sifat: "...",
+                                      isReadOnly: true,
+                                    )
+                                  : OutputSuratkeluar(catatan: "..."),
                             ),
                           );
                         },
@@ -164,7 +158,14 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
         role: Role.tu,
         currentIndex: 1,
         onTap: (index) {
-          handleNavbarTap(context, index, Role.tu);
+          handleNavbarTap(
+            context,
+            index,
+            Role.tu,
+            "Tata Usaha",
+            "tu@gmail.com",
+            "Tata Usaha",
+          );
         },
       ),
     );

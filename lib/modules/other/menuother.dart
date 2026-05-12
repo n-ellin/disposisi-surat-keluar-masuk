@@ -5,7 +5,7 @@ import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 import '../../shared/widgets/surat_card.dart';
 
 class MenuOther extends StatefulWidget {
-  const MenuOther({super.key, required String jenisSurat});
+  const MenuOther({super.key});
 
   @override
   State<MenuOther> createState() => _MenuOtherState();

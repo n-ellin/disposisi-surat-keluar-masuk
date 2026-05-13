@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
         // ================= AUTH =================
         '/splash_screen': (context) => const SplashScreen(),
 
-        '/signin': (context) => const SignIn(),
+        '/signin': (context) => const Login(),
 
         '/gantipw': (context) => const GantiKataSandiPage(),
 
@@ -80,7 +80,13 @@ class MyApp extends StatelessWidget {
         '/history_other': (context) => const HistoryOtherPage(),
 
         // ================= DETAIL SURAT =================
-        '/input_suratmasuk': (context) => const InputSuratMasuk(),
+        '/input_suratmasuk': (context) {
+          final surat =
+              ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>;
+
+          return InputSuratMasuk(surat: surat);
+        },
 
         '/input_suratkeluar': (context) => const InputSuratKeluar(),
 
@@ -91,7 +97,6 @@ class MyApp extends StatelessWidget {
           instruksi: "Tindak lanjuti",
           koordinasi: '',
           diteruskanKe: '',
-          sifat: '',
         ),
 
         '/output_suratkeluar': (context) =>

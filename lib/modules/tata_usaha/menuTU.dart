@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 
 class TuDashboardPage extends StatefulWidget {
   final String jenisSurat;
@@ -11,51 +12,20 @@ class TuDashboardPage extends StatefulWidget {
 }
 
 class _TuDashboardPageState extends State<TuDashboardPage> {
-  int _currentIndex = 0;
   String _selectedFilter = 'semua';
   String _searchQuery = '';
 
-  final List<Map<String, dynamic>> _allSurat = [
-    {
-      'jenisSurat': 'Surat Keluar',
-      'tanggal': 'Senin, 12 Oktober 2025',
-      'status': 'disetujui',
-      'data': {'Dari': 'SMKN 2 SINGOSARI', 'Perihal': 'Rapat Pleno'},
-    },
-    {
-      'jenisSurat': 'Surat Keluar',
-      'tanggal': 'Senin, 15 Oktober 2025',
-      'status': 'disetujui',
-      'data': {'Dari': 'SMKN 2 SINGOSARI', 'Perihal': 'Rapat Korodinasi'},
-    },
-    {
-      'jenisSurat': 'Surat Masuk',
-      'tanggal': 'Senin, 12 Oktober 2025',
-      'status': 'ditolak',
-      'data': {
-        'Dari': 'Dinas Pendidikan',
-        'Perihal': 'Undangan Rapat Koordinasi',
-      },
-    },
-    {
-      'jenisSurat': 'Surat Masuk',
-      'tanggal': 'Senin, 12 Oktober 2025',
-      'status': 'menunggu',
-      'data': {
-        'Dari': 'SMKN 1 SINGOSARI',
-        'Perihal': 'Undangan Rapat',
-      },
-    },
-  ];
+  /// ================= DATA SURAT =================
+  List<Map<String, dynamic>> get _allSurat => DummySurat.allSurat;
 
+  /// ================= DELETE DIALOG =================
   void _showDeleteDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.35),
       builder: (context) {
-        final size = MediaQuery.of(context).size;
-        final w = size.width;
+        final w = MediaQuery.of(context).size.width;
 
         return Center(
           child: Material(
@@ -82,7 +52,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
                     ),
                     child: Icon(
                       Icons.warning_amber_rounded,
-                      color: Color(0xFFB98A00),
+                      color: const Color(0xFFB98A00),
                       size: w * 0.09,
                     ),
                   ),
@@ -96,7 +66,6 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
                     style: TextStyle(
                       fontSize: w * 0.042,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black87,
                     ),
                   ),
 
@@ -114,7 +83,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
 
                   SizedBox(height: w * 0.08),
 
-                  /// BUTTON ROW
+                  /// BUTTON
                   Row(
                     children: [
                       /// BATAL
@@ -144,7 +113,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
                             Navigator.pop(context);
                           },
                           icon: const Icon(Icons.delete_outline, size: 18),
-                          label: const Text("Hapus Surat ini"),
+                          label: const Text("Hapus Surat"),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFF3B30),
                             foregroundColor: Colors.white,
@@ -167,14 +136,14 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
     );
   }
 
+  /// ================= PROCESS DIALOG =================
   void _showProcessDialog() {
     showDialog(
       context: context,
       barrierDismissible: true,
       barrierColor: Colors.black.withOpacity(0.35),
       builder: (context) {
-        final size = MediaQuery.of(context).size;
-        final w = size.width;
+        final w = MediaQuery.of(context).size.width;
 
         return Center(
           child: Material(
@@ -192,7 +161,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  /// ICON BULAT
+                  /// ICON
                   Container(
                     padding: EdgeInsets.all(w * 0.03),
                     decoration: const BoxDecoration(
@@ -237,29 +206,33 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
     );
   }
 
+  /// ================= FILTER SURAT =================
   List<Map<String, dynamic>> get _filteredSurat {
     List<Map<String, dynamic>> result = _allSurat
         .where((s) => s['jenisSurat'] == widget.jenisSurat)
         .toList();
 
+    /// FILTER STATUS
     if (_selectedFilter != 'semua') {
-      result = result
-          .where(
-            (s) =>
-                (s['status'] ?? '').toString().toLowerCase() ==
-                _selectedFilter.toLowerCase(),
-          )
-          .toList();
+      result = result.where((s) {
+        return (s['status'] ?? '').toString().toLowerCase() ==
+            _selectedFilter.toLowerCase();
+      }).toList();
     }
 
+    /// SEARCH
     if (_searchQuery.isNotEmpty) {
       result = result.where((s) {
         final query = _searchQuery.toLowerCase();
 
         final jenisSurat = (s['jenisSurat'] ?? '').toString().toLowerCase();
+
         final tanggal = (s['tanggal'] ?? '').toString().toLowerCase();
+
         final status = (s['status'] ?? '').toString().toLowerCase();
+
         final dari = (s['data']?['Dari'] ?? '').toString().toLowerCase();
+
         final perihal = (s['data']?['Perihal'] ?? '').toString().toLowerCase();
 
         return jenisSurat.contains(query) ||
@@ -273,6 +246,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
     return result;
   }
 
+  /// ================= FILTER COLORS =================
   final Map<String, Color> filterColors = {
     'semua': const Color(0xFF6F7A83),
     'menunggu': const Color(0xFFC59B36),
@@ -280,16 +254,21 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
     'ditolak': const Color(0xFFB63A3A),
   };
 
+  /// ================= FILTER LABEL =================
   String _label(String key) {
     switch (key) {
       case 'semua':
         return 'Semua';
+
       case 'menunggu':
         return 'Menunggu';
+
       case 'disetujui':
         return 'Disetujui';
+
       case 'ditolak':
         return 'Ditolak';
+
       default:
         return key;
     }
@@ -298,6 +277,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     final w = size.width;
     final h = size.height;
 
@@ -333,7 +313,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
         padding: EdgeInsets.all(w * 0.04),
         child: Column(
           children: [
-            /// 🏷 TITLE
+            /// TITLE
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -344,11 +324,16 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
                 ),
               ),
             ),
+
             SizedBox(height: h * 0.015),
 
-            /// 🔍 SEARCH PERIHAL
+            /// SEARCH
             TextField(
-              onChanged: (value) => setState(() => _searchQuery = value),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
               style: TextStyle(fontSize: w * 0.04),
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search, size: w * 0.055),
@@ -362,12 +347,14 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
                 ),
               ),
             ),
+
             SizedBox(height: h * 0.015),
 
-            /// 🏷 FILTER BUTTON (SHADOW HALUS SAAT AKTIF)
+            /// FILTER
             Row(
               children: filterColors.keys.map((key) {
                 final isSelected = _selectedFilter == key;
+
                 final color = filterColors[key]!;
 
                 return Expanded(
@@ -397,16 +384,26 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
                             ),
                           ),
                         ),
+
                         selected: isSelected,
+
                         showCheckmark: false,
-                        selectedColor: color, // warna solid saat aktif
-                        backgroundColor: Colors.white, // putih saat nonaktif
+
+                        selectedColor: color,
+
+                        backgroundColor: Colors.white,
+
                         side: BorderSide(color: color, width: 1.5),
+
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        onSelected: (_) => 
-                            setState(() => _selectedFilter = key),
+
+                        onSelected: (_) {
+                          setState(() {
+                            _selectedFilter = key;
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -416,21 +413,28 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
 
             SizedBox(height: h * 0.02),
 
-            /// 📄 LIST SURAT
+            /// LIST SURAT
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.only(bottom: h * 0.12),
+
                 itemCount: _filteredSurat.length,
+
                 itemBuilder: (context, index) {
                   final surat = _filteredSurat[index];
+
                   return Padding(
                     padding: EdgeInsets.only(bottom: h * 0.015),
                     child: SuratCard(
-                      jenisSurat: surat['jenisSurat'],
-                      tanggal: surat['tanggal'],
-                      status: surat['status'],
+                      jenisSurat: surat['jenisSurat'].toString(),
+                      tanggal: surat['tanggal'].toString(),
+                      status: surat['status']?.toString(),
+
                       role: CardRole.tu,
+                      type: CardType.menu,
+
                       data: Map<String, String>.from(surat['data']),
+
                       onDelete: _showDeleteDialog,
                       onDetail: _showProcessDialog,
                     ),

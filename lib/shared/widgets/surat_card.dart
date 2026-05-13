@@ -3,16 +3,24 @@ import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 enum CardRole { tu, kepsek, other }
 
+enum CardType {
+  home,
+  menu,
+  history,
+}
+
 class SuratCard extends StatelessWidget {
   final String jenisSurat;
   final String tanggal;
   final Map<String, String> data;
+
   final CardRole role;
+  final CardType type;
+
   final String? status;
-  final VoidCallback? onDelete;
+
   final VoidCallback onDetail;
-  final bool showAction;
-  final bool isHistory;
+  final VoidCallback? onDelete;
 
   const SuratCard({
     super.key,
@@ -20,14 +28,20 @@ class SuratCard extends StatelessWidget {
     required this.tanggal,
     required this.data,
     required this.role,
-    this.status,
-    this.onDelete,
+    required this.type,
     required this.onDetail,
-    this.showAction = true,
-    this.isHistory = false,
+    this.onDelete,
+    this.status,
   });
 
-  // ===== STATUS LABEL =====
+  /// ================= STATUS =================
+
+  bool get showStatus => role == CardRole.tu;
+
+  bool get isHome => type == CardType.home;
+  bool get isMenu => type == CardType.menu;
+  bool get isHistory => type == CardType.history;
+
   String _label() {
     switch (status?.toLowerCase()) {
       case 'disetujui':
@@ -68,31 +82,21 @@ class SuratCard extends StatelessWidget {
   }
 
   Color _buttonColor() {
-    if (role == CardRole.kepsek) {
-      if (jenisSurat.toLowerCase() == 'surat masuk') {
-        return AppColors.bluePrimary;
-      } else {
-        return AppColors.orangePrimary;
-      }
+    if (jenisSurat.toLowerCase() == 'surat keluar') {
+      return AppColors.orangePrimary;
     }
-
-    if (role == CardRole.other) {
-      return AppColors.bluePrimary;
-    }
-
     return AppColors.bluePrimary;
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final w = size.width;
+    final w = MediaQuery.of(context).size.width;
 
     return GestureDetector(
-      onTap: onDetail,
+      onTap: isHome ? onDetail : null,
       child: Container(
         margin: EdgeInsets.only(bottom: w * 0.045),
-        padding: EdgeInsets.fromLTRB(w * 0.04, w * 0.04, w * 0.04, w * 0.035),
+        padding: EdgeInsets.all(w * 0.04),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(w * 0.05),
@@ -103,190 +107,211 @@ class SuratCard extends StatelessWidget {
               blurRadius: w * 0.05,
               offset: Offset(0, w * 0.025),
             ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: w * 0.02,
-              offset: Offset(0, w * 0.01),
-            ),
           ],
         ),
-
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// ================= HEADER =================
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          jenisSurat,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: w * 0.042,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: w * 0.02),
-
-                      if (role == CardRole.tu && status != null)
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: w * 0.03,
-                            vertical: w * 0.012,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _bgColor(),
-                            borderRadius: BorderRadius.circular(w * 0.06),
-                          ),
-                          child: Text(
-                            _label(),
-                            style: TextStyle(
-                              fontSize: w * 0.028,
-                              fontWeight: FontWeight.w700,
-                              color: _textColor(),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(width: w * 0.02),
-
-                Text(
-                  tanggal,
-                  style: TextStyle(
-                    fontSize: w * 0.03,
-                    color: const Color(0xFF9E9E9E),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: w * 0.03),
-
-            /// ================= DETAIL =================
-            _infoText("Dari", data['Dari'], w),
-            _infoText("Perihal", data['Perihal'], w),
-
-            SizedBox(height: w * 0.04),
-
-            /// ================= FOOTER =================
-            if (showAction)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  /// ===== ROLE TU =====
-                  if (role == CardRole.tu) ...[
-                    OutlinedButton.icon(
-                      onPressed: onDelete,
-                      icon: Icon(Icons.delete_outline, size: w * 0.045),
-                      label: Text(
-                        "Hapus",
-                        style: TextStyle(fontSize: w * 0.032),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: w * 0.04,
-                          vertical: w * 0.025,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(w * 0.04),
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(width: w * 0.03),
-
-                    CircleAvatar(
-                      radius: w * 0.055,
-                      backgroundColor: _buttonColor(),
-                      child: Icon(
-                        Icons.arrow_forward_rounded,
-                        color: Colors.white,
-                        size: w * 0.055,
-                      ),
-                    ),
-                  ]
-                  /// ===== ROLE KEPSEK & OTHER =====
-                  else ...[
-                    isHistory
-                        ? Container(
-                            padding: EdgeInsets.all(w * 0.028),
-                            decoration: BoxDecoration(
-                              color: _buttonColor(),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.visibility_outlined,
-                              color: Colors.white,
-                              size: w * 0.045,
-                            ),
-                          )
-                        : SizedBox(
-                            height: w * 0.085,
-                            child: ElevatedButton(
-                              onPressed: onDetail,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _buttonColor(),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(w * 0.03),
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: w * 0.05,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "Detail",
-                                    style: TextStyle(
-                                      fontSize: w * 0.032,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-
-                                  SizedBox(width: w * 0.02),
-
-                                  Icon(
-                                    Icons.arrow_forward_rounded,
-                                    size: w * 0.045,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                  ],
-                ],
-              ),
-          ],
-        ),
+        child: isHome ? _buildHomeCard(w) : _buildDefaultCard(w),
       ),
     );
   }
 
-  /// Helper untuk teks detail
+  /// ================= HOME CARD =================
+
+  Widget _buildHomeCard(double w) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(w * 0.028),
+          decoration: BoxDecoration(
+            color: jenisSurat == 'Surat Masuk'
+                ? const Color(0xFF0F6E7A).withOpacity(0.12)
+                : const Color(0xFFDA7B17).withOpacity(0.12),
+            borderRadius: BorderRadius.circular(w * 0.03),
+          ),
+          child: Icon(
+            jenisSurat == 'Surat Masuk'
+                ? Icons.mail_outline
+                : Icons.outgoing_mail,
+            color: jenisSurat == 'Surat Masuk'
+                ? AppColors.bluePrimary
+                : AppColors.orangePrimary,
+          ),
+        ),
+
+        SizedBox(width: w * 0.035),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                data['Perihal'] ?? '-',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: w * 0.038,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: w * 0.01),
+              Text(
+                data['Dari'] ?? '-',
+                style: TextStyle(
+                  fontSize: w * 0.032,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        if (showStatus && status != null)
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: w * 0.03,
+              vertical: w * 0.012,
+            ),
+            decoration: BoxDecoration(
+              color: _bgColor(),
+              borderRadius: BorderRadius.circular(w * 0.05),
+            ),
+            child: Text(
+              _label(),
+              style: TextStyle(
+                fontSize: w * 0.028,
+                fontWeight: FontWeight.w700,
+                color: _textColor(),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  /// ================= MENU & HISTORY =================
+
+  Widget _buildDefaultCard(double w) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// HEADER
+        Row(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      jenisSurat,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: w * 0.042,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(width: w * 0.02),
+
+                  if (showStatus && status != null)
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: w * 0.03,
+                        vertical: w * 0.012,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _bgColor(),
+                        borderRadius: BorderRadius.circular(w * 0.05),
+                      ),
+                      child: Text(
+                        _label(),
+                        style: TextStyle(
+                          fontSize: w * 0.028,
+                          fontWeight: FontWeight.w700,
+                          color: _textColor(),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+
+        SizedBox(height: w * 0.015),
+
+        Text(
+          tanggal,
+          style: TextStyle(
+            fontSize: w * 0.03,
+            color: Colors.grey.shade500,
+          ),
+        ),
+
+        SizedBox(height: w * 0.04),
+
+        _infoText("Dari", data['Dari'], w),
+        _infoText("Perihal", data['Perihal'], w),
+
+        SizedBox(height: w * 0.04),
+
+        Align(
+          alignment: Alignment.centerRight,
+          child: isHistory
+              ? InkWell(
+                  onTap: onDetail,
+                  borderRadius: BorderRadius.circular(100),
+                  child: Container(
+                    padding: EdgeInsets.all(w * 0.028),
+                    decoration: BoxDecoration(
+                      color: _buttonColor(),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.visibility_outlined,
+                      color: Colors.white,
+                      size: w * 0.045,
+                    ),
+                  ),
+                )
+              : ElevatedButton(
+                  onPressed: onDetail,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _buttonColor(),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(w * 0.03),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text("Detail"),
+                      SizedBox(width: w * 0.015),
+                      const Icon(Icons.arrow_forward_rounded),
+                    ],
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+
+  /// ================= INFO =================
+
   Widget _infoText(String label, String? value, double w) {
     return Padding(
-      padding: EdgeInsets.only(bottom: w * 0.02),
+      padding: EdgeInsets.only(bottom: w * 0.018),
       child: RichText(
         text: TextSpan(
-          style: TextStyle(fontSize: w * 0.034, color: Colors.black87),
+          style: TextStyle(
+            fontSize: w * 0.034,
+            color: Colors.black87,
+          ),
           children: [
             TextSpan(
               text: "$label : ",
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(fontWeight: FontWeight.w700),
             ),
             TextSpan(text: value ?? '-'),
           ],

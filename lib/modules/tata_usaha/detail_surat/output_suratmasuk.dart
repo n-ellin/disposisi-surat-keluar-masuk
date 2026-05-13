@@ -9,7 +9,6 @@ class OutputSuratmasuk extends StatelessWidget {
   final String instruksi;
   final String koordinasi;
   final String diteruskanKe;
-  final String sifat;
   final bool isReadOnly;
   final List<String> lampiranUrls; // ✅ TAMBAH
 
@@ -21,7 +20,6 @@ class OutputSuratmasuk extends StatelessWidget {
     required this.instruksi,
     required this.koordinasi,
     required this.diteruskanKe,
-    required this.sifat,
     this.isReadOnly = false,
     this.lampiranUrls = const [], // ✅ default kosong
   });
@@ -95,7 +93,6 @@ class OutputSuratmasuk extends StatelessWidget {
                 _sectionCard(
                   children: [
                     _readOnlyField("Diteruskan Ke", diteruskanKe),
-                    _readOnlyField("Sifat", sifat),
                   ],
                 ),
                 const SizedBox(height: 16),

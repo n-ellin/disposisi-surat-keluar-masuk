@@ -2,28 +2,103 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/home.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
-import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-
-class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  State<Login> createState() => _LoginState();
 }
 
-class _SignInState extends State<SignIn> {
+class _LoginState extends State<Login> {
   final TextEditingController emailC = TextEditingController();
   final TextEditingController passwordC = TextEditingController();
 
+  String? emailError;
+  String? passwordError;
+
   bool obscure = true;
+
+  final List<String> validEmails = [
+    'kepsek@gmail.com',
+    'tu@gmail.com',
+    'user@gmail.com',
+  ];
 
   @override
   void dispose() {
     emailC.dispose();
     passwordC.dispose();
     super.dispose();
+  }
+
+  void validateEmail() {
+    final email = emailC.text.trim();
+
+    setState(() {
+      if (email.isEmpty) {
+        emailError = null;
+      } else if (!validEmails.contains(email)) {
+        emailError = "Email tidak ditemukan";
+      } else {
+        emailError = null;
+      }
+    });
+  }
+
+  void login() {
+    final email = emailC.text.trim();
+    final password = passwordC.text.trim();
+
+    setState(() {
+      passwordError = null;
+    });
+
+    if (emailError != null) return;
+
+    if (email == 'kepsek@gmail.com' && password == '123456') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => Home(
+            role: Role.kepsek,
+            nama: "Kepala Sekolah",
+            email: email,
+            jabatan: "Kepala Sekolah",
+          ),
+        ),
+      );
+    } else if (email == 'tu@gmail.com' && password == '123456') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => Home(
+            role: Role.tu,
+            nama: "Tata Usaha",
+            email: email,
+            jabatan: "Tata Usaha",
+          ),
+        ),
+      );
+    } else if (email == 'user@gmail.com' && password == '123456') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => Home(
+            role: Role.other,
+            nama: "User",
+            email: email,
+            jabatan: "User",
+          ),
+        ),
+      );
+    } else {
+      setState(() {
+        passwordError = "Password salah";
+      });
+    }
   }
 
   @override
@@ -44,7 +119,6 @@ class _SignInState extends State<SignIn> {
               padding: const EdgeInsets.symmetric(horizontal: 28),
               child: Column(
                 children: [
-                  // LOGO / ICON
                   Container(
                     width: 78,
                     height: 78,
@@ -61,7 +135,6 @@ class _SignInState extends State<SignIn> {
 
                   const SizedBox(height: 20),
 
-                  // TITLE
                   const Text(
                     "Masuk",
                     style: TextStyle(
@@ -83,7 +156,6 @@ class _SignInState extends State<SignIn> {
 
                   const SizedBox(height: 34),
 
-                  // LOGIN CARD
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
@@ -101,7 +173,6 @@ class _SignInState extends State<SignIn> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // EMAIL LABEL
                         const Text(
                           "EMAIL",
                           style: TextStyle(
@@ -114,18 +185,12 @@ class _SignInState extends State<SignIn> {
 
                         const SizedBox(height: 10),
 
-                        // EMAIL FIELD
-                        _buildField(
-                          controller: emailC,
-                          hint: "Email",
-                          icon: Icons.mail_outline_rounded,
-                        ),
+                        _buildEmailField(),
 
                         const SizedBox(height: 22),
 
-                        // PASSWORD LABEL
                         const Text(
-                          "PASSWORD",
+                          "KATA SANDI",
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
@@ -136,12 +201,10 @@ class _SignInState extends State<SignIn> {
 
                         const SizedBox(height: 10),
 
-                        // PASSWORD FIELD
                         _buildPasswordField(),
 
                         const SizedBox(height: 10),
 
-                        // FORGOT PASSWORD
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
@@ -149,7 +212,8 @@ class _SignInState extends State<SignIn> {
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
                               minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              tapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: const Text(
                               "Lupa password?",
@@ -164,62 +228,11 @@ class _SignInState extends State<SignIn> {
 
                         const SizedBox(height: 22),
 
-                        // BUTTON
                         SizedBox(
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: () {
-                              final email = emailC.text.trim();
-                              final password = passwordC.text.trim();
-
-                              if (email == 'kepsek@gmail.com' &&
-                                  password == '123456') {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => Home(
-                                      role: Role.kepsek,
-                                      nama: "Kepala Sekolah",
-                                      email: email,
-                                      jabatan: "Kepala Sekolah",
-                                    ),
-                                  ),
-                                );
-                              } else if (email == 'tu@gmail.com' &&
-                                  password == '123456') {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => Home(
-                                      role: Role.tu,
-                                      nama: "Tata Usaha",
-                                      email: email,
-                                      jabatan: "Tata Usaha",
-                                    ),
-                                  ),
-                                );
-                              } else if (email == 'user@gmail.com' &&
-                                  password == '123456') {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => Home(
-                                      role: Role.other,
-                                      nama: "User",
-                                      email: email,
-                                      jabatan: "User",
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Email atau password salah'),
-                                  ),
-                                );
-                              }
-                            }, // <- NAH INI YANG KURANG
+                            onPressed: login,
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
                               backgroundColor: AppColors.bluePrimary,
@@ -243,7 +256,6 @@ class _SignInState extends State<SignIn> {
 
                   const SizedBox(height: 24),
 
-                  // FOOTER
                   Text(
                     "© 2025 SMKN 2 Singosari",
                     style: TextStyle(
@@ -260,44 +272,66 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  Widget _buildField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-  }) {
-    return TextField(
-      controller: controller,
-      cursorColor: AppColors.bluePrimary,
-
-      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-
-      decoration: InputDecoration(
-        isDense: true,
-
-        hintText: hint,
-
-        hintStyle: TextStyle(
-          color: Colors.black.withOpacity(0.35),
+  Widget _buildEmailField() {
+    return Focus(
+      onFocusChange: (hasFocus) {
+        if (!hasFocus) {
+          validateEmail();
+        }
+      },
+      child: TextField(
+        controller: emailC,
+        cursorColor: AppColors.bluePrimary,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
           fontSize: 14,
         ),
+        decoration: InputDecoration(
+          isDense: true,
+          hintText: "Email",
 
-        prefixIcon: Icon(icon, color: Colors.grey.shade600, size: 20),
+          errorText: emailError,
 
-        filled: true,
-        fillColor: const Color(0xFFF3F4F6),
+          hintStyle: TextStyle(
+            color: Colors.black.withOpacity(0.35),
+            fontSize: 14,
+          ),
 
-        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          prefixIcon: Icon(
+            Icons.mail_outline_rounded,
+            color: Colors.grey.shade600,
+            size: 20,
+          ),
 
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
+          filled: true,
+          fillColor: const Color(0xFFF3F4F6),
 
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(
-            color: AppColors.bluePrimary,
-            width: 1.4,
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: AppColors.bluePrimary,
+              width: 1.4,
+            ),
+          ),
+
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: Colors.grey.shade300),
+          ),
+
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: AppColors.bluePrimary,
+              width: 1.4,
+            ),
           ),
         ),
       ),
@@ -310,12 +344,17 @@ class _SignInState extends State<SignIn> {
       obscureText: obscure,
       cursorColor: AppColors.bluePrimary,
 
-      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      style: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 14,
+      ),
 
       decoration: InputDecoration(
         isDense: true,
 
         hintText: "Kata sandi",
+
+        errorText: passwordError,
 
         hintStyle: TextStyle(
           color: Colors.black.withOpacity(0.35),
@@ -334,10 +373,10 @@ class _SignInState extends State<SignIn> {
               obscure = !obscure;
             });
           },
-
           icon: Icon(
-            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-
+            obscure
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined,
             color: Colors.grey.shade500,
             size: 20,
           ),
@@ -354,6 +393,19 @@ class _SignInState extends State<SignIn> {
         ),
 
         focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: AppColors.bluePrimary,
+            width: 1.4,
+          ),
+        ),
+
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+
+        focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(
             color: AppColors.bluePrimary,

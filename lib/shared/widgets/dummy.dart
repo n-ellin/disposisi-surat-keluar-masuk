@@ -1,6 +1,5 @@
 class DummySurat {
   static List<Map<String, dynamic>> allSurat = [
-
     /// ================= SURAT 1 =================
     {
       'id': 1,
@@ -11,21 +10,22 @@ class DummySurat {
 
       'status': 'menunggu',
 
-      /// surat dibuat oleh siapa
       'fromRole': 'tu',
 
-      /// tujuan surat
       'toRole': 'kepsek',
 
-      /// disposisi lanjutan
       'disposisiKe': '',
 
       'catatan': '',
 
       'data': {
+        'Nomor Surat': '421.3/045/SMK-TI/VI/2026',
+        'Tanggal Surat': '24 Juni 2026',
         'Dari': 'Dinas Pendidikan',
         'Perihal': 'Undangan Rapat',
       },
+
+      'lampiran': ['assets/images/undangan.png', 'assets/images/logo.png'],
     },
 
     /// ================= SURAT 2 =================
@@ -47,9 +47,13 @@ class DummySurat {
       'catatan': 'Segera diproses',
 
       'data': {
+        'Nomor Surat': '420/SMKN2/V/2026',
+        'Tanggal Surat': '25 Juni 2026',
         'Dari': 'SMKN 2 Singosari',
         'Perihal': 'Rapat Pleno',
       },
+
+      'lampiran': ['assets/images/undangan.png'],
     },
   ];
 }

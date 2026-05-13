@@ -182,7 +182,7 @@ class ProfilePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (_) => const SignIn()),
+                      MaterialPageRoute(builder: (_) => const Login()),
                       (route) => false,
                     );
                   },

@@ -105,11 +105,14 @@ class _HistoryOtherPageState extends State<HistoryOtherPage> {
                     return Padding(
                       padding: EdgeInsets.only(bottom: h * 0.02),
                       child: SuratCard(
-                        jenisSurat: surat['jenisSurat'],
-                        tanggal: surat['tanggal'],
+                        jenisSurat: surat['jenisSurat'].toString(),
+                        tanggal: surat['tanggal'].toString(),
+
                         role: CardRole.kepsek,
+                        type: CardType.history,
+
                         data: Map<String, String>.from(surat['data']),
-                        showAction: false,
+
                         onDetail: () {},
                       ),
                     );

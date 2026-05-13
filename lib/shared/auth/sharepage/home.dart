@@ -167,7 +167,7 @@ class _HomeState extends State<Home> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) =>
-                                    const TuDashboardPage(jenisSurat: 'Masuk'),
+                                    const TuDashboardPage(jenisSurat: ' Surat Masuk'),
                               ),
                             );
                           } else if (widget.role == Role.kepsek) {
@@ -175,7 +175,7 @@ class _HomeState extends State<Home> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => const KepsekDashboardPage(
-                                  jenisSurat: 'Masuk',
+                                  jenisSurat: 'Surat Masuk',
                                 ),
                               ),
                             );
@@ -321,7 +321,6 @@ class _HomeState extends State<Home> {
                     instruksi: surat['instruksi'] ?? '-',
                     koordinasi: surat['koordinasi'] ?? '-',
                     diteruskanKe: surat['diteruskanKe'] ?? '-',
-                    sifat: surat['sifat'] ?? '-',
                     isReadOnly: true,
                   )
                 : OutputSuratkeluar(catatan: surat['catatan'] ?? '-'),

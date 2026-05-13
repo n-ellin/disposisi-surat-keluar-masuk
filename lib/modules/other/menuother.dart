@@ -148,11 +148,15 @@ class _MenuOtherState extends State<MenuOther> {
                   return Padding(
                     padding: EdgeInsets.only(bottom: h * 0.015),
                     child: SuratCard(
-                      jenisSurat: surat["jenisSurat"],
-                      tanggal: surat["tanggal"],
-                      status: surat["status"],
+                      jenisSurat: surat["jenisSurat"].toString(),
+                      tanggal: surat["tanggal"].toString(),
+                      status: surat["status"]?.toString(),
+
                       role: CardRole.other,
+                      type: CardType.menu,
+
                       data: Map<String, String>.from(surat["data"]),
+
                       onDetail: () {},
                     ),
                   );

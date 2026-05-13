@@ -63,7 +63,7 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
               /// TITLE
               Center(
                 child: Text(
-                  "History Surat",
+                  "Riwayat",
                   style: TextStyle(
                     fontSize: w * 0.065,
                     fontWeight: FontWeight.bold,
@@ -116,11 +116,15 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                     return Padding(
                       padding: EdgeInsets.only(bottom: h * 0.015),
                       child: SuratCard(
-                        jenisSurat: surat['jenisSurat'],
-                        tanggal: surat['tanggal'],
-                        status: surat['status'],
+                        jenisSurat: surat['jenisSurat'].toString(),
+                        tanggal: surat['tanggal'].toString(),
+                        status: surat['status']?.toString(),
+
                         role: CardRole.tu,
+                        type: CardType.history,
+
                         data: Map<String, String>.from(surat['data']),
+
                         onDetail: () {
                           final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
 
@@ -136,14 +140,12 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                                       instruksi: "...",
                                       koordinasi: "...",
                                       diteruskanKe: "...",
-                                      sifat: "...",
                                       isReadOnly: true,
                                     )
                                   : OutputSuratkeluar(catatan: "..."),
                             ),
                           );
                         },
-                        showAction: false,
                       ),
                     );
                   },

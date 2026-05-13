@@ -136,21 +136,14 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
                       padding: EdgeInsets.only(bottom: h * 0.02),
 
                       child: SuratCard(
-                        isHistory: true,
                         jenisSurat: surat['jenisSurat'],
-
                         tanggal: surat['tanggal'],
-
                         status: surat['status'],
-
                         role: CardRole.kepsek,
-
+                        type: CardType.history,
                         data: Map<String, String>.from(surat['data']),
 
-                        showAction: true,
-
                         onDetail: () {
-                          /// PREVIEW SURAT
                           print("Preview Surat");
                         },
                       ),

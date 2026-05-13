@@ -115,8 +115,10 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
               const SizedBox(height: 8),
 
+              // Ganti bagian dropdown status kamu dengan ini:
               DropdownButtonFormField<String>(
                 value: _selectedStatus,
+                hint: const Text("Pilih Status"),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
@@ -171,8 +173,29 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                     ),
                   ),
                 ],
-                onChanged: (value) => setState(() => _selectedStatus = value),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedStatus = value;
+                  });
+                },
               ),
+
+              const SizedBox(height: 20),
+
+              // Form muncul sesuai status yang dipilih
+              if (_isApproved) ...[
+                _formDisposisi(),
+                const SizedBox(height: 16),
+                _formTambahan(),
+              ],
+
+              if (_isRejected)
+                _sectionCard(
+                  title: "Form Disposisi",
+                  children: [
+                    _textField("Catatan", controller: catatanTolakController),
+                  ],
+                ),
 
               const SizedBox(height: 20),
 

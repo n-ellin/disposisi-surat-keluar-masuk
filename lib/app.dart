@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      title: "Simdis",
+      title: "E-Disposisi",
 
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
       ),
 
       /// HALAMAN PERTAMA
-      initialRoute: '/signin',
+      initialRoute: '/input_suratmasuk',
 
       /// ROUTES
       routes: {

@@ -17,10 +17,10 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
   final TextEditingController catatanTerimaController = TextEditingController();
   final TextEditingController catatanTolakController = TextEditingController();
-  final TextEditingController tujuanController = TextEditingController();
+  final TextEditingController tanggapanController =
+      TextEditingController(); // ✅ fix Bug #2
   final TextEditingController instruksiController = TextEditingController();
   final TextEditingController koordinasiController = TextEditingController();
-
   final TextEditingController _multiSelectController = TextEditingController();
 
   List<String> selectedTujuan = [];
@@ -37,7 +37,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
   void dispose() {
     catatanTerimaController.dispose();
     catatanTolakController.dispose();
-    tujuanController.dispose();
+    tanggapanController.dispose(); // ✅ fix Bug #2
     instruksiController.dispose();
     koordinasiController.dispose();
     _multiSelectController.dispose();
@@ -115,7 +115,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
               const SizedBox(height: 8),
 
-              // Ganti bagian dropdown status kamu dengan ini:
+              /// DROPDOWN STATUS
               DropdownButtonFormField<String>(
                 value: _selectedStatus,
                 hint: const Text("Pilih Status"),
@@ -182,7 +182,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
               const SizedBox(height: 20),
 
-              // Form muncul sesuai status yang dipilih
+              // ✅ fix Bug #1 — hapus duplikat, tinggal satu blok
               if (_isApproved) ...[
                 _formDisposisi(),
                 const SizedBox(height: 16),
@@ -199,22 +199,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
               const SizedBox(height: 20),
 
-              if (_isApproved) ...[
-                _formDisposisi(),
-                const SizedBox(height: 20),
-                _formTambahan(),
-              ],
-
-              if (_isRejected)
-                _sectionCard(
-                  title: "Form Disposisi",
-                  children: [
-                    _textField("Catatan", controller: catatanTolakController),
-                  ],
-                ),
-
-              const SizedBox(height: 20),
-
+              /// TOMBOL KIRIM
               if (_selectedStatus != null)
                 Align(
                   alignment: Alignment.centerRight,
@@ -232,7 +217,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                             catatan: _isApproved
                                 ? catatanTerimaController.text
                                 : catatanTolakController.text,
-                            tujuan: tujuanController.text,
+                            tujuan: tanggapanController.text, // ✅ fix Bug #2
                             instruksi: instruksiController.text,
                             koordinasi: koordinasiController.text,
                             diteruskanKe: selectedTujuan.join(", "),
@@ -280,10 +265,9 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
             ),
 
             const SizedBox(height: 10),
-
             const Text("Lampiran"),
-
             const SizedBox(height: 8),
+
             if (_attachmentUrls.isNotEmpty)
               GestureDetector(
                 onTap: () {
@@ -323,7 +307,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                           style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
                       ),
-                      Icon(
+                      const Icon(
                         Icons.arrow_forward_ios,
                         size: 14,
                         color: Colors.grey,
@@ -344,11 +328,11 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey.shade300),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(Icons.attach_file, color: Colors.grey, size: 20),
-                    const SizedBox(width: 10),
-                    const Text("Tidak ada lampiran"),
+                    SizedBox(width: 10),
+                    Text("Tidak ada lampiran"),
                   ],
                 ),
               ),
@@ -387,7 +371,10 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     return _sectionCard(
       title: "Dengan Hormat Harap",
       children: [
-        _textField("Tanggapan", controller: tujuanController),
+        _textField(
+          "Tanggapan",
+          controller: tanggapanController,
+        ), // ✅ fix Bug #2
         _textField("Instruksi", controller: instruksiController),
         _textField("Koordinasi", controller: koordinasiController),
       ],
@@ -418,7 +405,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
         maxLines: 3,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
@@ -427,67 +414,69 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
   /// ================= MULTI SELECT =================
 
   Widget _multiSelectField() {
-    return TextField(
-      controller: _multiSelectController,
-      readOnly: true,
-      decoration: const InputDecoration(
-        labelText: "Di Teruskan Ke",
-        border: OutlineInputBorder(),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: TextField(
+        controller: _multiSelectController,
+        readOnly: true,
+        decoration: const InputDecoration(
+          labelText: "Di Teruskan Ke",
+          border: OutlineInputBorder(),
+        ),
+        onTap: () async {
+          final result = await showDialog<List<String>>(
+            context: context,
+            builder: (_) {
+              final options = [
+                "Waka Kurikulum",
+                "Waka Kesiswaan",
+                "BK",
+                "Koordinator",
+              ];
+              List<String> temp = List.from(selectedTujuan);
+
+              return AlertDialog(
+                title: const Text("Pilih Tujuan"),
+                content: StatefulBuilder(
+                  builder: (context, setStateDialog) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: options.map((e) {
+                        return CheckboxListTile(
+                          value: temp.contains(e),
+                          title: Text(e),
+                          onChanged: (v) {
+                            setStateDialog(() {
+                              v == true ? temp.add(e) : temp.remove(e);
+                            });
+                          },
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Batal"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context, temp),
+                    child: const Text("OK"),
+                  ),
+                ],
+              );
+            },
+          );
+
+          if (result != null) {
+            setState(() {
+              selectedTujuan = result;
+              _multiSelectController.text = result.join(", ");
+            });
+          }
+        },
       ),
-      onTap: () async {
-        final result = await showDialog<List<String>>(
-          context: context,
-          builder: (_) {
-            final options = [
-              "Waka Kurikulum",
-              "Waka Kesiswaan",
-              "BK",
-              "Koordinator",
-            ];
-
-            List<String> temp = List.from(selectedTujuan);
-
-            return AlertDialog(
-              title: const Text("Pilih Tujuan"),
-              content: StatefulBuilder(
-                builder: (context, setStateDialog) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: options.map((e) {
-                      return CheckboxListTile(
-                        value: temp.contains(e),
-                        title: Text(e),
-                        onChanged: (v) {
-                          setStateDialog(() {
-                            v == true ? temp.add(e) : temp.remove(e);
-                          });
-                        },
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Batal"),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context, temp),
-                  child: const Text("OK"),
-                ),
-              ],
-            );
-          },
-        );
-
-        if (result != null) {
-          setState(() {
-            selectedTujuan = result;
-            _multiSelectController.text = result.join(", ");
-          });
-        }
-      },
     );
   }
 }

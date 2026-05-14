@@ -17,19 +17,22 @@ class HistoryTUPage extends StatefulWidget {
 
 class _HistoryTUPageState extends State<HistoryTUPage> {
   String _searchQuery = '';
-
   String _statusFilter = 'semua';
+
   List<Map<String, dynamic>> get _historySurat => DummySurat.allSurat;
 
   List<Map<String, dynamic>> get _filteredSurat {
     return _historySurat.where((s) {
-      final query = _searchQuery.toLowerCase();
+      final status = s['status'].toString().toLowerCase();
 
+      // ✅ Hanya tampilkan surat yang sudah dikonfirmasi kepsek (disetujui / ditolak)
+      if (status != 'disetujui' && status != 'ditolak') return false;
+
+      final query = _searchQuery.toLowerCase();
       final jenis = s['jenisSurat'].toString().toLowerCase();
       final tanggal = s['tanggal'].toString().toLowerCase();
       final dari = s['data']['Dari'].toString().toLowerCase();
       final perihal = s['data']['Perihal'].toString().toLowerCase();
-      final status = s['status'].toString().toLowerCase();
 
       final matchSearch =
           _searchQuery.isEmpty ||
@@ -108,48 +111,76 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
 
               /// LIST HISTORY
               Expanded(
-                child: ListView.builder(
-                  itemCount: _filteredSurat.length,
-                  itemBuilder: (context, index) {
-                    final surat = _filteredSurat[index];
+                child: _filteredSurat.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.inbox_outlined,
+                              size: w * 0.15,
+                              color: Colors.grey.shade300,
+                            ),
+                            SizedBox(height: h * 0.02),
+                            Text(
+                              "Belum ada riwayat surat",
+                              style: TextStyle(
+                                fontSize: w * 0.04,
+                                color: Colors.grey.shade400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: _filteredSurat.length,
+                        itemBuilder: (context, index) {
+                          final surat = _filteredSurat[index];
 
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: h * 0.015),
-                      child: SuratCard(
-                        jenisSurat: surat['jenisSurat'].toString(),
-                        tanggal: surat['tanggal'].toString(),
-                        status: surat['status']?.toString(),
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: h * 0.015),
+                            child: SuratCard(
+                              jenisSurat: surat['jenisSurat'].toString(),
+                              tanggal: surat['tanggal'].toString(),
+                              status: surat['status']?.toString(),
 
-                        role: CardRole.tu,
-                        type: CardType.history,
+                              role: CardRole.tu,
+                              type: CardType.history,
 
-                        data: Map<String, String>.from(surat['data']),
+                              data: Map<String, String>.from(surat['data']),
 
-                        onDetail: () {
-                          final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
+                              onDetail: () {
+                                final isMasuk =
+                                    surat['jenisSurat'] == 'Surat Masuk';
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => isMasuk
-                                  ? OutputSuratmasuk(
-                                      isApproved:
-                                          surat['status'] == 'disetujui',
-                                      catatan: "...",
-                                      tujuan: "...",
-                                      instruksi: "...",
-                                      koordinasi: "...",
-                                      diteruskanKe: "...",
-                                      isReadOnly: true,
-                                    )
-                                  : OutputSuratkeluar(catatan: "..."),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => isMasuk
+                                        ? OutputSuratmasuk(
+                                            isApproved:
+                                                surat['status'] == 'disetujui',
+                                            catatan: surat['catatan'] ?? '-',
+                                            tujuan: surat['tujuan'] ?? '-',
+                                            instruksi:
+                                                surat['instruksi'] ?? '-',
+                                            koordinasi:
+                                                surat['koordinasi'] ?? '-',
+                                            diteruskanKe:
+                                                surat['diteruskanKe'] ?? '-',
+                                            isReadOnly: true,
+                                          )
+                                        : OutputSuratkeluar(
+                                            catatan: surat['catatan'] ?? '-',
+                                            isReadOnly: true,
+                                          ),
+                                  ),
+                                );
+                              },
                             ),
                           );
                         },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
@@ -180,13 +211,13 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
 
     switch (label) {
       case 'disetujui':
-        activeColor = const Color(0xFF3F9142); // hijau
+        activeColor = const Color(0xFF3F9142);
         break;
       case 'ditolak':
-        activeColor = const Color(0xFFB63A3A); // merah
+        activeColor = const Color(0xFFB63A3A);
         break;
       default:
-        activeColor = AppColors.bluePrimary; // semua
+        activeColor = AppColors.bluePrimary;
     }
 
     return ElevatedButton(

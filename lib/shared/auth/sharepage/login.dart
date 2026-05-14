@@ -53,11 +53,28 @@ class _LoginState extends State<Login> {
     final password = passwordC.text.trim();
 
     setState(() {
+      emailError = null;
       passwordError = null;
+
+      /// EMAIL KOSONG
+      if (email.isEmpty) {
+        emailError = "Email wajib diisi";
+      }
+      /// EMAIL TIDAK DITEMUKAN
+      else if (!validEmails.contains(email)) {
+        emailError = "Email tidak ditemukan";
+      }
+
+      /// PASSWORD KOSONG
+      if (password.isEmpty) {
+        passwordError = "Password wajib diisi";
+      }
     });
 
-    if (emailError != null) return;
+    /// STOP JIKA ADA ERROR
+    if (emailError != null || passwordError != null) return;
 
+    /// LOGIN ROLE
     if (email == 'kepsek@gmail.com' && password == '123456') {
       Navigator.pushReplacement(
         context,
@@ -212,8 +229,7 @@ class _LoginState extends State<Login> {
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
                               minimumSize: Size.zero,
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: const Text(
                               "Lupa password?",
@@ -273,65 +289,55 @@ class _LoginState extends State<Login> {
   }
 
   Widget _buildEmailField() {
-    return Focus(
-      onFocusChange: (hasFocus) {
-        if (!hasFocus) {
-          validateEmail();
-        }
-      },
-      child: TextField(
-        controller: emailC,
-        cursorColor: AppColors.bluePrimary,
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
+    return TextField(
+      controller: emailC,
+      cursorColor: AppColors.bluePrimary,
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      decoration: InputDecoration(
+        isDense: true,
+        hintText: "Email",
+
+        errorText: emailError,
+
+        hintStyle: TextStyle(
+          color: Colors.black.withOpacity(0.35),
           fontSize: 14,
         ),
-        decoration: InputDecoration(
-          isDense: true,
-          hintText: "Email",
 
-          errorText: emailError,
+        prefixIcon: Icon(
+          Icons.mail_outline_rounded,
+          color: Colors.grey.shade600,
+          size: 20,
+        ),
 
-          hintStyle: TextStyle(
-            color: Colors.black.withOpacity(0.35),
-            fontSize: 14,
+        filled: true,
+        fillColor: const Color(0xFFF3F4F6),
+
+        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: AppColors.bluePrimary,
+            width: 1.4,
           ),
+        ),
 
-          prefixIcon: Icon(
-            Icons.mail_outline_rounded,
-            color: Colors.grey.shade600,
-            size: 20,
-          ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
 
-          filled: true,
-          fillColor: const Color(0xFFF3F4F6),
-
-          contentPadding: const EdgeInsets.symmetric(vertical: 14),
-
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(
-              color: AppColors.bluePrimary,
-              width: 1.4,
-            ),
-          ),
-
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: Colors.grey.shade300),
-          ),
-
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(
-              color: AppColors.bluePrimary,
-              width: 1.4,
-            ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: AppColors.bluePrimary,
+            width: 1.4,
           ),
         ),
       ),
@@ -344,10 +350,7 @@ class _LoginState extends State<Login> {
       obscureText: obscure,
       cursorColor: AppColors.bluePrimary,
 
-      style: const TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 14,
-      ),
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
 
       decoration: InputDecoration(
         isDense: true,
@@ -374,9 +377,7 @@ class _LoginState extends State<Login> {
             });
           },
           icon: Icon(
-            obscure
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined,
+            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
             color: Colors.grey.shade500,
             size: 20,
           ),

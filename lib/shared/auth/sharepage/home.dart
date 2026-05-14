@@ -7,6 +7,7 @@ import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 
 import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/notif.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
@@ -42,7 +43,6 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-
     Timer.periodic(const Duration(seconds: 5), (timer) {
       setState(() {
         notifCount++;
@@ -50,17 +50,12 @@ class _HomeState extends State<Home> {
     });
   }
 
-  /// ================= ALL SURAT =================
   List<Map<String, dynamic>> get _allSurat => DummySurat.allSurat;
-
-  /// ================= SURAT TERBARU =================
   List<Map<String, dynamic>> get _suratTerbaru =>
-      DummySurat.allSurat.reversed.toList();
+      DummySurat.allSurat.reversed.take(5).toList();
 
-  /// ================= TOTAL =================
   int get jumlahSuratMasuk =>
       _allSurat.where((s) => s['jenisSurat'] == 'Surat Masuk').length;
-
   int get jumlahSuratKeluar =>
       _allSurat.where((s) => s['jenisSurat'] == 'Surat Keluar').length;
 
@@ -72,7 +67,6 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -82,7 +76,7 @@ class _HomeState extends State<Home> {
               children: [
                 SizedBox(height: h * 0.03),
 
-                /// ================= HEADER =================
+                /// HEADER
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -91,17 +85,16 @@ class _HomeState extends State<Home> {
                       width: w * 0.1,
                       height: w * 0.1,
                     ),
-
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => NotificationPage(role: widget.role),
+                            builder: (_) =>
+                                NotificationPage(role: widget.role),
                           ),
                         );
                       },
-
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
@@ -110,23 +103,19 @@ class _HomeState extends State<Home> {
                             size: w * 0.075,
                             color: AppColors.bluePrimary,
                           ),
-
                           Positioned(
                             right: -2,
                             top: -2,
                             child: Container(
                               padding: const EdgeInsets.all(3),
-
                               decoration: const BoxDecoration(
                                 color: Colors.red,
                                 shape: BoxShape.circle,
                               ),
-
                               constraints: const BoxConstraints(
                                 minWidth: 16,
                                 minHeight: 16,
                               ),
-
                               child: Center(
                                 child: Text(
                                   notifCount.toString(),
@@ -147,7 +136,7 @@ class _HomeState extends State<Home> {
 
                 const SizedBox(height: 12),
 
-                /// ================= TITLE =================
+                /// TITLE
                 const Text(
                   "Disposisi Surat",
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -155,10 +144,9 @@ class _HomeState extends State<Home> {
 
                 SizedBox(height: h * 0.03),
 
-                /// ================= STAT CARD =================
+                /// STAT CARD
                 Row(
                   children: [
-                    /// SURAT MASUK
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
@@ -166,8 +154,9 @@ class _HomeState extends State<Home> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) =>
-                                    const TuDashboardPage(jenisSurat: ' Surat Masuk'),
+                                builder: (_) => const TuDashboardPage(
+                                  jenisSurat: 'Surat Masuk',
+                                ),
                               ),
                             );
                           } else if (widget.role == Role.kepsek) {
@@ -181,24 +170,17 @@ class _HomeState extends State<Home> {
                             );
                           }
                         },
-
                         child: _statCard(
                           gradient: const LinearGradient(
                             colors: [Color(0xFF6DA8B4), Color(0xFF0F6E7A)],
                           ),
-
                           iconPath: "assets/icons/ic_inmail.svg",
-
                           jumlah: jumlahSuratMasuk.toString(),
-
                           label: "Masuk",
                         ),
                       ),
                     ),
-
                     SizedBox(width: w * 0.04),
-
-                    /// SURAT KELUAR
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
@@ -222,16 +204,12 @@ class _HomeState extends State<Home> {
                             );
                           }
                         },
-
                         child: _statCard(
                           gradient: const LinearGradient(
                             colors: [Color(0xFFD6A66B), Color(0xFFDA7B17)],
                           ),
-
                           iconPath: "assets/icons/ic_outmail.svg",
-
                           jumlah: jumlahSuratKeluar.toString(),
-
                           label: "Keluar",
                         ),
                       ),
@@ -241,7 +219,7 @@ class _HomeState extends State<Home> {
 
                 SizedBox(height: h * 0.04),
 
-                /// ================= HEADER SURAT TERBARU =================
+                /// HEADER SURAT TERBARU
                 const Text(
                   "Surat Terbaru",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -249,17 +227,45 @@ class _HomeState extends State<Home> {
 
                 SizedBox(height: h * 0.015),
 
-                /// ================= LIST SURAT =================
+                /// LIST SURAT - pakai SuratCard
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-
                   itemCount: _suratTerbaru.length,
-
                   itemBuilder: (context, index) {
                     final surat = _suratTerbaru[index];
+                    final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
 
-                    return _suratTerbaruCard(surat);
+                    return SuratCard(
+                      jenisSurat: surat['jenisSurat'] ?? '',
+                      tanggal: surat['tanggal'] ?? '-',
+                      data: Map<String, String>.from(surat['data'] ?? {}),
+                      role: CardRole.tu,
+                      type: CardType.home,
+                      status: surat['status'],
+                      onDetail: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => isMasuk
+                                ? OutputSuratmasuk(
+                                    isApproved:
+                                        surat['status'] == 'disetujui',
+                                    catatan: surat['catatan'] ?? '-',
+                                    tujuan: surat['tujuan'] ?? '-',
+                                    instruksi: surat['instruksi'] ?? '-',
+                                    koordinasi: surat['koordinasi'] ?? '-',
+                                    diteruskanKe:
+                                        surat['diteruskanKe'] ?? '-',
+                                    isReadOnly: true,
+                                  )
+                                : OutputSuratkeluar(
+                                    catatan: surat['catatan'] ?? '-',
+                                  ),
+                          ),
+                        );
+                      },
+                    );
                   },
                 ),
 
@@ -270,7 +276,7 @@ class _HomeState extends State<Home> {
         ),
       ),
 
-      /// ================= NAVBAR =================
+      /// NAVBAR
       bottomNavigationBar: CustomNavbar(
         role: widget.role,
         currentIndex: 0,
@@ -288,131 +294,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  /// ================= CARD SURAT =================
-  Widget _suratTerbaruCard(Map<String, dynamic> surat) {
-    final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
-
-    Color statusColor;
-
-    switch (surat['status']) {
-      case 'disetujui':
-        statusColor = const Color(0xFF3F9142);
-        break;
-
-      case 'ditolak':
-        statusColor = const Color(0xFFB63A3A);
-        break;
-
-      default:
-        statusColor = const Color(0xFFE08B2E);
-    }
-
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-
-          MaterialPageRoute(
-            builder: (_) => isMasuk
-                ? OutputSuratmasuk(
-                    isApproved: surat['status'] == 'disetujui',
-                    catatan: surat['catatan'] ?? '-',
-                    tujuan: surat['tujuan'] ?? '-',
-                    instruksi: surat['instruksi'] ?? '-',
-                    koordinasi: surat['koordinasi'] ?? '-',
-                    diteruskanKe: surat['diteruskanKe'] ?? '-',
-                    isReadOnly: true,
-                  )
-                : OutputSuratkeluar(catatan: surat['catatan'] ?? '-'),
-          ),
-        );
-      },
-
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-
-        padding: const EdgeInsets.all(14),
-
-        decoration: BoxDecoration(
-          color: Colors.white,
-
-          borderRadius: BorderRadius.circular(14),
-
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-
-        child: Row(
-          children: [
-            /// ================= ICON =================
-            Container(
-              padding: const EdgeInsets.all(10),
-
-              decoration: BoxDecoration(
-                color: isMasuk
-                    ? const Color(0xFF0F6E7A).withOpacity(0.12)
-                    : const Color(0xFFDA7B17).withOpacity(0.12),
-
-                borderRadius: BorderRadius.circular(10),
-              ),
-
-              child: SvgPicture.asset(
-                isMasuk
-                    ? "assets/icons/ic_inmail.svg"
-                    : "assets/icons/ic_outmail.svg",
-
-                width: 20,
-                height: 20,
-
-                colorFilter: ColorFilter.mode(
-                  isMasuk ? const Color(0xFF0F6E7A) : const Color(0xFFDA7B17),
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 12),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-
-                children: [
-                  Text(
-                    surat['data']['Perihal'] ?? '-',
-
-                    maxLines: 1,
-
-                    overflow: TextOverflow.ellipsis,
-
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-
-                  const SizedBox(height: 3),
-
-                  Text(
-                    surat['data']['Dari'] ?? '-',
-
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// ================= STAT CARD =================
+  /// STAT CARD
   Widget _statCard({
     required LinearGradient gradient,
     required String iconPath,
@@ -423,20 +305,15 @@ class _HomeState extends State<Home> {
 
     return Container(
       padding: const EdgeInsets.all(16),
-
       decoration: BoxDecoration(
         gradient: gradient,
-
         borderRadius: BorderRadius.circular(w * 0.05),
       ),
-
       child: Row(
         children: [
           CircleAvatar(
             radius: 22,
-
             backgroundColor: Colors.white.withOpacity(0.3),
-
             child: SvgPicture.asset(
               iconPath,
               width: 24,
@@ -447,24 +324,19 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
                 Text(
                   jumlah,
-
                   style: const TextStyle(
                     fontSize: 20,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-
                 Text(label, style: const TextStyle(color: Colors.white)),
               ],
             ),

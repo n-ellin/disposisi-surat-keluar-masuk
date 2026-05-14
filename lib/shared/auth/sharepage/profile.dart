@@ -4,6 +4,7 @@ import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/password/gantipw.dart';
 
 class ProfilePage extends StatelessWidget {
   final String nama;
@@ -122,7 +123,15 @@ class ProfilePage extends StatelessWidget {
 
                     InkWell(
                       borderRadius: BorderRadius.circular(14),
-                      onTap: () {},
+                      onTap: () {
+                        // ✅ Navigasi ke halaman ganti kata sandi
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const GantiKataSandiPage(),
+                          ),
+                        );
+                      },
 
                       child: Row(
                         children: [

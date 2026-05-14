@@ -50,12 +50,13 @@ class MyApp extends StatelessWidget {
       ),
 
       /// HALAMAN PERTAMA
-      initialRoute: '/input_suratmasuk',
+      initialRoute: '/signin',
 
       /// ROUTES
       routes: {
         // ================= AUTH =================
         '/splash_screen': (context) => const SplashScreen(),
+        
 
         '/signin': (context) => const Login(),
 

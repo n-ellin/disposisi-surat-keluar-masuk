@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratmasuk.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratkeluar.dart';
+
 class TuDashboardPage extends StatefulWidget {
   final String jenisSurat;
 
@@ -17,124 +20,6 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
 
   /// ================= DATA SURAT =================
   List<Map<String, dynamic>> get _allSurat => DummySurat.allSurat;
-
-  /// ================= DELETE DIALOG =================
-  void _showDeleteDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.black.withOpacity(0.35),
-      builder: (context) {
-        final w = MediaQuery.of(context).size.width;
-
-        return Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              width: w * 0.85,
-              padding: EdgeInsets.symmetric(
-                horizontal: w * 0.06,
-                vertical: w * 0.08,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3F0F6),
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  /// ICON
-                  Container(
-                    padding: EdgeInsets.all(w * 0.04),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFE8D29A),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.warning_amber_rounded,
-                      color: const Color(0xFFB98A00),
-                      size: w * 0.09,
-                    ),
-                  ),
-
-                  SizedBox(height: w * 0.06),
-
-                  /// TITLE
-                  Text(
-                    "Apakah anda yakin ingin\nmenghapus surat ini?",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: w * 0.042,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-
-                  SizedBox(height: w * 0.03),
-
-                  /// SUBTITLE
-                  Text(
-                    "Tindakan ini bersifat permanen dan tidak bisa dibatalkan.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: w * 0.032,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-
-                  SizedBox(height: w * 0.08),
-
-                  /// BUTTON
-                  Row(
-                    children: [
-                      /// BATAL
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFF6C63FF),
-                            side: const BorderSide(color: Color(0xFF6C63FF)),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: w * 0.035),
-                          ),
-                          child: const Text("Batal"),
-                        ),
-                      ),
-
-                      SizedBox(width: w * 0.04),
-
-                      /// HAPUS
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(Icons.delete_outline, size: 18),
-                          label: const Text("Hapus Surat"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFF3B30),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: w * 0.035),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   /// ================= PROCESS DIALOG =================
   void _showProcessDialog() {
@@ -282,13 +167,13 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
     final h = size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFF2F2F2),
 
       /// ================= APPBAR =================
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFF2F2F2),
         surfaceTintColor: Colors.transparent,
 
         actions: [
@@ -435,8 +320,36 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
 
                       data: Map<String, String>.from(surat['data']),
 
-                      onDelete: _showDeleteDialog,
-                      onDetail: _showProcessDialog,
+                      onDetail: () {
+                        final status = surat['status']
+                            ?.toString()
+                            .toLowerCase();
+                        final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
+
+                        if (status == 'menunggu') {
+                          _showProcessDialog();
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => isMasuk
+                                  ? OutputSuratmasuk(
+                                      isApproved: status == 'disetujui',
+                                      catatan: surat['catatan'] ?? '-',
+                                      tujuan: surat['tujuan'] ?? '-',
+                                      instruksi: surat['instruksi'] ?? '-',
+                                      koordinasi: surat['koordinasi'] ?? '-',
+                                      diteruskanKe:
+                                          surat['diteruskanKe'] ?? '-',
+                                      isReadOnly: false,
+                                    )
+                                  : OutputSuratkeluar(
+                                      catatan: surat['catatan'] ?? '-',
+                                    ),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   );
                 },

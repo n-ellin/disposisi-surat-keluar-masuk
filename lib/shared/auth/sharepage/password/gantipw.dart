@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 class GantiKataSandiPage extends StatefulWidget {
   const GantiKataSandiPage({super.key});
@@ -70,6 +71,7 @@ class _GantiKataSandiPageState
               const EdgeInsets.symmetric(
             horizontal: 24,
           ),
+
           child: Column(
             children: [
               const SizedBox(height: 16),
@@ -81,9 +83,10 @@ class _GantiKataSandiPageState
                     onPressed: () {
                       Navigator.pop(context);
                     },
+
                     icon: const Icon(
                       Icons.arrow_back_ios,
-                      color: Colors.blue,
+                      color: AppColors.bluePrimary,
                     ),
                   ),
 
@@ -93,19 +96,8 @@ class _GantiKataSandiPageState
                     "Ganti Kata Sandi",
                     style: TextStyle(
                       fontSize: 24,
-                      fontWeight:
-                          FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  const CircleAvatar(
-                    radius: 22,
-                    backgroundImage:
-                        NetworkImage(
-                      "https://i.pravatar.cc/150?img=12",
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.bluePrimary
                     ),
                   ),
                 ],
@@ -119,6 +111,7 @@ class _GantiKataSandiPageState
                     crossAxisAlignment:
                         CrossAxisAlignment
                             .start,
+
                     children: [
                       const Text(
                         "Keamanan Akun",
@@ -151,9 +144,11 @@ class _GantiKataSandiPageState
                             const EdgeInsets.all(
                           22,
                         ),
+
                         decoration:
                             BoxDecoration(
                           color: Colors.white,
+
                           borderRadius:
                               BorderRadius
                                   .circular(
@@ -165,6 +160,7 @@ class _GantiKataSandiPageState
                           crossAxisAlignment:
                               CrossAxisAlignment
                                   .start,
+
                           children: [
                             buildLabel(
                               "KATA SANDI LAMA",
@@ -176,10 +172,13 @@ class _GantiKataSandiPageState
                             buildField(
                               controller:
                                   oldPassC,
+
                               hint:
                                   "Masukkan kata sandi lama",
+
                               obscure:
                                   obscureOld,
+
                               onTap: () {
                                 setState(() {
                                   obscureOld =
@@ -201,12 +200,16 @@ class _GantiKataSandiPageState
                             buildField(
                               controller:
                                   newPassC,
+
                               hint:
                                   "Masukkan kata sandi baru",
+
                               obscure:
                                   obscureNew,
+
                               onChanged:
                                   validatePassword,
+
                               onTap: () {
                                 setState(() {
                                   obscureNew =
@@ -224,22 +227,23 @@ class _GantiKataSandiPageState
                                     const EdgeInsets.only(
                                   top: 14,
                                 ),
+
                                 child: Column(
                                   children: [
-                                    if (!hasNumber)
-                                      buildValidation(
-                                        "Mengandung minimal satu angka",
-                                      ),
+                                    buildValidation(
+                                      "Mengandung minimal satu angka",
+                                      hasNumber,
+                                    ),
 
-                                    if (!min8Char)
-                                      buildValidation(
-                                        "Terdiri dari minimal 8 karakter",
-                                      ),
+                                    buildValidation(
+                                      "Terdiri dari minimal 8 karakter",
+                                      min8Char,
+                                    ),
 
-                                    if (!hasUpperLower)
-                                      buildValidation(
-                                        "Mengandung huruf besar & huruf kecil",
-                                      ),
+                                    buildValidation(
+                                      "Mengandung huruf besar & huruf kecil",
+                                      hasUpperLower,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -257,12 +261,16 @@ class _GantiKataSandiPageState
                             buildField(
                               controller:
                                   confirmPassC,
+
                               hint:
                                   "Ulangi kata sandi baru",
+
                               obscure:
                                   obscureConfirm,
+
                               onChanged:
                                   validateConfirm,
+
                               onTap: () {
                                 setState(() {
                                   obscureConfirm =
@@ -272,17 +280,21 @@ class _GantiKataSandiPageState
                             ),
 
                             if (confirmPassC
-                                    .text
-                                    .isNotEmpty &&
-                                !passwordMatch)
+                                .text
+                                .isNotEmpty)
                               Padding(
                                 padding:
                                     const EdgeInsets.only(
                                   top: 14,
                                 ),
+
                                 child:
                                     buildValidation(
-                                  "Konfirmasi password tidak cocok",
+                                  passwordMatch
+                                      ? "Konfirmasi password cocok"
+                                      : "Konfirmasi password tidak cocok",
+
+                                  passwordMatch,
                                 ),
                               ),
 
@@ -293,15 +305,18 @@ class _GantiKataSandiPageState
                               alignment:
                                   Alignment
                                       .centerRight,
+
                               child: TextButton(
                                 onPressed:
                                     () {},
+
                                 child: const Text(
                                   "Lupa kata sandi?",
                                   style:
                                       TextStyle(
                                     color:
-                                        Colors.blue,
+                                        AppColors.bluePrimary,
+
                                     fontSize:
                                         16,
                                   ),
@@ -323,18 +338,22 @@ class _GantiKataSandiPageState
                   bottom: 24,
                   top: 20,
                 ),
+
                 child: SizedBox(
                   width: double.infinity,
                   height: 62,
+
                   child: ElevatedButton(
                     style:
                         ElevatedButton.styleFrom(
                       elevation: 0,
+
                       backgroundColor:
                           isValid
-                              ? Colors.blue
+                              ? AppColors.bluePrimary
                               : Colors.grey
                                   .shade400,
+
                       shape:
                           RoundedRectangleBorder(
                         borderRadius:
@@ -352,6 +371,7 @@ class _GantiKataSandiPageState
                       mainAxisAlignment:
                           MainAxisAlignment
                               .center,
+
                       children: const [
                         Text(
                           "Simpan Perubahan",
@@ -360,6 +380,7 @@ class _GantiKataSandiPageState
                             fontWeight:
                                 FontWeight
                                     .bold,
+
                             color:
                                 Colors.white,
                           ),
@@ -387,6 +408,7 @@ class _GantiKataSandiPageState
   Widget buildLabel(String text) {
     return Text(
       text,
+
       style: const TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.w700,
@@ -399,22 +421,29 @@ class _GantiKataSandiPageState
   Widget buildField({
     required TextEditingController
         controller,
+
     required String hint,
+
     required bool obscure,
+
     required VoidCallback onTap,
+
     Function(String)? onChanged,
   }) {
     return TextField(
       controller: controller,
       obscureText: obscure,
       onChanged: onChanged,
+
       decoration: InputDecoration(
         hintText: hint,
+
         hintStyle: TextStyle(
           color: Colors.grey.shade400,
         ),
 
         filled: true,
+
         fillColor:
             const Color(0xfff3f4f7),
 
@@ -427,15 +456,18 @@ class _GantiKataSandiPageState
         border: OutlineInputBorder(
           borderRadius:
               BorderRadius.circular(18),
+
           borderSide: BorderSide.none,
         ),
 
         suffixIcon: IconButton(
           onPressed: onTap,
+
           icon: Icon(
             obscure
                 ? Icons.visibility_outlined
                 : Icons.visibility_off_outlined,
+
             color: Colors.grey,
           ),
         ),
@@ -443,15 +475,28 @@ class _GantiKataSandiPageState
     );
   }
 
-  Widget buildValidation(String text) {
+  Widget buildValidation(
+    String text,
+    bool isValid,
+  ) {
     return Padding(
       padding:
-          const EdgeInsets.only(bottom: 8),
+          const EdgeInsets.only(
+        bottom: 8,
+      ),
+
       child: Row(
         children: [
-          const Icon(
-            Icons.error_outline,
-            color: Colors.red,
+          Icon(
+            isValid
+                ? Icons.check_circle
+                : Icons.error_outline,
+
+            color:
+                isValid
+                    ? Colors.green
+                    : Colors.red,
+
             size: 18,
           ),
 
@@ -459,8 +504,13 @@ class _GantiKataSandiPageState
 
           Text(
             text,
-            style: const TextStyle(
-              color: Colors.red,
+
+            style: TextStyle(
+              color:
+                  isValid
+                      ? Colors.green
+                      : Colors.red,
+
               fontSize: 14,
             ),
           ),

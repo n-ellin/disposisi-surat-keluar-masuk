@@ -38,7 +38,8 @@ class SuratCard extends StatelessWidget {
       case 'ditolak':
         return 'Ditolak';
       case 'menunggu':
-        return 'Menunggu';
+      case 'diproses':
+        return 'Diproses';
       default:
         return '';
     }
@@ -51,6 +52,7 @@ class SuratCard extends StatelessWidget {
       case 'ditolak':
         return const Color(0xFFF4D6D8);
       case 'menunggu':
+      case 'diproses':
         return const Color(0xFFF1E2BF);
       default:
         return Colors.grey.shade200;
@@ -64,6 +66,7 @@ class SuratCard extends StatelessWidget {
       case 'ditolak':
         return const Color(0xFFB4232C);
       case 'menunggu':
+      case 'diproses':
         return const Color(0xFF8A6D1F);
       default:
         return Colors.grey;
@@ -71,10 +74,9 @@ class SuratCard extends StatelessWidget {
   }
 
   Color _buttonColor() {
-    if (jenisSurat.toLowerCase() == 'surat keluar') {
-      return AppColors.orangePrimary;
-    }
-    return AppColors.bluePrimary;
+    return jenisSurat.toLowerCase() == 'surat keluar'
+        ? AppColors.orangePrimary
+        : AppColors.bluePrimary;
   }
 
   @override
@@ -85,10 +87,6 @@ class SuratCard extends StatelessWidget {
       onTap: isHome ? onDetail : null,
       child: Container(
         margin: EdgeInsets.only(bottom: w * 0.045),
-        padding: EdgeInsets.symmetric(
-          horizontal: w * 0.038,
-          vertical: w * 0.042,
-        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(w * 0.04),
@@ -101,24 +99,56 @@ class SuratCard extends StatelessWidget {
             ),
           ],
         ),
-        child: isHome ? _buildHomeCard(w) : _buildDefaultCard(w),
+        // ✅ ClipRRect tetap di sini supaya border radius card tetap rapi
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(w * 0.04),
+          // ✅ IntrinsicHeight memastikan left stroke stretch ikut tinggi konten
+          child: IntrinsicHeight(
+            child: Row(
+              // ✅ stretch supaya semua children ikut tinggi IntrinsicHeight
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ✅ LEFT STROKE — full height, no margin, langsung nempel di edge
+                if (isHistory)
+                  Container(
+                    width: w * 0.012,
+                    decoration: BoxDecoration(
+                      color: _buttonColor(),
+                    ),
+                  ),
+
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: w * 0.038,
+                      vertical: w * 0.028,
+                    ),
+                    child: isHome
+                        ? _buildHomeCard(w)
+                        : _buildDefaultCard(w),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  /// ================= HOME CARD =================
   Widget _buildHomeCard(double w) {
     final isMasuk = jenisSurat == 'Surat Masuk';
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        /// ICON
         Container(
           width: w * 0.10,
           height: w * 0.10,
           decoration: BoxDecoration(
-            color: isMasuk ? const Color(0xFFE7F6F8) : const Color(0xFFFFF1E3),
+            color: isMasuk
+                ? const Color(0xFFE7F6F8)
+                : const Color(0xFFFFF1E3),
             borderRadius: BorderRadius.circular(w * 0.03),
           ),
           child: Center(
@@ -138,7 +168,6 @@ class SuratCard extends StatelessWidget {
 
         SizedBox(width: w * 0.03),
 
-        /// KIRI: Perihal + Dari
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +182,9 @@ class SuratCard extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+
               SizedBox(height: w * 0.005),
+
               Text(
                 data['Dari'] ?? '-',
                 maxLines: 1,
@@ -169,7 +200,6 @@ class SuratCard extends StatelessWidget {
 
         SizedBox(width: w * 0.02),
 
-        /// KANAN: Tanggal + Badge
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
@@ -181,8 +211,10 @@ class SuratCard extends StatelessWidget {
                 color: Colors.grey.shade500,
               ),
             ),
+
             if (showStatus && status != null) ...[
               SizedBox(height: w * 0.006),
+
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: w * 0.022,
@@ -208,54 +240,12 @@ class SuratCard extends StatelessWidget {
     );
   }
 
-  /// ================= MENU & HISTORY =================
   Widget _buildDefaultCard(double w) {
     final isMasuk = jenisSurat == 'Surat Masuk';
-
-    // Layout kanan: tanggal + tombol Detail (sama untuk menu & history)
-    Widget rightColumn = Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Text(
-          tanggal,
-          style: TextStyle(
-            fontSize: w * 0.024,
-            color: Colors.grey.shade500,
-          ),
-        ),
-        SizedBox(height: w * 0.02),
-        ElevatedButton(
-          onPressed: onDetail,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: _buttonColor(),
-            foregroundColor: Colors.white,
-            elevation: 0,
-            padding: EdgeInsets.symmetric(
-              horizontal: w * 0.03,
-              vertical: w * 0.015,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(w * 0.03),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("Detail", style: TextStyle(fontSize: w * 0.03)),
-              SizedBox(width: w * 0.01),
-              Icon(Icons.arrow_forward_rounded, size: w * 0.035),
-            ],
-          ),
-        ),
-      ],
-    );
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        /// ICON kiri
         Container(
           width: w * 0.11,
           height: w * 0.11,
@@ -282,7 +272,6 @@ class SuratCard extends StatelessWidget {
 
         SizedBox(width: w * 0.03),
 
-        /// TENGAH: jenis + badge + perihal + dari
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,7 +289,9 @@ class SuratCard extends StatelessWidget {
                       ),
                     ),
                   ),
+
                   SizedBox(width: w * 0.02),
+
                   if (showStatus && status != null)
                     Container(
                       padding: EdgeInsets.symmetric(
@@ -322,7 +313,9 @@ class SuratCard extends StatelessWidget {
                     ),
                 ],
               ),
+
               SizedBox(height: w * 0.008),
+
               Text(
                 data['Perihal'] ?? '-',
                 maxLines: 1,
@@ -333,7 +326,9 @@ class SuratCard extends StatelessWidget {
                   color: Colors.black87,
                 ),
               ),
+
               SizedBox(height: w * 0.004),
+
               Text(
                 data['Dari'] ?? '-',
                 maxLines: 1,
@@ -349,27 +344,81 @@ class SuratCard extends StatelessWidget {
 
         SizedBox(width: w * 0.02),
 
-        rightColumn,
-      ],
-    );
-  }
-
-  /// ================= INFO =================
-  Widget _infoText(String label, String? value, double w) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: w * 0.018),
-      child: RichText(
-        text: TextSpan(
-          style: TextStyle(fontSize: w * 0.034, color: Colors.black87),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            TextSpan(
-              text: "$label : ",
-              style: const TextStyle(fontWeight: FontWeight.w700),
+            Text(
+              tanggal,
+              style: TextStyle(
+                fontSize: w * 0.024,
+                color: Colors.grey.shade500,
+              ),
             ),
-            TextSpan(text: value ?? '-'),
+
+            SizedBox(height: w * 0.02),
+
+            if (isHistory)
+              GestureDetector(
+                onTap: onDetail,
+                child: Container(
+                  width: w * 0.09,
+                  height: w * 0.09,
+                  decoration: BoxDecoration(
+                    color: _buttonColor().withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(w * 0.03),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.remove_red_eye_rounded,
+                      color: _buttonColor(),
+                      size: w * 0.048,
+                    ),
+                  ),
+                ),
+              )
+            else
+              ElevatedButton(
+                onPressed: onDetail,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _buttonColor(),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  minimumSize: Size(0, w * 0.085),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: w * 0.032,
+                    vertical: 0,
+                  ),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(w * 0.028),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Detail",
+                      style: TextStyle(
+                        fontSize: w * 0.028,
+                        fontWeight: FontWeight.w600,
+                        height: 1,
+                      ),
+                    ),
+
+                    SizedBox(width: w * 0.008),
+
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      size: w * 0.032,
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
-      ),
+      ],
     );
   }
 }

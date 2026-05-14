@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/home.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/password/reset kata sandi/input_email.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -225,7 +226,14 @@ class _LoginState extends State<Login> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ForgotPasswordPage(),
+                                ),
+                              );
+                            },
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
                               minimumSize: Size.zero,

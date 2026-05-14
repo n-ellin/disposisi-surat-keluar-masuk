@@ -27,7 +27,7 @@ class OutputSuratmasuk extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6F8),
+      backgroundColor: const Color(0xFFF2F2F2),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -37,25 +37,21 @@ class OutputSuratmasuk extends StatelessWidget {
               const SizedBox(height: 20),
 
               /// BACK + TITLE
-              Stack(
-                alignment: Alignment.center,
+              Row(
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () => Navigator.of(context).pop(),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      style: IconButton.styleFrom(
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: AppColors.bluePrimary,
+                      size: 20,
                     ),
                   ),
-                  Text(
+                  const SizedBox(width: 2),
+                  const Text(
                     "Detail Surat Masuk",
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.bluePrimary,
                     ),
@@ -71,9 +67,7 @@ class OutputSuratmasuk extends StatelessWidget {
                   children: [_readOnlyField("Diteruskan Ke", diteruskanKe)],
                 ),
                 const SizedBox(height: 16),
-                _sectionCard(
-                  children: [_labeledTextArea("Catatan", catatan)],
-                ),
+                _sectionCard(children: [_labeledTextArea("Catatan", catatan)]),
                 const SizedBox(height: 16),
                 _sectionCard(
                   children: [
@@ -85,9 +79,7 @@ class OutputSuratmasuk extends StatelessWidget {
                   ],
                 ),
               ] else ...[
-                _sectionCard(
-                  children: [_labeledTextArea("Catatan", catatan)],
-                ),
+                _sectionCard(children: [_labeledTextArea("Catatan", catatan)]),
               ],
 
               const SizedBox(height: 20),
@@ -104,9 +96,7 @@ class OutputSuratmasuk extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 _sectionCard(
-                  children: [
-                    _AttachmentCarousel(attachmentUrls: lampiranUrls),
-                  ],
+                  children: [_AttachmentCarousel(attachmentUrls: lampiranUrls)],
                 ),
                 const SizedBox(height: 20),
               ],
@@ -355,8 +345,11 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.broken_image,
-                                  size: 50, color: Colors.grey),
+                              Icon(
+                                Icons.broken_image,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
                               SizedBox(height: 10),
                               Text("Gagal memuat gambar"),
                             ],

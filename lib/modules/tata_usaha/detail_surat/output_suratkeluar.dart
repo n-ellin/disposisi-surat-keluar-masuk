@@ -29,27 +29,27 @@ class OutputSuratkeluar extends StatelessWidget {
               const SizedBox(height: 20),
 
               // HEADER
-              Stack(
-                alignment: Alignment.center,
+              Row(
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () => Navigator.pop(context),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: AppColors.orangePrimary,
+                      size: 20,
                     ),
                   ),
+                  const SizedBox(width: 2),
                   const Text(
                     "Detail Surat Keluar",
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.orangePrimary,
                     ),
                   ),
                 ],
               ),
-
 
               const SizedBox(height: 20),
 
@@ -259,8 +259,11 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.broken_image,
-                                  size: 50, color: Colors.grey),
+                              Icon(
+                                Icons.broken_image,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
                               SizedBox(height: 10),
                               Text("Gagal memuat gambar"),
                             ],

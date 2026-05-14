@@ -27,11 +27,9 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: w * 0.055),
-
           child: Column(
             children: [
               SizedBox(height: h * 0.02),
@@ -47,29 +45,21 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(height: h * 0.03),
 
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(w * 0.008),
-
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade200, width: 2),
-                    ),
-
-                    child: CircleAvatar(
-                      radius: w * 0.10,
-                      backgroundColor: Colors.grey.shade200,
-
-                      child: Icon(
-                        Icons.person,
-                        size: w * 0.11,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
+              Container(
+                padding: EdgeInsets.all(w * 0.008),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey.shade200, width: 2),
+                ),
+                child: CircleAvatar(
+                  radius: w * 0.10,
+                  backgroundColor: Colors.grey.shade200,
+                  child: Icon(
+                    Icons.person,
+                    size: w * 0.11,
+                    color: Colors.grey.shade500,
                   ),
-                ],
+                ),
               ),
 
               SizedBox(height: h * 0.035),
@@ -77,30 +67,11 @@ class ProfilePage extends StatelessWidget {
               _cardWrapper(
                 child: Column(
                   children: [
-                    _profileTile(
-                      context,
-                      icon: Icons.work_outline,
-                      label: "JABATAN",
-                      value: jabatan,
-                    ),
-
+                    _profileTile(context, icon: Icons.work_outline, label: "JABATAN", value: jabatan),
                     SizedBox(height: h * 0.015),
-
-                    _profileTile(
-                      context,
-                      icon: Icons.person_outline,
-                      label: "NAMA",
-                      value: nama,
-                    ),
-
+                    _profileTile(context, icon: Icons.person_outline, label: "NAMA", value: nama),
                     SizedBox(height: h * 0.015),
-
-                    _profileTile(
-                      context,
-                      icon: Icons.email_outlined,
-                      label: "EMAIL",
-                      value: email,
-                    ),
+                    _profileTile(context, icon: Icons.email_outlined, label: "EMAIL", value: email),
                   ],
                 ),
               ),
@@ -131,26 +102,21 @@ class ProfilePage extends StatelessWidget {
                           ),
                         );
                       },
-
                       child: Row(
                         children: [
                           Container(
                             padding: EdgeInsets.all(w * 0.03),
-
                             decoration: BoxDecoration(
                               color: AppColors.bluePrimary.withOpacity(0.10),
                               borderRadius: BorderRadius.circular(12),
                             ),
-
                             child: Icon(
                               Icons.lock_outline,
                               color: AppColors.bluePrimary,
                               size: w * 0.055,
                             ),
                           ),
-
                           SizedBox(width: w * 0.04),
-
                           Expanded(
                             child: Text(
                               "Ubah Kata Sandi",
@@ -160,7 +126,6 @@ class ProfilePage extends StatelessWidget {
                               ),
                             ),
                           ),
-
                           Icon(
                             Icons.chevron_right,
                             size: w * 0.07,
@@ -177,8 +142,7 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(
                 width: double.infinity,
-
-                child: OutlinedButton.icon(
+                child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: h * 0.018),
                     side: BorderSide(color: Colors.red.shade400, width: 1.4),
@@ -186,7 +150,6 @@ class ProfilePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -194,9 +157,7 @@ class ProfilePage extends StatelessWidget {
                       builder: (BuildContext ctx) {
                         return Dialog(
                           backgroundColor: Colors.transparent,
-                          insetPadding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                          ),
+                          insetPadding: const EdgeInsets.symmetric(horizontal: 32),
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
@@ -208,30 +169,11 @@ class ProfilePage extends StatelessWidget {
                               children: [
                                 Container(
                                   width: double.infinity,
-                                  padding: const EdgeInsets.fromLTRB(
-                                    24, 32, 24, 24,
-                                  ),
+                                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
                                   color: Colors.white,
                                   child: Column(
                                     children: [
-                                      Container(
-                                        width: 72,
-                                        height: 72,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.shade100,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: Colors.grey.shade200,
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                        child: const Icon(
-                                          Icons.logout_rounded,
-                                          size: 32,
-                                          color: Color(0xFFE24B4A),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 16),
+                                      const SizedBox(height: 8),
                                       const Text(
                                         "Keluar dari akun?",
                                         style: TextStyle(
@@ -261,15 +203,10 @@ class ProfilePage extends StatelessWidget {
                                       Expanded(
                                         child: OutlinedButton(
                                           style: OutlinedButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 14,
-                                            ),
-                                            side: BorderSide(
-                                              color: Colors.grey.shade300,
-                                            ),
+                                            padding: const EdgeInsets.symmetric(vertical: 14),
+                                            side: BorderSide(color: Colors.grey.shade300),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(14),
+                                              borderRadius: BorderRadius.circular(14),
                                             ),
                                           ),
                                           onPressed: () => Navigator.pop(ctx),
@@ -287,16 +224,11 @@ class ProfilePage extends StatelessWidget {
                                       Expanded(
                                         child: ElevatedButton(
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(
-                                              0xFFE24B4A,
-                                            ),
+                                            backgroundColor: const Color(0xFFE24B4A),
                                             foregroundColor: Colors.white,
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 14,
-                                            ),
+                                            padding: const EdgeInsets.symmetric(vertical: 14),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(14),
+                                              borderRadius: BorderRadius.circular(14),
                                             ),
                                             elevation: 0,
                                           ),
@@ -329,10 +261,7 @@ class ProfilePage extends StatelessWidget {
                       },
                     );
                   },
-
-                  icon: Icon(Icons.logout, color: Colors.red, size: w * 0.05),
-
-                  label: Text(
+                  child: Text(
                     "Keluar",
                     style: TextStyle(
                       color: Colors.red,
@@ -348,7 +277,6 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
       ),
-
       bottomNavigationBar: CustomNavbar(
         currentIndex: 2,
         role: role,
@@ -363,13 +291,10 @@ class ProfilePage extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
-
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-
         border: Border.all(color: const Color(0xFFE5E7EB)),
-
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
@@ -378,7 +303,6 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
       ),
-
       child: child,
     );
   }
@@ -393,27 +317,21 @@ class ProfilePage extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: w * 0.035, vertical: w * 0.025),
-
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(14),
       ),
-
       child: Row(
         children: [
           Container(
             padding: EdgeInsets.all(w * 0.018),
-
             decoration: BoxDecoration(
               color: const Color(0xFFEDEFF3),
               borderRadius: BorderRadius.circular(10),
             ),
-
             child: Icon(icon, size: w * 0.045, color: AppColors.bluePrimary),
           ),
-
           SizedBox(width: w * 0.03),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,9 +346,7 @@ class ProfilePage extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-
                 SizedBox(height: w * 0.008),
-
                 Text(
                   value,
                   overflow: TextOverflow.ellipsis,

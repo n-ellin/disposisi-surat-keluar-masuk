@@ -134,7 +134,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
   /// ================= FILTER COLORS =================
   final Map<String, Color> filterColors = {
     'semua': const Color(0xFF6F7A83),
-    'menunggu': const Color(0xFFC59B36),
+    'diproses': const Color(0xFFC59B36),
     'disetujui': const Color(0xFF3F9142),
     'ditolak': const Color(0xFFB63A3A),
   };
@@ -145,8 +145,8 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
       case 'semua':
         return 'Semua';
 
-      case 'menunggu':
-        return 'Menunggu';
+      case 'diproses':
+        return 'diproses';
 
       case 'disetujui':
         return 'Disetujui';

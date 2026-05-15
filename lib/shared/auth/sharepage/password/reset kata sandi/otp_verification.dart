@@ -13,17 +13,23 @@ class OtpVerificationPage extends StatefulWidget {
 }
 
 class _OtpVerificationPageState extends State<OtpVerificationPage> {
-  final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
+  final List<TextEditingController> _controllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
   bool _isLoading = false;
   int _timerSeconds = 120;
   int _attemptsLeft = 5;
+
   bool _isBlocked = false;
-  DateTime? _blockUntil;
+  int _blockSeconds = 0;
   Timer? _timer;
   Timer? _blockTimer;
+
+  String? _notifType;
+  String? _notifMessage;
 
   @override
   void initState() {
@@ -45,20 +51,23 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   }
 
   void _startBlockTimer() {
-    _blockUntil = DateTime.now().add(const Duration(hours: 1));
-    _blockTimer = Timer.periodic(const Duration(minutes: 1), (t) {
-      if (_blockUntil!.isBefore(DateTime.now())) {
+    setState(() {
+      _isBlocked = true;
+      _blockSeconds = 25 * 60; // ← 25 menit
+    });
+
+    _blockTimer?.cancel();
+    _blockTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (_blockSeconds <= 0) {
         t.cancel();
         setState(() {
           _isBlocked = false;
           _attemptsLeft = 5;
+          _notifType = 'success';
+          _notifMessage = 'Anda dapat mencoba kembali sekarang';
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Anda dapat mencoba lagi sekarang'),
-            backgroundColor: Color(0xFF10B981),
-          ),
-        );
+      } else {
+        setState(() => _blockSeconds--);
       }
     });
   }
@@ -70,28 +79,33 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   }
 
   String get _blockTimerText {
-    if (_blockUntil == null) return '';
-    final diff = _blockUntil!.difference(DateTime.now());
-    final m = (diff.inMinutes).toString().padLeft(2, '0');
-    final s = (diff.inSeconds % 60).toString().padLeft(2, '0');
+    final m = (_blockSeconds ~/ 60).toString().padLeft(2, '0');
+    final s = (_blockSeconds % 60).toString().padLeft(2, '0');
     return '$m:$s';
   }
 
   String get _maskedEmail {
     final parts = widget.email.split('@');
     if (parts.length != 2) return widget.email;
-    
     final local = parts[0];
     final domain = parts[1];
-    
     if (local.length <= 2) return widget.email;
-    
-    final visible = local.substring(0, 2);
-    final masked = '***';
-    return '$visible$masked@$domain';
+    return '${local.substring(0, 2)}***@$domain';
   }
 
   String get _otpCode => _controllers.map((c) => c.text).join();
+
+  void _showNotif(String type, String message) {
+    setState(() {
+      _notifType = type;
+      _notifMessage = message;
+    });
+    if (type != 'block') {
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) setState(() => _notifType = null);
+      });
+    }
+  }
 
   Future<void> _verifyOtp() async {
     if (_otpCode.length < 6) {
@@ -101,22 +115,13 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           break;
         }
       }
-      return;
-    }
-
-    if (_isBlocked) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Akun diblokir. Tunggu $_blockTimerText'),
-          backgroundColor: Color(0xFFEF4444),
-        ),
-      );
+      _showNotif('error', 'OTP salah. Silakan coba lagi.');
       return;
     }
 
     setState(() => _isLoading = true);
     await Future.delayed(const Duration(seconds: 2));
-    
+
     setState(() {
       _isLoading = false;
       _attemptsLeft--;
@@ -125,19 +130,14 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     if (!mounted) return;
 
     if (_attemptsLeft <= 0) {
-      _showAttemptsExhaustedDialog();
+      _showLimitDialog();
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('OTP salah. Sisa ${_attemptsLeft} percobaan'),
-        backgroundColor: Color(0xFFEF4444),
-      ),
-    );
+    _showNotif('error', 'OTP salah. Sisa $_attemptsLeft percobaan');
   }
 
-  void _showAttemptsExhaustedDialog() {
+  void _showLimitDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -145,29 +145,37 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Row(
           children: [
-            Icon(Icons.block, color: Color(0xFFEF4444), size: 28),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: Color(0xFFEF4444),
+              size: 28,
+            ),
             SizedBox(width: 12),
-            Text(
-              'Kesempatan Habis',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+            Flexible(
+              child: Text(
+                'Batas OTP Tercapai',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              ),
             ),
           ],
         ),
         content: const Text(
-          'Anda telah melebihi batas percobaan. Akun akan diblokir selama 1 jam ke depan.',
+          'Terlalu banyak percobaan. Tunggu 25 menit untuk mencoba lagi.',
           style: TextStyle(fontSize: 14, height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              setState(() => _isBlocked = true);
               _startBlockTimer();
               _clearOtpFields();
             },
             child: const Text(
               'OK',
-              style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFFEF4444)),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Color(0xFFEF4444),
+              ),
             ),
           ),
         ],
@@ -176,14 +184,20 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   }
 
   void _resendOtp() {
+    if (_isBlocked) return;
+
+    _attemptsLeft--;
+
+    if (_attemptsLeft <= 0) {
+      _clearOtpFields();
+      _showLimitDialog();
+      return;
+    }
+
     _clearOtpFields();
     _startTimer();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Kode OTP berhasil dikirim ulang'),
-        backgroundColor: AppColors.bluePrimary,
-      ),
-    );
+    setState(() {});
+    _showNotif('success', 'Kode OTP berhasil dikirim ulang');
   }
 
   void _clearOtpFields() {
@@ -209,7 +223,11 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         backgroundColor: const Color(0xFFF2F2F2),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: Colors.black87),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: Colors.black87,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -220,6 +238,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
+
+              // ── ICON ────────────────────────────────────────────────────
               Container(
                 width: 56,
                 height: 56,
@@ -227,142 +247,165 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   color: const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(Icons.key_outlined, color: AppColors.bluePrimary, size: 28),
+                child: Icon(
+                  Icons.key_outlined,
+                  color: AppColors.bluePrimary,
+                  size: 28,
+                ),
               ),
               const SizedBox(height: 24),
+
+              // ── TITLE ───────────────────────────────────────────────────
               const Text(
                 'Verifikasi OTP',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.black87),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                ),
               ),
               const SizedBox(height: 8),
               RichText(
                 text: TextSpan(
-                  style: const TextStyle(fontSize: 14, color: Colors.black45, height: 1.5),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black45,
+                    height: 1.5,
+                  ),
                   children: [
                     const TextSpan(text: 'Kode OTP sudah dikirim ke\n'),
                     TextSpan(
                       text: _maskedEmail,
-                      style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 36),
+
+              // ── LABEL OTP ───────────────────────────────────────────────
               const Text(
                 'Kode OTP',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
               const SizedBox(height: 12),
+
+              // ── OTP BOXES ───────────────────────────────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(6, (i) => _buildOtpBox(i)),
               ),
-              const SizedBox(height: 24), // Pindah ke atas tombol
+              const SizedBox(height: 16),
 
-              // Status display - DIPINDAH KE ATAS TOMBOL
+              // ── IN-PAGE NOTIF ─────────────────────────────────────────────
+              if (_notifType != null) _buildNotifBanner(),
+
+              const SizedBox(height: 8),
+
+              // ── STATUS ────────────────────────────────────────────────────
               if (_isBlocked)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFFBEB),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFF59E0B), width: 1),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.lock_clock, color: Color(0xFFF59E0B), size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: RichText(
+                _buildBlockedStatus()
+              else ...[
+                Center(
+                  child: _timerSeconds > 0
+                      ? RichText(
                           text: TextSpan(
-                            style: const TextStyle(fontSize: 13, color: Color(0xFF92400E)),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.black45,
+                            ),
                             children: [
-                              const TextSpan(text: 'Akun diblokir. Tunggu '),
+                              const TextSpan(text: 'Kode berlaku selama '),
                               TextSpan(
-                                text: _blockTimerText,
-                                style: const TextStyle(fontWeight: FontWeight.w700),
+                                text: _timerText,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              else ...[
-                Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: Center(
-                    child: _timerSeconds > 0
-                        ? RichText(
-                            text: TextSpan(
-                              style: const TextStyle(fontSize: 13, color: Colors.black45),
-                              children: [
-                                const TextSpan(text: 'Kode berlaku selama '),
-                                TextSpan(
-                                  text: _timerText,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : const Text(
-                            'Kode sudah kadaluarsa',
-                            style: TextStyle(fontSize: 13, color: Color(0xFFEF4444)),
+                        )
+                      : const Text(
+                          'Kode sudah kadaluarsa',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFFEF4444),
                           ),
-                  ),
+                        ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(bottom: 28),
-                  child: Center(
-                    child: Text(
-                      'Sisa percobaan: $_attemptsLeft',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: _attemptsLeft <= 2 ? const Color(0xFFEF4444) : Colors.black87,
-                      ),
+                const SizedBox(height: 6),
+                Center(
+                  child: Text(
+                    'Sisa percobaan: $_attemptsLeft',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _attemptsLeft <= 2
+                          ? const Color(0xFFEF4444)
+                          : Colors.black54,
                     ),
                   ),
                 ),
               ],
 
-              // Tombol di atas resend
+              const SizedBox(height: 24),
+
+              // ── TOMBOL VERIFIKASI ──────────────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: (_isLoading || _timerSeconds == 0 || _isBlocked) ? null : _verifyOtp,
+                  onPressed: (_isLoading || _timerSeconds == 0 || _isBlocked)
+                      ? null
+                      : _verifyOtp,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.bluePrimary,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     disabledBackgroundColor: const Color(0xFF93C5FD),
                   ),
                   child: _isLoading
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
-                      : Text(
-                          _isBlocked ? 'DIBLOKIR' : 'Verifikasi',
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                      : const Text(
+                          'Verifikasi',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                 ),
               ),
 
               const SizedBox(height: 16),
+
+              // ── KIRIM ULANG ────────────────────────────────────────────────
               Center(
                 child: TextButton(
-                  onPressed: (_timerSeconds == 0 && !_isBlocked) ? _resendOtp : null,
+                  onPressed: (_timerSeconds == 0 && !_isBlocked)
+                      ? _resendOtp
+                      : null,
                   child: Text(
-                    'Kirim ulang kode',
+                    _isBlocked
+                        ? 'Tunggu timer untuk kirim OTP baru'
+                        : 'Kirim ulang kode',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -373,6 +416,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   ),
                 ),
               ),
+
               const Spacer(),
               const SizedBox(height: 12),
             ],
@@ -382,57 +426,151 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     );
   }
 
+  // ── IN-PAGE BANNER NOTIF ──────────────────────────────────────────────────
+  Widget _buildNotifBanner() {
+    final isSuccess = _notifType == 'success';
+
+    final color = isSuccess ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+
+          const SizedBox(width: 8),
+
+          Text(
+            _notifMessage ?? '',
+
+            style: TextStyle(
+              fontSize: 13,
+              color: color,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── BLOCKED STATUS ────────────────────────────────────────────────────────
+  Widget _buildBlockedStatus() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFFBEB),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFF59E0B)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.lock_clock, color: Color(0xFFF59E0B), size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(fontSize: 13, color: Color(0xFF92400E)),
+                children: [
+                  const TextSpan(text: 'Percobaan tercapai. Coba lagi dalam '),
+                  TextSpan(
+                    text: _blockTimerText,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── OTP BOX ───────────────────────────────────────────────────────────────
   Widget _buildOtpBox(int index) {
-    final isEmpty = _controllers[index].text.isEmpty;
+    final isFilled = _controllers[index].text.isNotEmpty;
 
     return SizedBox(
       width: 46,
       height: 54,
-      child: TextFormField(
-        controller: _controllers[index],
-        focusNode: _focusNodes[index],
-        keyboardType: TextInputType.text,
-        textAlign: TextAlign.center,
-        maxLength: 1,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
-        ],
-        style: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: Colors.black87,
-        ),
-        decoration: InputDecoration(
-          counterText: '',
-          filled: true,
-          fillColor: isEmpty ? const Color(0xFFFFFBEB) : const Color(0xFFF9FAFB),
-          contentPadding: EdgeInsets.zero,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: isEmpty ? const Color(0xFFF59E0B) : const Color(0xFFE5E7EB),
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: isEmpty ? const Color(0xFFF59E0B) : const Color(0xFFE5E7EB),
-              width: isEmpty ? 2 : 1,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: AppColors.bluePrimary, width: 2),
-          ),
-        ),
-        onChanged: (val) {
-          if (val.isNotEmpty && index < 5) {
-            _focusNodes[index + 1].requestFocus();
-          } else if (val.isEmpty && index > 0) {
+      child: KeyboardListener(
+        focusNode: FocusNode(),
+        onKeyEvent: (event) {
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.backspace &&
+              _controllers[index].text.isEmpty &&
+              index > 0) {
             _focusNodes[index - 1].requestFocus();
+            _controllers[index - 1].clear();
+            setState(() {});
           }
-          setState(() {});
         },
+        child: TextFormField(
+          controller: _controllers[index],
+          focusNode: _focusNodes[index],
+          keyboardType: TextInputType.text,
+          textAlign: TextAlign.center,
+          maxLength: 6,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
+          ],
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: Colors.black87,
+          ),
+          decoration: InputDecoration(
+            counterText: '',
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: EdgeInsets.zero,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: isFilled ? AppColors.bluePrimary : Colors.grey.shade300,
+                width: isFilled ? 1.5 : 1,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: AppColors.bluePrimary,
+                width: 2,
+              ),
+            ),
+          ),
+          onChanged: (val) {
+            if (val.length > 1) {
+              final clean = val.replaceAll(RegExp(r'[^A-Za-z0-9]'), '');
+              for (int i = 0; i < 6; i++) {
+                _controllers[i].text = i < clean.length ? clean[i] : '';
+              }
+              _focusNodes[5].requestFocus();
+              setState(() {});
+              return;
+            }
+
+            if (val.isNotEmpty && index < 5) {
+              _focusNodes[index + 1].requestFocus();
+            } else if (val.isEmpty && index > 0) {
+              _focusNodes[index - 1].requestFocus();
+            }
+            setState(() {});
+          },
+        ),
       ),
     );
   }

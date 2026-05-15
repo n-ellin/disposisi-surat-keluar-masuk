@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/home.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+import 'package:ta_mobile_disposisi_surat/modules/users/menuuser.dart';
 import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/password/reset kata sandi/input_email.dart';
 
 class Login extends StatefulWidget {
@@ -103,13 +104,7 @@ class _LoginState extends State<Login> {
     } else if (email == 'user@gmail.com' && password == '123456') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => Home(
-            role: Role.other,
-            nama: "User",
-            email: email,
-            jabatan: "User",
-          ),
+        MaterialPageRoute(builder: (_) => const MenuUser(),
         ),
       );
     } else {

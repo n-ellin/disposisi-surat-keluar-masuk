@@ -1,5 +1,5 @@
 enum Role {
   tu,
   kepsek,
-  other,
+  users,
 }

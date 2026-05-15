@@ -15,6 +15,8 @@ class InputSuratMasuk extends StatefulWidget {
 class _InputSuratMasukState extends State<InputSuratMasuk> {
   String? _selectedStatus;
 
+  bool _showLampiran = false;
+
   final TextEditingController catatanTerimaController = TextEditingController();
   final TextEditingController catatanTolakController = TextEditingController();
   final TextEditingController tanggapanController = TextEditingController();
@@ -43,6 +45,45 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     super.dispose();
   }
 
+  // ── CONFIRM DIALOG ─────────────────────────────────────────────────────────
+  void _showConfirmDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.send_rounded, color: AppColors.bluePrimary),
+            SizedBox(width: 8),
+            Text("Kirim Disposisi"),
+          ],
+        ),
+        content: const Text("Apakah Anda yakin ingin mengirim disposisi ini?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal", style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.bluePrimary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text("Yakin"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,26 +97,33 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               const SizedBox(height: 18),
 
               // ── HEADER ──────────────────────────────────────────────────
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
-                      color: AppColors.bluePrimary,
-                      size: 20,
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 10),
+                child: Row(
+                  children: [
+                    InkWell(
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: () => Navigator.pop(context),
+                      child: const Padding(
+                        padding: EdgeInsets.all(6),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: AppColors.bluePrimary,
+                          size: 22,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 2),
-                  const Text(
-                    "Detail Surat Masuk",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.bluePrimary,
+                    const SizedBox(width: 10),
+                    const Text(
+                      "Detail Surat Masuk",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.bluePrimary,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -109,9 +157,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                     DropdownMenuItem(value: 'terima', child: Text("Terima")),
                     DropdownMenuItem(value: 'tolak', child: Text("Tolak")),
                   ],
-                  onChanged: (value) {
-                    setState(() => _selectedStatus = value);
-                  },
+                  onChanged: (value) => setState(() => _selectedStatus = value),
                 ),
               ),
               const SizedBox(height: 18),
@@ -148,29 +194,13 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 30,
-                        vertical: 12,
+                        vertical: 10,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => OutputSuratmasuk(
-                            isApproved: isApproved,
-                            catatan: isApproved
-                                ? catatanTerimaController.text
-                                : catatanTolakController.text,
-                            tujuan: tanggapanController.text,
-                            instruksi: instruksiController.text,
-                            koordinasi: koordinasiController.text,
-                            diteruskanKe: selectedTujuan.join(", "),
-                          ),
-                        ),
-                      );
-                    },
+                    onPressed: () => _showConfirmDialog(context),
                     child: const Text("Kirim"),
                   ),
                 ),
@@ -219,29 +249,68 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
             suratData['Dari'] ?? '-',
           ),
           _detailItem(Icons.notes, "Perihal", suratData['Perihal'] ?? '-'),
-
-          // ── LAMPIRAN: langsung carousel preview ──────────────────────
+          Text(
+            "Lampiran",
+            style: TextStyle(
+              color: Colors.grey.shade500,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
           if (attachmentUrls.isEmpty)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+            Text(
+              "Tidak ada lampiran",
+              style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+            )
+          else
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => FullScreenImageViewer(
+                      imageUrls: attachmentUrls,
+                      initialIndex: 0,
+                    ),
+                  ),
+                );
+              },
               child: Container(
-                width: double.infinity,
-                color: Colors.grey.shade200,
-                padding: const EdgeInsets.symmetric(vertical: 40),
-                child: const Column(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Row(
                   children: [
-                    Icon(Icons.insert_drive_file, size: 50),
-                    SizedBox(height: 10),
+                    Icon(
+                      Icons.attach_file_rounded,
+                      color: AppColors.bluePrimary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
                     Text(
-                      "Tidak ada lampiran",
-                      style: TextStyle(color: Colors.grey),
+                      "${attachmentUrls.length} File Lampiran",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(
+                      Icons.remove_red_eye_outlined,
+                      color: Colors.grey.shade500,
+                      size: 16,
                     ),
                   ],
                 ),
               ),
-            )
-          else
-            _AttachmentCarousel(attachmentUrls: attachmentUrls),
+            ),
         ],
       ),
     );
@@ -330,10 +399,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     );
   }
 
-  Widget _sectionCard({
-    required String title,
-    required List<Widget> children,
-  }) {
+  Widget _sectionCard({required String title, required List<Widget> children}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -388,10 +454,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     );
   }
 
-  Widget _textField({
-    required String hint,
-    TextEditingController? controller,
-  }) {
+  Widget _textField({required String hint, TextEditingController? controller}) {
     return TextField(
       controller: controller,
       maxLines: 2,
@@ -422,6 +485,8 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     return TextField(
       controller: multiSelectController,
       readOnly: true,
+      enableInteractiveSelection: false,
+      showCursor: false,
       decoration: InputDecoration(
         hintText: "Pilih penerima",
         filled: true,
@@ -554,24 +619,6 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Label lampiran
-        Row(
-          children: [
-            Icon(
-              Icons.attach_file_rounded,
-              size: 18,
-              color: AppColors.bluePrimary,
-            ),
-            const SizedBox(width: 6),
-            const Text(
-              "Lampiran",
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-
-        // Carousel
         SizedBox(
           height: 230,
           child: Stack(
@@ -580,16 +627,12 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
               PageView.builder(
                 controller: _pageController,
                 itemCount: attachmentUrls.length,
-                onPageChanged: (index) {
-                  setState(() => _currentIndex = index);
-                },
+                onPageChanged: (index) => setState(() => _currentIndex = index),
                 itemBuilder: (context, index) {
                   final path = attachmentUrls[index];
-
                   return Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: GestureDetector(
-                      // ── Tap → full screen viewer ──────────────────────
                       onTap: () {
                         Navigator.push(
                           context,
@@ -635,29 +678,24 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                   );
                 },
               ),
-
-              // Dot indicator
               Positioned(
                 bottom: 12,
                 child: Row(
-                  children: List.generate(
-                    attachmentUrls.length,
-                    (index) {
-                      final isActive = _currentIndex == index;
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        margin: const EdgeInsets.symmetric(horizontal: 3),
-                        width: isActive ? 18 : 7,
-                        height: 7,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: isActive
-                              ? AppColors.bluePrimary
-                              : Colors.grey.shade400,
-                        ),
-                      );
-                    },
-                  ),
+                  children: List.generate(attachmentUrls.length, (index) {
+                    final isActive = _currentIndex == index;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      width: isActive ? 18 : 7,
+                      height: 7,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: isActive
+                            ? AppColors.bluePrimary
+                            : Colors.grey.shade400,
+                      ),
+                    );
+                  }),
                 ),
               ),
             ],

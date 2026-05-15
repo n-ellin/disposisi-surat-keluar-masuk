@@ -9,7 +9,7 @@ import 'shared/auth/sharepage/password/gantipw.dart';
 
 // SHARED PAGE
 import 'shared/auth/sharepage/profile.dart';
-import 'shared/auth/sharepage/notif.dart';
+import 'shared/widgets/notif.dart';
 
 // TATA USAHA
 import 'modules/tata_usaha/menuTU.dart';
@@ -24,9 +24,9 @@ import 'modules/kepsek/detail_surat/input_suratkeluar.dart';
 import 'modules/kepsek/history_kepsek.dart';
 
 // OTHER
-import 'modules/other/menuother.dart';
-import 'modules/other/history_other.dart';
-import 'modules/other/detailsurat.dart';
+import 'modules/users/menuuser.dart';
+import 'modules/users/history_other.dart';
+import 'modules/users/detailsurat.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -56,7 +56,6 @@ class MyApp extends StatelessWidget {
       routes: {
         // ================= AUTH =================
         '/splash_screen': (context) => const SplashScreen(),
-        
 
         '/signin': (context) => const Login(),
 
@@ -71,7 +70,8 @@ class MyApp extends StatelessWidget {
         ),
 
         // ================= NOTIFICATION =================
-        '/notif': (context) => const NotificationPage(role: Role.tu),
+        '/notif': (context) =>
+            NotificationPage(role: Role.tu, notifications: []),
 
         // ================= HISTORY =================
         '/history_tu': (context) => const HistoryTUPage(),
@@ -109,10 +109,15 @@ class MyApp extends StatelessWidget {
         '/menu_kepsek': (context) =>
             const KepsekDashboardPage(jenisSurat: 'Masuk'),
 
-        '/menu_other': (context) => const MenuOther(),
+        '/menu_other': (context) => const MenuUser(),
 
         // ================= OTHER =================
-        '/detail_suratOther': (context) => const DetailSuratOther(),
+        '/detail_suratUsers': (context) {
+          final surat =
+              ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>;
+          return DetailSuratUsers(surat: surat);
+        },
       },
     );
   }

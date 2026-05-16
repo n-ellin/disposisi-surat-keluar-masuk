@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
+import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/filter_date.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';

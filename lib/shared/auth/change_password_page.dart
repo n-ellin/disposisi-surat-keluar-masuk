@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/password/reset kata sandi/input_email.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/reset%20kata%20sandi/input_email_page.dart';
 
 class GantiKataSandiPage extends StatefulWidget {
   const GantiKataSandiPage({super.key});

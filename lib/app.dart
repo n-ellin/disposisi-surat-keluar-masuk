@@ -3,30 +3,30 @@ import 'package:flutter/material.dart';
 import 'core/constants/role.dart';
 
 // AUTH
-import 'shared/auth/sharepage/splash_screen.dart';
-import 'shared/auth/sharepage/login.dart';
-import 'shared/auth/sharepage/password/gantipw.dart';
+import 'shared/auth/pages/splash_screen.dart';
+import 'shared/auth/login_page.dart';
+import 'shared/auth/change_password_page.dart';
 
 // SHARED PAGE
-import 'shared/auth/sharepage/profile.dart';
-import 'shared/widgets/notif.dart';
+import 'shared/auth/profile_page.dart';
+import 'shared/widgets/notification_page.dart';
 
 // TATA USAHA
-import 'modules/tata_usaha/menuTU.dart';
-import 'modules/tata_usaha/history_tu.dart';
-import 'modules/tata_usaha/detail_surat/output_pengajuanSurat.dart';
-import 'modules/tata_usaha/detail_surat/output_disposisi_surat.dart';
+import 'features/tata usaha/pages/menuTU.dart';
+import 'features/tata usaha/pages/history_tu.dart';
+import 'features/tata usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
+import 'features/tata usaha/pages/hasil_disposisi_surat_masuk_page.dart';
 
 // KEPSEK
-import 'modules/kepsek/menuukepsek.dart';
-import 'modules/kepsek/detail_surat/disposisi_suratmasuk.dart';
-import 'modules/kepsek/detail_surat/pengajuan_suratkeluar.dart';
-import 'modules/kepsek/history_kepsek.dart';
+import 'features/kepsek/pages/menu_kepsek_page.dart';
+import 'features/kepsek/pages/disposisi_suratmasuk.dart';
+import 'features/kepsek/pages/pengajuan_suratkeluar.dart';
+import 'features/kepsek/pages/history_kepsek_page.dart';
 
 // OTHER
-import 'modules/users/menuuser.dart';
-import 'modules/users/historyUsers.dart';
-import 'modules/users/detailsurat.dart';
+import 'features/users/pages/menu_user_page.dart';
+import 'features/users/pages/history_user_page.dart';
+import 'features/users/pages/detail_surat_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

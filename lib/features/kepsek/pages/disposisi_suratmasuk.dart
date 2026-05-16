@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/core/constants/full-img-viewer.dart';
-import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_disposisi_surat.dart';
+import 'package:ta_mobile_disposisi_surat/core/utils/full-img-viewer.dart';
+import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_disposisi_surat_masuk_page.dart';
 
 class InputSuratMasuk extends StatefulWidget {
   final Map<String, dynamic> surat;

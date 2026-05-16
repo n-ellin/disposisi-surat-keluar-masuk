@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/password/reset kata sandi/otp_verification.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/reset%20kata%20sandi/otp_verification_page.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 class ForgotPasswordPage extends StatefulWidget {

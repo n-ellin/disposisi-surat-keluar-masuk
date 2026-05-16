@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/core/constants/full-img-viewer.dart';
-import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_pengajuanSurat.dart';
+import 'package:ta_mobile_disposisi_surat/core/utils/full-img-viewer.dart';
+import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
 
 class InputSuratKeluar extends StatefulWidget {
   const InputSuratKeluar({super.key});

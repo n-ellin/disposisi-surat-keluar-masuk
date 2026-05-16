@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ta_mobile_disposisi_surat/shared/auth/sharepage/password/reset kata sandi/new_pw.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/reset%20kata%20sandi/new_password_page.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 class OtpVerificationPage extends StatefulWidget {

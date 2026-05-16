@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/core/constants/full-img-viewer.dart';
+import 'package:ta_mobile_disposisi_surat/core/utils/full-img-viewer.dart';
 
 class DetailSuratUsers extends StatelessWidget {
   final Map<String, dynamic> surat;

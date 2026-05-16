@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
-import 'package:ta_mobile_disposisi_surat/modules/users/detailsurat.dart';
+import 'package:ta_mobile_disposisi_surat/features/users/pages/detail_surat_page.dart';
 
-import 'package:ta_mobile_disposisi_surat/shared/widgets/notif.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/notification_page.dart';
 
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 
-import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
-import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
+import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
 
 class MenuUser extends StatefulWidget {
   const MenuUser({super.key});

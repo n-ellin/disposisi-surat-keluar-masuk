@@ -17,19 +17,19 @@ class CustomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
       child: Material(
         color: Colors.transparent,
-        elevation: 3,
+        elevation: 4,
         shadowColor: Colors.black12,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(24),
         clipBehavior: Clip.antiAlias,
         child: BottomAppBar(
           color: Colors.white,
           elevation: 0,
           shape: const _NoNotch(),
           child: SizedBox(
-            height: 48, // sebelumnya 55
+            height: 54,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: _buildItems(),
@@ -63,8 +63,8 @@ class CustomNavbar extends StatelessWidget {
             scale: scale,
             child: SvgPicture.asset(
               asset,
-              width: 20,
-              height: 20,
+              width: 22,
+              height: 22,
               colorFilter: ColorFilter.mode(
                 isActive ? const Color(0xFF2E8BC0) : Color(0xFF9FB8C2),
                 BlendMode.srcIn,

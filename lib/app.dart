@@ -14,18 +14,18 @@ import 'shared/widgets/notif.dart';
 // TATA USAHA
 import 'modules/tata_usaha/menuTU.dart';
 import 'modules/tata_usaha/history_tu.dart';
-import 'modules/tata_usaha/detail_surat/output_suratkeluar.dart';
-import 'modules/tata_usaha/detail_surat/output_suratmasuk.dart';
+import 'modules/tata_usaha/detail_surat/output_pengajuanSurat.dart';
+import 'modules/tata_usaha/detail_surat/output_disposisi_surat.dart';
 
 // KEPSEK
 import 'modules/kepsek/menuukepsek.dart';
-import 'modules/kepsek/detail_surat/input_suratmasuk.dart';
-import 'modules/kepsek/detail_surat/input_suratkeluar.dart';
+import 'modules/kepsek/detail_surat/disposisi_suratmasuk.dart';
+import 'modules/kepsek/detail_surat/pengajuan_suratkeluar.dart';
 import 'modules/kepsek/history_kepsek.dart';
 
 // OTHER
 import 'modules/users/menuuser.dart';
-import 'modules/users/history_other.dart';
+import 'modules/users/historyUsers.dart';
 import 'modules/users/detailsurat.dart';
 
 class MyApp extends StatelessWidget {

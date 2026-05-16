@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
-enum CardRole { tu, kepsek, other }
+enum CardRole { tu, kepsek, Users }
 
 enum CardType { home, menu, history }
 

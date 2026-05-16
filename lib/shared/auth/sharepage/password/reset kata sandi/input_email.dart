@@ -91,7 +91,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: 'contoh@email.com',
+                    hintText: 'Masukkan email',
                     hintStyle: const TextStyle(color: Colors.black26, fontSize: 14),
                     prefixIcon: const Icon(Icons.email_outlined, size: 20, color: Colors.black38),
                     filled: true,
@@ -147,23 +147,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           ),
                   ),
                 ),
-
-                const Spacer(),
-
-                Center(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      'Kembali ke Login',
-                      style: TextStyle(
-                        color: AppColors.bluePrimary,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
               ],
             ),
           ),

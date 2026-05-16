@@ -4,10 +4,10 @@ import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratmasuk.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_disposisi_surat.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
-import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratkeluar.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_pengajuanSurat.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/filter_date.dart';
 
 class HistoryTUPage extends StatefulWidget {
   const HistoryTUPage({super.key});
@@ -17,8 +17,10 @@ class HistoryTUPage extends StatefulWidget {
 }
 
 class _HistoryTUPageState extends State<HistoryTUPage> {
-  String _searchQuery = '';
-  String _statusFilter = 'semua';
+  String _searchQuery = FilterState.tuSearchQuery;
+  String _statusFilter = FilterState.tuStatusFilter;
+  String _dateFilter = FilterState.tuDateFilter;
+  DateTime? _selectedDate = FilterState.tuSelectedDate;
 
   List<Map<String, dynamic>> get _historySurat => DummySurat.allSurat;
 
@@ -26,7 +28,9 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
     return _historySurat.where((s) {
       final status = s['status'].toString().toLowerCase();
 
-      if (status != 'disetujui' && status != 'ditolak') return false;
+      if (status != 'disetujui' && status != 'ditolak') {
+        return false;
+      }
 
       final query = _searchQuery.toLowerCase();
       final jenis = s['jenisSurat'].toString().toLowerCase();
@@ -43,8 +47,134 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
 
       final matchStatus = _statusFilter == 'semua' || status == _statusFilter;
 
-      return matchSearch && matchStatus;
+      bool matchDate = true;
+
+      try {
+        final parts = tanggal.split(' ');
+        final day = int.parse(parts[0]);
+
+        final monthMap = {
+          'januari': 1,
+          'februari': 2,
+          'maret': 3,
+          'april': 4,
+          'mei': 5,
+          'juni': 6,
+          'juli': 7,
+          'agustus': 8,
+          'september': 9,
+          'oktober': 10,
+          'november': 11,
+          'desember': 12,
+        };
+
+        final month = monthMap[parts[1].toLowerCase()] ?? 1;
+        final year = int.parse(parts[2]);
+        final suratDate = DateTime(year, month, day);
+        final now = DateTime.now();
+
+        if (_dateFilter == 'Hari ini') {
+          matchDate =
+              suratDate.day == now.day &&
+              suratDate.month == now.month &&
+              suratDate.year == now.year;
+        } else if (_dateFilter == 'Bulan ini') {
+          matchDate =
+              suratDate.month == now.month && suratDate.year == now.year;
+        } else if (_selectedDate != null) {
+          matchDate =
+              suratDate.day == _selectedDate!.day &&
+              suratDate.month == _selectedDate!.month &&
+              suratDate.year == _selectedDate!.year;
+        }
+      } catch (_) {
+        matchDate = true;
+      }
+
+      return matchSearch && matchStatus && matchDate;
     }).toList();
+  }
+
+  void _showDateFilter() async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          title: const Text(
+            'Filter Tanggal',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _dateTile('Hari ini'),
+              _dateTile('Bulan ini'),
+              _dateTile('Pilih tanggal'),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (result == null) return;
+
+    if (result == 'Pilih tanggal') {
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2020),
+        lastDate: DateTime(2030),
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: AppColors.bluePrimary,
+                onPrimary: Colors.white,
+                onSurface: Colors.black87,
+              ),
+              datePickerTheme: DatePickerThemeData(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+            child: child!,
+          );
+        },
+      );
+
+      if (picked != null) {
+        setState(() {
+          _selectedDate = picked;
+          _dateFilter = '${picked.day}/${picked.month}/${picked.year}';
+          FilterState.tuSelectedDate = picked;
+          FilterState.tuDateFilter = _dateFilter;
+        });
+      }
+    } else {
+      setState(() {
+        _selectedDate = null;
+        _dateFilter = result;
+        FilterState.tuSelectedDate = null;
+        FilterState.tuDateFilter = result;
+      });
+    }
+  }
+
+  Widget _dateTile(String title) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+      ),
+      onTap: () {
+        Navigator.pop(context, title);
+      },
+    );
   }
 
   @override
@@ -53,18 +183,16 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
     final h = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      // [8] Background: subtle off-white biar ga terlalu flat
       backgroundColor: const Color(0xFFF2F2F2),
 
       body: SafeArea(
         child: Column(
           children: [
-            // ─── HEADER ───────────────────────────────────────────────
+            // HEADER
             Padding(
               padding: EdgeInsets.fromLTRB(w * 0.04, h * 0.018, w * 0.04, 0),
               child: Column(
                 children: [
-                  // [1] Title center, spacing seimbang
                   Text(
                     "Riwayat",
                     style: TextStyle(
@@ -77,15 +205,12 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
 
                   SizedBox(height: h * 0.016),
 
-                  // [2] Search Bar: shadow tipis, lebih kontras
+                  // SEARCH BAR
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: const Color(0xFFE2E5EA),
-                        width: 1,
-                      ),
+                      border: Border.all(color: const Color(0xFFE2E5EA)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.05),
@@ -95,8 +220,12 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                       ],
                     ),
                     child: TextField(
-                      onChanged: (value) =>
-                          setState(() => _searchQuery = value),
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                          FilterState.tuSearchQuery = value;
+                        });
+                      },
                       style: TextStyle(fontSize: w * 0.036),
                       decoration: InputDecoration(
                         hintText: "Cari surat...",
@@ -109,21 +238,17 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                           color: Colors.grey.shade400,
                           size: w * 0.052,
                         ),
-                        // [2] Sedikit kurangi height dengan contentPadding
                         contentPadding: EdgeInsets.symmetric(
                           vertical: h * 0.014,
                         ),
                         border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
                       ),
                     ),
                   ),
 
                   SizedBox(height: h * 0.014),
 
-                  // [3] Filter Chips
-                  // [3] Filter Chips — full width
+                  // FILTER STATUS
                   Row(
                     children: [
                       Expanded(child: _filterChip("semua")),
@@ -134,12 +259,58 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                     ],
                   ),
 
-                  SizedBox(height: h * 0.014),
+                  SizedBox(height: h * 0.012),
+
+                  // FILTER TANGGAL
+                  GestureDetector(
+                    onTap: _showDateFilter,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE2E5EA)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today_rounded,
+                                size: 18,
+                                color: AppColors.bluePrimary,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _dateFilter,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: h * 0.016),
                 ],
               ),
             ),
 
-            // ─── LIST ──────────────────────────────────────────────────
+            // LIST
             Expanded(
               child: _filteredSurat.isEmpty
                   ? Center(
@@ -182,6 +353,7 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                       itemBuilder: (context, index) {
                         final surat = _filteredSurat[index];
                         final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
+
                         return SuratCard(
                           jenisSurat: surat['jenisSurat'] ?? '',
                           tanggal: surat['tanggal'] ?? '-',
@@ -220,7 +392,6 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
         ),
       ),
 
-      // [7] Bottom Nav: shadow tipis di atas
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
@@ -249,7 +420,6 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
     );
   }
 
-  // [3] Filter Chip — compact, border tipis untuk nonaktif
   Widget _filterChip(String label) {
     final isActive = _statusFilter == label;
 
@@ -268,7 +438,12 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
     final displayLabel = label[0].toUpperCase() + label.substring(1);
 
     return GestureDetector(
-      onTap: () => setState(() => _statusFilter = label),
+      onTap: () {
+        setState(() {
+          _statusFilter = label;
+          FilterState.tuStatusFilter = label;
+        });
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: double.infinity,

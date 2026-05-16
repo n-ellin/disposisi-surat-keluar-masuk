@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/full-img-viewer.dart';
-import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratmasuk.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_disposisi_surat.dart';
 
 class InputSuratMasuk extends StatefulWidget {
   final Map<String, dynamic> surat;
@@ -460,7 +460,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       maxLines: 2,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
         filled: true,
         fillColor: Colors.white,
         contentPadding: const EdgeInsets.symmetric(

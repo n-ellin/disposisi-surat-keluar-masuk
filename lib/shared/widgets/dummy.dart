@@ -142,7 +142,7 @@ class DummySurat {
 
       'jenisSurat': 'Surat Keluar',
 
-      'tanggal': '9 Mei 2026',
+      'tanggal': '8 Mei 2026',
 
       'status': 'menunggu',
 

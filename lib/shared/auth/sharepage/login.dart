@@ -69,7 +69,7 @@ class _LoginState extends State<Login> {
 
       /// PASSWORD KOSONG
       if (password.isEmpty) {
-        passwordError = "Password wajib diisi";
+        passwordError = "Kata sandi wajib diisi";
       }
     });
 
@@ -109,7 +109,7 @@ class _LoginState extends State<Login> {
       );
     } else {
       setState(() {
-        passwordError = "Password salah";
+        passwordError = "Kata sandi salah";
       });
     }
   }
@@ -235,7 +235,7 @@ class _LoginState extends State<Login> {
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: const Text(
-                              "Lupa password?",
+                              "Lupa Kata sandi?",
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,

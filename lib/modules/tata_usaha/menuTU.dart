@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 
-import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratmasuk.dart';
-import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_suratkeluar.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_disposisi_surat.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_pengajuanSurat.dart';
 
 class TuDashboardPage extends StatefulWidget {
   final String jenisSurat;
@@ -213,22 +213,38 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
             SizedBox(height: h * 0.015),
 
             /// SEARCH
-            TextField(
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-              },
-              style: TextStyle(fontSize: w * 0.04),
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search, size: w * 0.055),
-                hintText: 'Cari Surat...',
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                contentPadding: EdgeInsets.symmetric(vertical: h * 0.018),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(w * 0.06),
-                  borderSide: BorderSide.none,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFE2E5EA), width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                onChanged: (value) => setState(() => _searchQuery = value),
+                style: TextStyle(fontSize: w * 0.036),
+                decoration: InputDecoration(
+                  hintText: "Cari surat...",
+                  hintStyle: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: w * 0.036,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: Colors.grey.shade400,
+                    size: w * 0.052,
+                  ),
+                  // [2] Sedikit kurangi height dengan contentPadding
+                  contentPadding: EdgeInsets.symmetric(vertical: h * 0.014),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
                 ),
               ),
             ),

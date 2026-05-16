@@ -108,6 +108,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   }
 
   Future<void> _verifyOtp() async {
+    // VALIDASI INPUT
     if (_otpCode.length < 6) {
       for (int i = 0; i < 6; i++) {
         if (_controllers[i].text.isEmpty) {
@@ -115,26 +116,24 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           break;
         }
       }
-      _showNotif('error', 'OTP salah. Silakan coba lagi.');
+
+      _showNotif('error', 'OTP harus 6 digit');
       return;
     }
 
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
 
-    setState(() {
-      _isLoading = false;
-      _attemptsLeft--;
-    });
+    await Future.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
 
-    if (_attemptsLeft <= 0) {
-      _showLimitDialog();
-      return;
-    }
+    setState(() => _isLoading = false);
 
-    _showNotif('error', 'OTP salah. Sisa $_attemptsLeft percobaan');
+    // OTP BERHASIL
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const NewPasswordPage()),
+    );
   }
 
   void _showLimitDialog() {

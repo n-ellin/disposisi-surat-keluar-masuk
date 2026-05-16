@@ -22,6 +22,13 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
   bool min8Char = false;
   bool hasUpperLower = false;
   bool passwordMatch = false;
+  bool oldPasswordCorrect = false;
+
+  void validateOldPassword(String value) {
+    setState(() {
+      oldPasswordCorrect = value == "Admin123";
+    });
+  }
 
   void validatePassword(String value) {
     setState(() {
@@ -38,7 +45,89 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
     });
   }
 
-  bool get isValid => hasNumber && min8Char && hasUpperLower && passwordMatch;
+  bool get isValid =>
+      oldPasswordCorrect &&
+      hasNumber &&
+      min8Char &&
+      hasUpperLower &&
+      passwordMatch;
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.all(24),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF6FF),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: const Icon(
+                Icons.check_circle_outline,
+                color: AppColors.bluePrimary,
+                size: 40,
+              ),
+            ),
+
+            const SizedBox(height: 18),
+
+            const Text(
+              "Password Berhasil Diubah",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 10),
+
+            const Text(
+              "Kata sandi akun kamu berhasil diperbarui.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+                height: 1.5,
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.bluePrimary,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+
+                onPressed: () {
+                  Navigator.pop(context); // tutup dialog
+                  Navigator.pop(context); // balik halaman sebelumnya
+                },
+
+                child: const Text(
+                  "OK",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,28 +141,36 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
               const SizedBox(height: 12),
 
               // HEADER
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
-                      color: AppColors.bluePrimary,
-                      size: 20,
+              // HEADER
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      splashRadius: 20,
+                      icon: const Icon(
+                        Icons.arrow_back_ios,
+                        color: AppColors.bluePrimary,
+                        size: 20,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 2),
-                  const Text(
-                    "Ganti Kata Sandi",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.bluePrimary,
-                    ),
-                  ),
-                ],
-              ),
 
+                    const SizedBox(width: 6),
+
+                    const Text(
+                      "Ganti Kata Sandi",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.bluePrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 20),
 
               Expanded(
@@ -118,10 +215,20 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                               controller: oldPassC,
                               hint: "Masukkan kata sandi lama",
                               obscure: obscureOld,
+                              onChanged: validateOldPassword,
                               onTap: () =>
                                   setState(() => obscureOld = !obscureOld),
                             ),
-
+                            if (oldPassC.text.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: buildValidation(
+                                  oldPasswordCorrect
+                                      ? "Password lama benar"
+                                      : "Password lama salah",
+                                  oldPasswordCorrect,
+                                ),
+                              ),
                             const SizedBox(height: 20),
 
                             buildLabel("KATA SANDI BARU"),
@@ -228,7 +335,7 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    onPressed: isValid ? () {} : null,
+                    onPressed: isValid ? _showSuccessDialog : null,
                     child: const Text(
                       "Simpan Perubahan",
                       style: TextStyle(
@@ -270,6 +377,16 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
       controller: controller,
       obscureText: obscure,
       onChanged: onChanged,
+
+      enableInteractiveSelection: true,
+      enableSuggestions: false,
+      autocorrect: false,
+      contextMenuBuilder: (context, editableTextState) {
+        return AdaptiveTextSelectionToolbar.editableText(
+          editableTextState: editableTextState,
+        );
+      },
+
       style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,

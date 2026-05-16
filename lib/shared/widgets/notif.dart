@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 class NotificationPage extends StatelessWidget {
   final Role role;
@@ -13,7 +14,7 @@ class NotificationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /// GROUPING
+    /// ================= GROUPING =================
     Map<String, List<Map<String, dynamic>>> grouped = {};
 
     for (var notif in notifications) {
@@ -37,44 +38,51 @@ class NotificationPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-              const SizedBox(height: 10),
+              const SizedBox(height: 24),
 
               _buildHeader(context),
 
               const SizedBox(height: 24),
 
               Expanded(
-                child: ListView(
-                  children: grouped.entries.map((entry) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [
-                        Text(
-                          entry.key,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500,
-                          ),
+                child: notifications.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Belum ada notifikasi",
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
                         ),
+                      )
+                    : ListView(
+                        children: grouped.entries.map((entry) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
 
-                        const SizedBox(height: 14),
+                            children: [
+                              Text(
+                                entry.key,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
 
-                        ...entry.value.map((notif) {
-                          return _NotificationCard(
-                            title: notif['title'],
-                            desc: notif['desc'],
-                            color: notif['color'],
-                            isRead: notif['isRead'],
+                              const SizedBox(height: 14),
+
+                              ...entry.value.map((notif) {
+                                return _NotificationCard(
+                                  title: notif['title'],
+                                  desc: notif['desc'],
+                                  color: notif['color'],
+                                  isRead: notif['isRead'],
+                                );
+                              }).toList(),
+
+                              const SizedBox(height: 20),
+                            ],
                           );
                         }).toList(),
-
-                        const SizedBox(height: 20),
-                      ],
-                    );
-                  }).toList(),
-                ),
+                      ),
               ),
             ],
           ),
@@ -83,29 +91,36 @@ class NotificationPage extends StatelessWidget {
     );
   }
 
+  /// ================= HEADER =================
   Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
         IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
+          padding: EdgeInsets.zero, // ← hapus padding internal
+          constraints:
+              const BoxConstraints(), // ← hapus minimum size constraint
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            color: AppColors.bluePrimary,
+          ),
         ),
 
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
 
         const Text(
           "Notifikasi",
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF6C84B6),
+            color: AppColors.bluePrimary,
           ),
         ),
       ],
     );
   }
 
-  /// GROUP TITLE
+  /// ================= GROUP TITLE =================
   String getTimeGroup(DateTime date) {
     final now = DateTime.now();
 
@@ -121,6 +136,7 @@ class NotificationPage extends StatelessWidget {
   }
 }
 
+/// ================= CARD =================
 class _NotificationCard extends StatelessWidget {
   final String title;
   final String desc;
@@ -136,21 +152,26 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
+      width: double.infinity,
+
       margin: const EdgeInsets.only(bottom: 14),
 
       padding: const EdgeInsets.all(16),
 
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isRead ? Colors.white : const Color(0xFFF8FBFF),
 
         borderRadius: BorderRadius.circular(18),
+
+        border: Border.all(
+          color: isRead ? Colors.transparent : color.withOpacity(0.15),
+        ),
 
         boxShadow: [
           BoxShadow(
             blurRadius: 10,
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withOpacity(0.05),
             offset: const Offset(0, 4),
           ),
         ],
@@ -158,21 +179,17 @@ class _NotificationCard extends StatelessWidget {
 
       child: Stack(
         children: [
-
-          /// SMALL INDICATOR
+          /// INDICATOR
           if (!isRead)
             Positioned(
               right: 0,
               top: 2,
 
               child: Container(
-                width: 8,
-                height: 8,
+                width: 9,
+                height: 9,
 
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(3),
-                ),
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
               ),
             ),
 
@@ -180,22 +197,18 @@ class _NotificationCard extends StatelessWidget {
             padding: const EdgeInsets.only(right: 16),
 
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
-
                 Text(
                   title,
 
                   style: TextStyle(
                     fontSize: 14,
 
-                    fontWeight: isRead
-                        ? FontWeight.w600
-                        : FontWeight.bold,
+                    fontWeight: isRead ? FontWeight.w600 : FontWeight.bold,
 
-                    color: Colors.black,
+                    color: Colors.black87,
                   ),
                 ),
 
@@ -208,9 +221,7 @@ class _NotificationCard extends StatelessWidget {
                     fontSize: 13,
                     height: 1.5,
 
-                    color: isRead
-                        ? Colors.black54
-                        : Colors.black87,
+                    color: isRead ? Colors.black54 : Colors.black87,
                   ),
                 ),
               ],
@@ -221,3 +232,82 @@ class _NotificationCard extends StatelessWidget {
     );
   }
 }
+
+/// ================= DUMMY NOTIFICATION =================
+
+final List<Map<String, dynamic>> notifTU = [
+  {
+    'title': 'Surat Masuk Ditolak',
+    'desc':
+        'Surat masuk telah ditolak Kepala Sekolah. Silakan periksa kembali dan tindak lanjuti.',
+    'color': Colors.red,
+    'isRead': false,
+    'createdAt': DateTime.now(),
+  },
+
+  {
+    'title': 'Surat Masuk Diterima',
+    'desc':
+        'Surat masuk telah diterima Kepala Sekolah. Silakan lanjutkan proses.',
+    'color': Colors.green,
+    'isRead': false,
+    'createdAt': DateTime.now(),
+  },
+
+  {
+    'title': 'Surat Keluar Ditolak',
+    'desc':
+        'Surat keluar ditolak Kepala Sekolah. Periksa kembali dan tindak lanjuti.',
+    'color': Colors.red,
+    'isRead': true,
+    'createdAt': DateTime.now().subtract(const Duration(days: 1)),
+  },
+
+  {
+    'title': 'Surat Keluar Diterima',
+    'desc':
+        'Surat keluar telah diterima Kepala Sekolah. Silakan lanjutkan proses.',
+    'color': Colors.green,
+    'isRead': true,
+    'createdAt': DateTime.now().subtract(const Duration(days: 1)),
+  },
+
+  {
+    'title': 'Surat Masuk Dikonfirmasi',
+    'desc': 'Surat masuk sudah dikonfirmasi oleh penerima.',
+    'color': Colors.blue,
+    'isRead': true,
+    'createdAt': DateTime.now().subtract(const Duration(days: 1)),
+  },
+];
+
+final List<Map<String, dynamic>> notifKepsek = [
+  {
+    'title': 'Pemberitahuan Pengajuan Surat Keluar',
+    'desc':
+        'Terdapat pengajuan surat keluar yang memerlukan peninjauan dari Anda.',
+    'color': Colors.orange,
+    'isRead': false,
+    'createdAt': DateTime.now(),
+  },
+
+  {
+    'title': 'Pemberitahuan Pengajuan Disposisi Surat Masuk',
+    'desc':
+        'Terdapat pengajuan disposisi surat masuk yang memerlukan persetujuan Anda.',
+    'color': Colors.blue,
+    'isRead': false,
+    'createdAt': DateTime.now(),
+  },
+];
+
+final List<Map<String, dynamic>> notifUser = [
+  {
+    'title': 'Pemberitahuan Surat Masuk',
+    'desc':
+        'Anda menerima surat masuk baru. Silakan periksa detail surat untuk informasi lebih lanjut.',
+    'color': Colors.blue,
+    'isRead': false,
+    'createdAt': DateTime.now(),
+  },
+];

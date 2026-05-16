@@ -4,8 +4,8 @@ import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 
-import 'package:ta_mobile_disposisi_surat/modules/kepsek/detail_surat/input_suratmasuk.dart';
-import 'package:ta_mobile_disposisi_surat/modules/kepsek/detail_surat/input_suratkeluar.dart';
+import 'package:ta_mobile_disposisi_surat/modules/kepsek/detail_surat/disposisi_suratmasuk.dart';
+import 'package:ta_mobile_disposisi_surat/modules/kepsek/detail_surat/pengajuan_suratkeluar.dart';
 
 class KepsekDashboardPage extends StatefulWidget {
   final String jenisSurat;

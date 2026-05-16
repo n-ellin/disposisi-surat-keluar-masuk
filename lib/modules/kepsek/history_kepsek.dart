@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
-
 import 'package:ta_mobile_disposisi_surat/shared/navbar/custom_navbar.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+
 import 'package:ta_mobile_disposisi_surat/shared/navbar/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/filter_date.dart';
+
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_disposisi_surat.dart';
+import 'package:ta_mobile_disposisi_surat/modules/tata_usaha/detail_surat/output_pengajuanSurat.dart';
 
 class HistoryKepsekPage extends StatefulWidget {
   const HistoryKepsekPage({super.key});
@@ -16,42 +19,166 @@ class HistoryKepsekPage extends StatefulWidget {
 }
 
 class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
-  String _searchQuery = '';
-  String _jenisFilter = 'semua';
+  String _searchQuery = FilterState.kepsekSearchQuery;
+  String _jenisFilter = FilterState.kepsekJenisFilter;
+  String _dateFilter = FilterState.kepsekDateFilter;
+  DateTime? _selectedDate = FilterState.kepsekSelectedDate;
 
-  /// ================= DUMMY SURAT =================
   List<Map<String, dynamic>> get _historySurat => DummySurat.allSurat;
 
-  /// ================= FILTER =================
   List<Map<String, dynamic>> get _filteredSurat {
     return _historySurat.where((s) {
       final query = _searchQuery.toLowerCase();
-
       final jenis = s['jenisSurat'].toString().toLowerCase();
-
       final dari = s['data']['Dari'].toString().toLowerCase();
-
       final perihal = s['data']['Perihal'].toString().toLowerCase();
+      final tanggal = s['tanggal'].toString().toLowerCase();
 
       final matchSearch =
           _searchQuery.isEmpty ||
           jenis.contains(query) ||
           dari.contains(query) ||
-          perihal.contains(query);
+          perihal.contains(query) ||
+          tanggal.contains(query);
 
       final matchJenis =
           _jenisFilter == 'semua' ||
           (_jenisFilter == 'masuk' && jenis.contains('masuk')) ||
           (_jenisFilter == 'keluar' && jenis.contains('keluar'));
 
-      return matchSearch && matchJenis;
+      bool matchDate = true;
+
+      try {
+        final parts = tanggal.split(' ');
+        final day = int.parse(parts[0]);
+
+        final monthMap = {
+          'januari': 1,
+          'februari': 2,
+          'maret': 3,
+          'april': 4,
+          'mei': 5,
+          'juni': 6,
+          'juli': 7,
+          'agustus': 8,
+          'september': 9,
+          'oktober': 10,
+          'november': 11,
+          'desember': 12,
+        };
+
+        final month = monthMap[parts[1].toLowerCase()] ?? 1;
+        final year = int.parse(parts[2]);
+        final suratDate = DateTime(year, month, day);
+        final now = DateTime.now();
+
+        if (_dateFilter == 'Hari ini') {
+          matchDate =
+              suratDate.day == now.day &&
+              suratDate.month == now.month &&
+              suratDate.year == now.year;
+        } else if (_dateFilter == 'Bulan ini') {
+          matchDate =
+              suratDate.month == now.month && suratDate.year == now.year;
+        } else if (_selectedDate != null) {
+          matchDate =
+              suratDate.day == _selectedDate!.day &&
+              suratDate.month == _selectedDate!.month &&
+              suratDate.year == _selectedDate!.year;
+        }
+      } catch (_) {
+        matchDate = true;
+      }
+
+      return matchSearch && matchJenis && matchDate;
     }).toList();
+  }
+
+  void _showDateFilter() async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          title: const Text(
+            'Filter Tanggal',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _dateTile('Hari ini'),
+              _dateTile('Bulan ini'),
+              _dateTile('Pilih tanggal'),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (result == null) return;
+
+    if (result == 'Pilih tanggal') {
+      final picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2020),
+        lastDate: DateTime(2030),
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: AppColors.bluePrimary,
+                onPrimary: Colors.white,
+                onSurface: Colors.black,
+              ),
+              datePickerTheme: DatePickerThemeData(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+            child: child!,
+          );
+        },
+      );
+
+      if (picked != null) {
+        setState(() {
+          _selectedDate = picked;
+          _dateFilter = '${picked.day}/${picked.month}/${picked.year}';
+          FilterState.kepsekSelectedDate = picked;
+          FilterState.kepsekDateFilter = _dateFilter;
+        });
+      }
+    } else {
+      setState(() {
+        _selectedDate = null;
+        _dateFilter = result;
+        FilterState.kepsekSelectedDate = null;
+        FilterState.kepsekDateFilter = result;
+      });
+    }
+  }
+
+  Widget _dateTile(String title) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+      ),
+      onTap: () {
+        Navigator.pop(context, title);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     final w = size.width;
     final h = size.height;
 
@@ -61,15 +188,13 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(w * 0.04),
-
           child: Column(
             children: [
               SizedBox(height: h * 0.02),
 
-              /// ================= TITLE =================
+              // TITLE
               Text(
                 "Riwayat",
-
                 style: TextStyle(
                   fontSize: w * 0.07,
                   fontWeight: FontWeight.bold,
@@ -79,88 +204,189 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
 
               SizedBox(height: h * 0.02),
 
-              /// ================= SEARCH =================
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                },
+              // SEARCH
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFE2E5EA)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                      FilterState.kepsekSearchQuery = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Cari surat...",
+                    hintStyle: TextStyle(color: Colors.grey.shade400),
+                    prefixIcon: Icon(
+                      Icons.search_rounded,
+                      color: Colors.grey.shade400,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: h * 0.015),
+                  ),
+                ),
+              ),
 
-                decoration: InputDecoration(
-                  hintText: "Cari surat...",
+              SizedBox(height: h * 0.018),
 
-                  prefixIcon: const Icon(Icons.search),
+              // FILTER JENIS
+              Row(
+                children: [
+                  Expanded(child: _filterButton("Semua", "semua")),
+                  const SizedBox(width: 10),
+                  Expanded(child: _filterButton("Masuk", "masuk")),
+                  const SizedBox(width: 10),
+                  Expanded(child: _filterButton("Keluar", "keluar")),
+                ],
+              ),
 
-                  filled: true,
-                  fillColor: const Color(0xFFF7F8FA),
+              SizedBox(height: h * 0.014),
 
-                  contentPadding: EdgeInsets.symmetric(vertical: h * 0.015),
-
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-
-                    borderSide: BorderSide.none,
+              // FILTER TANGGAL
+              GestureDetector(
+                onTap: _showDateFilter,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFE2E5EA)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today_rounded,
+                            size: 18,
+                            color: AppColors.bluePrimary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _dateFilter,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 18,
+                        color: Colors.grey,
+                      ),
+                    ],
                   ),
                 ),
               ),
 
               SizedBox(height: h * 0.02),
 
-              /// ================= FILTER =================
-              Row(
-                children: [
-                  Expanded(child: _filterButton("Semua", "semua")),
-
-                  const SizedBox(width: 10),
-
-                  Expanded(child: _filterButton("Masuk", "masuk")),
-
-                  const SizedBox(width: 10),
-
-                  Expanded(child: _filterButton("Keluar", "keluar")),
-                ],
-              ),
-
-              SizedBox(height: h * 0.02),
-
-              /// ================= LIST =================
+              // LIST
               Expanded(
-                child: ListView.builder(
-                  itemCount: _filteredSurat.length,
+                child: _filteredSurat.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: w * 0.2,
+                              height: w * 0.2,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.inbox_outlined,
+                                size: w * 0.1,
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                            SizedBox(height: h * 0.016),
+                            Text(
+                              "Belum ada riwayat surat",
+                              style: TextStyle(
+                                fontSize: w * 0.038,
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: _filteredSurat.length,
+                        itemBuilder: (context, index) {
+                          final surat = _filteredSurat[index];
 
-                  itemBuilder: (context, index) {
-                    final surat = _filteredSurat[index];
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: h * 0.02),
+                            child: SuratCard(
+                              jenisSurat: surat['jenisSurat'],
+                              tanggal: surat['tanggal'],
+                              status: surat['status'],
+                              role: CardRole.kepsek,
+                              type: CardType.history,
+                              data: Map<String, String>.from(surat['data']),
+                              onDetail: () {
+                                final isMasuk =
+                                    surat['jenisSurat'] == 'Surat Masuk';
 
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: h * 0.02),
-
-                      child: SuratCard(
-                        jenisSurat: surat['jenisSurat'],
-                        tanggal: surat['tanggal'],
-                        status: surat['status'],
-                        role: CardRole.kepsek,
-                        type: CardType.history,
-                        data: Map<String, String>.from(surat['data']),
-
-                        onDetail: () {
-                          print("Preview Surat");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => isMasuk
+                                        ? OutputSuratmasuk(
+                                            isApproved:
+                                                surat['status'] == 'disetujui',
+                                            catatan: surat['catatan'] ?? '-',
+                                            tujuan: surat['tujuan'] ?? '-',
+                                            instruksi:
+                                                surat['instruksi'] ?? '-',
+                                            koordinasi:
+                                                surat['koordinasi'] ?? '-',
+                                            diteruskanKe:
+                                                surat['diteruskanKe'] ?? '-',
+                                            isReadOnly: true,
+                                          )
+                                        : OutputSuratkeluar(
+                                            catatan: surat['catatan'] ?? '-',
+                                            isReadOnly: true,
+                                          ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
                         },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
         ),
       ),
 
-      /// ================= NAVBAR =================
+      // NAVBAR
       bottomNavigationBar: CustomNavbar(
         role: Role.kepsek,
         currentIndex: 1,
-
         onTap: (index) {
           handleNavbarTap(
             context,
@@ -175,7 +401,6 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
     );
   }
 
-  /// ================= FILTER BUTTON =================
   Widget _filterButton(String text, String value) {
     final isActive = _jenisFilter == value;
 
@@ -183,25 +408,16 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
       onPressed: () {
         setState(() {
           _jenisFilter = value;
+          FilterState.kepsekJenisFilter = value;
         });
       },
-
       style: ElevatedButton.styleFrom(
-        backgroundColor: isActive
-            ? AppColors.bluePrimary
-            : const Color(0xFFF7F8FA),
-
-        foregroundColor: isActive
-            ? const Color(0xFFF7F8FA)
-            : AppColors.bluePrimary,
-
+        backgroundColor: isActive ? AppColors.bluePrimary : Colors.white,
+        foregroundColor: isActive ? Colors.white : AppColors.bluePrimary,
         elevation: isActive ? 2 : 0,
-
         side: BorderSide(color: AppColors.bluePrimary),
-
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       ),
-
       child: Text(text),
     );
   }

@@ -168,7 +168,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
     final h = size.height;
 
     return Scaffold(
-      backgroundColor: Color(0xFFF2F2F2),
+      backgroundColor: AppColors.bg,
 
       /// ================= APPBAR =================
       appBar: AppBar(

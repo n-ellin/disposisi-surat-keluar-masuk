@@ -81,13 +81,13 @@ class _MenuUserState extends State<MenuUser> {
     final h = size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.bg,
 
       /// ================= APPBAR =================
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.bg,
         surfaceTintColor: Colors.transparent,
 
         /// LOGO

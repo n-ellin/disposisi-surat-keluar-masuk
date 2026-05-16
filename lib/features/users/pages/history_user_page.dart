@@ -208,7 +208,7 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
     final h = size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
+      backgroundColor: AppColors.bg,
 
       body: SafeArea(
         child: Padding(

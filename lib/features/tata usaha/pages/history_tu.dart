@@ -183,7 +183,7 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
     final h = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
+      backgroundColor: AppColors.bg,
 
       body: SafeArea(
         child: Column(

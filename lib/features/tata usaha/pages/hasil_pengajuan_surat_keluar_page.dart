@@ -19,7 +19,7 @@ class OutputSuratkeluar extends StatelessWidget {
     const orange = Color(0xFFE08B2E);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
+      backgroundColor: AppColors.bg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),

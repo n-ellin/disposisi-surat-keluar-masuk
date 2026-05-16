@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
@@ -219,7 +220,7 @@ class _MenuUserState extends State<MenuUser> {
                 hintText: "Cari surat...",
 
                 filled: true,
-                fillColor: Colors.grey.shade100,
+                fillColor: AppColors.hintsearch,
 
                 contentPadding: EdgeInsets.symmetric(vertical: h * 0.018),
 
@@ -256,6 +257,7 @@ class _MenuUserState extends State<MenuUser> {
                       type: CardType.menu,
 
                       data: Map<String, String>.from(surat["data"]),
+                      diteruskanKe: surat["diteruskanKe"]?.toString(),
 
                       onDetail: () {
                         Navigator.push(

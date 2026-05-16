@@ -174,7 +174,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
     return InputDecoration(
       hintText: hint,
 
-      hintStyle: const TextStyle(color: Colors.black26, fontSize: 14),
+      hintStyle: const TextStyle(color: AppColors.hinttext, fontSize: 14),
 
       prefixIcon: Icon(prefixIcon, size: 20, color: Colors.black38),
 

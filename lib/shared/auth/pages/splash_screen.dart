@@ -16,7 +16,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // 🔵 Ubah warna status bar di sini
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Color(0xFFE3F2FD),

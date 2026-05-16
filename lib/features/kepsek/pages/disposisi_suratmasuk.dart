@@ -460,7 +460,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       maxLines: 2,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+        hintStyle: TextStyle(color: AppColors.hinttext, fontSize: 14),
         filled: true,
         fillColor: Colors.white,
         contentPadding: const EdgeInsets.symmetric(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 
@@ -232,7 +233,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
                 decoration: InputDecoration(
                   hintText: "Cari surat...",
                   hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
+                    color: AppColors.hintsearch,
                     fontSize: w * 0.036,
                   ),
                   prefixIcon: Icon(

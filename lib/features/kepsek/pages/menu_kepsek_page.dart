@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
@@ -113,7 +114,7 @@ class _KepsekDashboardPageState extends State<KepsekDashboardPage> {
 
                 filled: true,
 
-                fillColor: Colors.grey.shade100,
+                fillColor: AppColors.hintsearch,
 
                 contentPadding: EdgeInsets.symmetric(vertical: h * 0.018),
 

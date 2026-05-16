@@ -6,15 +6,16 @@ import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/filter_date.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
+import 'package:ta_mobile_disposisi_surat/core/utils/full-img-viewer.dart';
 
-class HistoryOtherPage extends StatefulWidget {
-  const HistoryOtherPage({super.key});
+class HistoryUsersPage extends StatefulWidget {
+  const HistoryUsersPage({super.key});
 
   @override
-  State<HistoryOtherPage> createState() => _HistoryOtherPageState();
+  State<HistoryUsersPage> createState() => _HistoryUsersPageState();
 }
 
-class _HistoryOtherPageState extends State<HistoryOtherPage> {
+class _HistoryUsersPageState extends State<HistoryUsersPage> {
   String _searchQuery = FilterState.guruSearchQuery;
   String _dateFilter = FilterState.guruDateFilter;
   DateTime? _selectedDate = FilterState.guruSelectedDate;
@@ -158,6 +159,35 @@ class _HistoryOtherPageState extends State<HistoryOtherPage> {
     }
   }
 
+  void _openLampiran(BuildContext context, Map<String, dynamic> surat) {
+    final List<String> lampiran = List<String>.from(surat['lampiran'] ?? []);
+
+    if (lampiran.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Tidak ada lampiran"),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          margin: const EdgeInsets.all(16),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FullScreenImageViewer(
+          imageUrls: lampiran,
+          initialIndex: 0,
+        ),
+      ),
+    );
+  }
+
   Widget _dateTile(String title) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
@@ -222,7 +252,7 @@ class _HistoryOtherPageState extends State<HistoryOtherPage> {
                   },
                   decoration: InputDecoration(
                     hintText: "Cari surat...",
-                    hintStyle: TextStyle(color: Colors.grey.shade400),
+                    hintStyle: TextStyle(color: AppColors.hintsearch),
                     prefixIcon: Icon(
                       Icons.search_rounded,
                       color: Colors.grey.shade400,
@@ -326,7 +356,8 @@ class _HistoryOtherPageState extends State<HistoryOtherPage> {
                               role: CardRole.Users,
                               type: CardType.history,
                               data: Map<String, String>.from(surat['data']),
-                              onDetail: () {},
+                              diteruskanKe: surat['diteruskanKe']?.toString(),
+                              onDetail: () => _openLampiran(context, surat),
                             ),
                           );
                         },

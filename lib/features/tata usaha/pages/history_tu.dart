@@ -230,7 +230,7 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                       decoration: InputDecoration(
                         hintText: "Cari surat...",
                         hintStyle: TextStyle(
-                          color: Colors.grey.shade400,
+                          color: AppColors.hintsearch,
                           fontSize: w * 0.036,
                         ),
                         prefixIcon: Icon(

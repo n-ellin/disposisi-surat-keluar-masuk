@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+
+// ── ENUMS ─────────────────────────────────────────────────────────────────────
 
 enum CardRole { tu, kepsek, Users }
 
 enum CardType { home, menu, history }
+
+// ── WIDGET ────────────────────────────────────────────────────────────────────
 
 class SuratCard extends StatelessWidget {
   final String jenisSurat;
@@ -13,6 +18,7 @@ class SuratCard extends StatelessWidget {
   final CardRole role;
   final CardType type;
   final String? status;
+  final String? diteruskanKe;
   final VoidCallback onDetail;
 
   const SuratCard({
@@ -24,12 +30,20 @@ class SuratCard extends StatelessWidget {
     required this.type,
     required this.onDetail,
     this.status,
+    this.diteruskanKe,
   });
+
+  // ── GETTERS ──────────────────────────────────────────────────────────────────
 
   bool get showStatus => role == CardRole.tu;
   bool get isHome => type == CardType.home;
-  bool get isMenu => type == CardType.menu;
   bool get isHistory => type == CardType.history;
+  bool get showDiteruskanKe =>
+      role == CardRole.Users &&
+      diteruskanKe != null &&
+      diteruskanKe!.isNotEmpty;
+
+  // ── STATUS HELPERS ───────────────────────────────────────────────────────────
 
   String _label() {
     switch (status?.toLowerCase()) {
@@ -79,6 +93,8 @@ class SuratCard extends StatelessWidget {
         : AppColors.bluePrimary;
   }
 
+  // ── BUILD ────────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
@@ -99,22 +115,17 @@ class SuratCard extends StatelessWidget {
             ),
           ],
         ),
-        // ✅ ClipRRect tetap di sini supaya border radius card tetap rapi
         child: ClipRRect(
           borderRadius: BorderRadius.circular(w * 0.04),
-          // ✅ IntrinsicHeight memastikan left stroke stretch ikut tinggi konten
           child: IntrinsicHeight(
             child: Row(
-              // ✅ stretch supaya semua children ikut tinggi IntrinsicHeight
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // ✅ LEFT STROKE — full height, no margin, langsung nempel di edge
+                // Left stroke — hanya untuk tipe history
                 if (isHistory)
                   Container(
                     width: w * 0.012,
-                    decoration: BoxDecoration(
-                      color: _buttonColor(),
-                    ),
+                    decoration: BoxDecoration(color: _buttonColor()),
                   ),
 
                 Expanded(
@@ -123,9 +134,7 @@ class SuratCard extends StatelessWidget {
                       horizontal: w * 0.038,
                       vertical: w * 0.028,
                     ),
-                    child: isHome
-                        ? _buildHomeCard(w)
-                        : _buildDefaultCard(w),
+                    child: isHome ? _buildHomeCard(w) : _buildDefaultCard(w),
                   ),
                 ),
               ],
@@ -136,26 +145,27 @@ class SuratCard extends StatelessWidget {
     );
   }
 
+  // ── HOME CARD ────────────────────────────────────────────────────────────────
+
   Widget _buildHomeCard(double w) {
     final isMasuk = jenisSurat == 'Surat Masuk';
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // Icon
         Container(
           width: w * 0.10,
           height: w * 0.10,
           decoration: BoxDecoration(
-            color: isMasuk
-                ? const Color(0xFFE7F6F8)
-                : const Color(0xFFFFF1E3),
+            color: isMasuk ? const Color(0xFFE7F6F8) : const Color(0xFFFFF1E3),
             borderRadius: BorderRadius.circular(w * 0.03),
           ),
           child: Center(
             child: SvgPicture.asset(
               isMasuk
-                  ? "assets/icons/ic_inmail.svg"
-                  : "assets/icons/ic_outmail.svg",
+                  ? 'assets/icons/ic_inmail.svg'
+                  : 'assets/icons/ic_outmail.svg',
               width: w * 0.05,
               height: w * 0.05,
               colorFilter: ColorFilter.mode(
@@ -168,6 +178,7 @@ class SuratCard extends StatelessWidget {
 
         SizedBox(width: w * 0.03),
 
+        // Perihal & Dari
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,9 +193,7 @@ class SuratCard extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-
               SizedBox(height: w * 0.005),
-
               Text(
                 data['Dari'] ?? '-',
                 maxLines: 1,
@@ -200,6 +209,7 @@ class SuratCard extends StatelessWidget {
 
         SizedBox(width: w * 0.02),
 
+        // Tanggal & badge status
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
@@ -211,10 +221,8 @@ class SuratCard extends StatelessWidget {
                 color: Colors.grey.shade500,
               ),
             ),
-
             if (showStatus && status != null) ...[
               SizedBox(height: w * 0.006),
-
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: w * 0.022,
@@ -240,26 +248,27 @@ class SuratCard extends StatelessWidget {
     );
   }
 
+  // ── DEFAULT CARD (menu & history) ────────────────────────────────────────────
+
   Widget _buildDefaultCard(double w) {
     final isMasuk = jenisSurat == 'Surat Masuk';
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // Icon
         Container(
           width: w * 0.11,
           height: w * 0.11,
           decoration: BoxDecoration(
-            color: isMasuk
-                ? const Color(0xFFE7F6F8)
-                : const Color(0xFFFFF1E3),
+            color: isMasuk ? const Color(0xFFE7F6F8) : const Color(0xFFFFF1E3),
             borderRadius: BorderRadius.circular(w * 0.03),
           ),
           child: Center(
             child: SvgPicture.asset(
               isMasuk
-                  ? "assets/icons/ic_inmail.svg"
-                  : "assets/icons/ic_outmail.svg",
+                  ? 'assets/icons/ic_inmail.svg'
+                  : 'assets/icons/ic_outmail.svg',
               width: w * 0.045,
               height: w * 0.045,
               colorFilter: ColorFilter.mode(
@@ -272,11 +281,13 @@ class SuratCard extends StatelessWidget {
 
         SizedBox(width: w * 0.03),
 
+        // Konten tengah
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Jenis surat + badge status (khusus TU)
               Row(
                 children: [
                   Flexible(
@@ -289,9 +300,7 @@ class SuratCard extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   SizedBox(width: w * 0.02),
-
                   if (showStatus && status != null)
                     Container(
                       padding: EdgeInsets.symmetric(
@@ -316,6 +325,7 @@ class SuratCard extends StatelessWidget {
 
               SizedBox(height: w * 0.008),
 
+              // Perihal
               Text(
                 data['Perihal'] ?? '-',
                 maxLines: 1,
@@ -329,6 +339,7 @@ class SuratCard extends StatelessWidget {
 
               SizedBox(height: w * 0.004),
 
+              // Dari
               Text(
                 data['Dari'] ?? '-',
                 maxLines: 1,
@@ -338,12 +349,52 @@ class SuratCard extends StatelessWidget {
                   color: Colors.grey.shade600,
                 ),
               ),
+
+              // Badge "Untuk" — ganti bagian if (showDiteruskanKe) di _buildDefaultCard
+              if (showDiteruskanKe) ...[
+                SizedBox(height: w * 0.012),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: w * 0.022,
+                    vertical: w * 0.007,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(w * 0.02),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.person_outline_rounded,
+                        size: w * 0.033,
+                        color: Colors.grey.shade600,
+                      ),
+                      SizedBox(width: w * 0.01),
+                      Flexible(
+                        child: Text(
+                          'Untuk: ${diteruskanKe!}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: w * 0.027,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
 
         SizedBox(width: w * 0.02),
 
+        // Tombol kanan
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -386,10 +437,7 @@ class SuratCard extends StatelessWidget {
                   foregroundColor: Colors.white,
                   elevation: 0,
                   minimumSize: Size(0, w * 0.085),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: w * 0.032,
-                    vertical: 0,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: w * 0.032),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(w * 0.028),
@@ -399,20 +447,15 @@ class SuratCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Detail",
+                      'Detail',
                       style: TextStyle(
                         fontSize: w * 0.028,
                         fontWeight: FontWeight.w600,
                         height: 1,
                       ),
                     ),
-
                     SizedBox(width: w * 0.008),
-
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      size: w * 0.032,
-                    ),
+                    Icon(Icons.arrow_forward_rounded, size: w * 0.032),
                   ],
                 ),
               ),

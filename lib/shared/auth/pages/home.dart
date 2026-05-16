@@ -360,13 +360,22 @@ class _HomeState extends State<Home> {
                           return;
                         }
 
-                        /// TU → halaman output/detail
+                        /// TU → cek status dulu
+                        final status = surat['status']
+                            ?.toString()
+                            .toLowerCase();
+
+                        if (status == 'menunggu') {
+                          _showProcessDialog(); // ← tambahin ini
+                          return;
+                        }
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => isMasuk
                                 ? OutputSuratmasuk(
-                                    isApproved: surat['status'] == 'disetujui',
+                                    isApproved: status == 'disetujui',
                                     catatan: surat['catatan'] ?? '-',
                                     tujuan: surat['tujuan'] ?? '-',
                                     instruksi: surat['instruksi'] ?? '-',
@@ -458,6 +467,68 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showProcessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.35),
+      builder: (context) {
+        final w = MediaQuery.of(context).size.width;
+
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              width: w * 0.75,
+              padding: EdgeInsets.symmetric(
+                vertical: w * 0.08,
+                horizontal: w * 0.06,
+              ),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F0F6),
+                borderRadius: BorderRadius.circular(28),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(w * 0.03),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF4A4A4A),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                      size: w * 0.06,
+                    ),
+                  ),
+                  SizedBox(height: w * 0.05),
+                  Text(
+                    "Surat Dalam Proses",
+                    style: TextStyle(
+                      fontSize: w * 0.04,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: w * 0.025),
+                  Text(
+                    "Surat masih dalam\nproses pengajuan",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: w * 0.032,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

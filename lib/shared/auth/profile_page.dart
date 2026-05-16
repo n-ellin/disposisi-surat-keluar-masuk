@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ta_mobile_disposisi_surat/shared/auth/login_page.dart';
-import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
-import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
-import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
+import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
+import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/shared/auth/change_password_page.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/login_page.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
 
 class ProfilePage extends StatelessWidget {
   final String nama;
@@ -34,8 +34,9 @@ class ProfilePage extends StatelessWidget {
             children: [
               SizedBox(height: h * 0.02),
 
+              // Title
               Text(
-                "Profile",
+                'Profile',
                 style: TextStyle(
                   color: AppColors.bluePrimary,
                   fontSize: w * 0.065,
@@ -45,6 +46,7 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(height: h * 0.03),
 
+              // Avatar
               Container(
                 padding: EdgeInsets.all(w * 0.008),
                 decoration: BoxDecoration(
@@ -64,44 +66,57 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(height: h * 0.035),
 
+              // Info card
               _cardWrapper(
                 child: Column(
                   children: [
-                    _profileTile(context, icon: Icons.work_outline, label: "JABATAN", value: jabatan),
+                    _profileTile(
+                      context,
+                      icon: Icons.work_outline,
+                      label: 'JABATAN',
+                      value: jabatan,
+                    ),
                     SizedBox(height: h * 0.015),
-                    _profileTile(context, icon: Icons.person_outline, label: "NAMA", value: nama),
+                    _profileTile(
+                      context,
+                      icon: Icons.person_outline,
+                      label: 'NAMA',
+                      value: nama,
+                    ),
                     SizedBox(height: h * 0.015),
-                    _profileTile(context, icon: Icons.email_outlined, label: "EMAIL", value: email),
+                    _profileTile(
+                      context,
+                      icon: Icons.email_outlined,
+                      label: 'EMAIL',
+                      value: email,
+                    ),
                   ],
                 ),
               ),
 
               SizedBox(height: h * 0.025),
 
+              // Keamanan card
               _cardWrapper(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Keamanan",
+                      'Keamanan',
                       style: TextStyle(
                         fontSize: w * 0.04,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-
                     SizedBox(height: h * 0.02),
-
                     InkWell(
                       borderRadius: BorderRadius.circular(14),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const GantiKataSandiPage(),
-                          ),
-                        );
-                      },
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const GantiKataSandiPage(),
+                        ),
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -119,7 +134,7 @@ class ProfilePage extends StatelessWidget {
                           SizedBox(width: w * 0.04),
                           Expanded(
                             child: Text(
-                              "Ubah Kata Sandi",
+                              'Ubah Kata Sandi',
                               style: TextStyle(
                                 fontSize: w * 0.04,
                                 fontWeight: FontWeight.w500,
@@ -140,6 +155,7 @@ class ProfilePage extends StatelessWidget {
 
               SizedBox(height: h * 0.035),
 
+              // Logout button
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
@@ -150,119 +166,9 @@ class ProfilePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      barrierColor: Colors.black.withOpacity(0.5),
-                      builder: (BuildContext ctx) {
-                        return Dialog(
-                          backgroundColor: Colors.transparent,
-                          insetPadding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-                                  color: Colors.white,
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(height: 8),
-                                      const Text(
-                                        "Keluar dari akun?",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.black87,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        "Anda yakin ingin keluar dari akun ini?",
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.grey.shade500,
-                                          height: 1.6,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(vertical: 14),
-                                            side: BorderSide(color: Colors.grey.shade300),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                            ),
-                                          ),
-                                          onPressed: () => Navigator.pop(ctx),
-                                          child: Text(
-                                            "Batal",
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.grey.shade700,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFFE24B4A),
-                                            foregroundColor: Colors.white,
-                                            padding: const EdgeInsets.symmetric(vertical: 14),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                            ),
-                                            elevation: 0,
-                                          ),
-                                          onPressed: () {
-                                            Navigator.pop(ctx);
-                                            Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) => const Login(),
-                                              ),
-                                              (route) => false,
-                                            );
-                                          },
-                                          child: const Text(
-                                            "Keluar",
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
+                  onPressed: () => _showLogoutDialog(context),
                   child: Text(
-                    "Keluar",
+                    'Keluar',
                     style: TextStyle(
                       color: Colors.red,
                       fontSize: w * 0.04,
@@ -280,12 +186,126 @@ class ProfilePage extends StatelessWidget {
       bottomNavigationBar: CustomNavbar(
         currentIndex: 2,
         role: role,
-        onTap: (index) {
-          handleNavbarTap(context, index, role, nama, email, jabatan);
-        },
+        onTap: (index) =>
+            handleNavbarTap(context, index, role, nama, email, jabatan),
       ),
     );
   }
+
+  // ── LOGOUT DIALOG ─────────────────────────────────────────────────────────────
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Content
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Keluar dari akun?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Anda yakin ingin keluar dari akun ini?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade500,
+                        height: 1.6,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Actions
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: BorderSide(color: Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(
+                          'Batal',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE24B4A),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => const Login()),
+                            (route) => false,
+                          );
+                        },
+                        child: const Text(
+                          'Keluar',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── HELPERS ──────────────────────────────────────────────────────────────────
 
   Widget _cardWrapper({required Widget child}) {
     return Container(

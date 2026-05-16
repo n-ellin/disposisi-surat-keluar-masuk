@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'package:ta_mobile_disposisi_surat/shared/auth/pages/home.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/features/users/pages/menu_user_page.dart';
+import 'package:ta_mobile_disposisi_surat/shared/auth/pages/home.dart';
 import 'package:ta_mobile_disposisi_surat/shared/auth/reset%20kata%20sandi/input_email_page.dart';
 
 class Login extends StatefulWidget {
@@ -15,15 +14,14 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final TextEditingController emailC = TextEditingController();
-  final TextEditingController passwordC = TextEditingController();
+  final TextEditingController _emailC = TextEditingController();
+  final TextEditingController _passwordC = TextEditingController();
 
-  String? emailError;
-  String? passwordError;
+  String? _emailError;
+  String? _passwordError;
+  bool _obscure = true;
 
-  bool obscure = true;
-
-  final List<String> validEmails = [
+  static const List<String> _validEmails = [
     'kepsek@gmail.com',
     'tu@gmail.com',
     'user@gmail.com',
@@ -31,88 +29,66 @@ class _LoginState extends State<Login> {
 
   @override
   void dispose() {
-    emailC.dispose();
-    passwordC.dispose();
+    _emailC.dispose();
+    _passwordC.dispose();
     super.dispose();
   }
 
-  void validateEmail() {
-    final email = emailC.text.trim();
+  // ── VALIDATION ───────────────────────────────────────────────────────────────
 
-    setState(() {
-      if (email.isEmpty) {
-        emailError = null;
-      } else if (!validEmails.contains(email)) {
-        emailError = "Email tidak ditemukan";
-      } else {
-        emailError = null;
-      }
-    });
+  void _validateEmail() {
+    setState(() => _emailError = null); // clear saja, error muncul saat login
   }
 
-  void login() {
-    final email = emailC.text.trim();
-    final password = passwordC.text.trim();
+  void _login() {
+    final email = _emailC.text.trim();
+    final password = _passwordC.text.trim();
 
     setState(() {
-      emailError = null;
-      passwordError = null;
+      _emailError = null;
+      _passwordError = null;
 
-      /// EMAIL KOSONG
       if (email.isEmpty) {
-        emailError = "Email wajib diisi";
-      }
-      /// EMAIL TIDAK DITEMUKAN
-      else if (!validEmails.contains(email)) {
-        emailError = "Email tidak ditemukan";
+        _emailError = 'Email wajib diisi';
+      } else if (!_validEmails.contains(email)) {
+        _emailError = 'Email tidak ditemukan';
       }
 
-      /// PASSWORD KOSONG
-      if (password.isEmpty) {
-        passwordError = "Kata sandi wajib diisi";
-      }
+      if (password.isEmpty) _passwordError = 'Kata sandi wajib diisi';
     });
 
-    /// STOP JIKA ADA ERROR
-    if (emailError != null || passwordError != null) return;
+    if (_emailError != null || _passwordError != null) return;
 
-    /// LOGIN ROLE
     if (email == 'kepsek@gmail.com' && password == '123456') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => Home(
-            role: Role.kepsek,
-            nama: "Kepala Sekolah",
-            email: email,
-            jabatan: "Kepala Sekolah",
-          ),
+      _navigateTo(
+        Home(
+          role: Role.kepsek,
+          nama: 'Kepala Sekolah',
+          email: email,
+          jabatan: 'Kepala Sekolah',
         ),
       );
     } else if (email == 'tu@gmail.com' && password == '123456') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => Home(
-            role: Role.tu,
-            nama: "Tata Usaha",
-            email: email,
-            jabatan: "Tata Usaha",
-          ),
+      _navigateTo(
+        Home(
+          role: Role.tu,
+          nama: 'Tata Usaha',
+          email: email,
+          jabatan: 'Tata Usaha',
         ),
       );
     } else if (email == 'user@gmail.com' && password == '123456') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MenuUser(),
-        ),
-      );
+      _navigateTo(const MenuUser());
     } else {
-      setState(() {
-        passwordError = "Kata sandi salah";
-      });
+      setState(() => _passwordError = 'Kata sandi salah');
     }
   }
+
+  void _navigateTo(Widget page) {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => page));
+  }
+
+  // ── BUILD ────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -125,13 +101,13 @@ class _LoginState extends State<Login> {
       ),
       child: Scaffold(
         backgroundColor: const Color(0xFFF2F2F2),
-
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 28),
               child: Column(
                 children: [
+                  // Icon
                   Container(
                     width: 78,
                     height: 78,
@@ -148,8 +124,9 @@ class _LoginState extends State<Login> {
 
                   const SizedBox(height: 20),
 
+                  // Title
                   const Text(
-                    "Masuk",
+                    'Masuk',
                     style: TextStyle(
                       fontSize: 38,
                       fontWeight: FontWeight.w800,
@@ -160,7 +137,7 @@ class _LoginState extends State<Login> {
                   const SizedBox(height: 8),
 
                   Text(
-                    "Silakan login untuk melanjutkan",
+                    'Silakan login untuk melanjutkan',
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black.withOpacity(0.45),
@@ -169,6 +146,7 @@ class _LoginState extends State<Login> {
 
                   const SizedBox(height: 34),
 
+                  // Form card
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
@@ -186,56 +164,37 @@ class _LoginState extends State<Login> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "EMAIL",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                            color: AppColors.hinttext,
-                          ),
-                        ),
-
+                        // Email
+                        const _FieldLabel(text: 'EMAIL'),
                         const SizedBox(height: 10),
-
                         _buildEmailField(),
 
                         const SizedBox(height: 22),
 
-                        const Text(
-                          "KATA SANDI",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                            color: AppColors.hinttext,
-                          ),
-                        ),
-
+                        // Password
+                        const _FieldLabel(text: 'KATA SANDI'),
                         const SizedBox(height: 10),
-
                         _buildPasswordField(),
 
                         const SizedBox(height: 10),
 
+                        // Lupa kata sandi
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ForgotPasswordPage(),
-                                ),
-                              );
-                            },
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ForgotPasswordPage(),
+                              ),
+                            ),
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: const Text(
-                              "Lupa Kata sandi?",
+                              'Lupa Kata sandi?',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -247,11 +206,12 @@ class _LoginState extends State<Login> {
 
                         const SizedBox(height: 22),
 
+                        // Login button
                         SizedBox(
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: login,
+                            onPressed: _login,
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
                               backgroundColor: AppColors.bluePrimary,
@@ -260,7 +220,7 @@ class _LoginState extends State<Login> {
                               ),
                             ),
                             child: const Text(
-                              "Masuk",
+                              'Masuk',
                               style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w700,
@@ -276,7 +236,7 @@ class _LoginState extends State<Login> {
                   const SizedBox(height: 24),
 
                   Text(
-                    "© 2025 SMKN 2 Singosari",
+                    '© 2025 SMKN 2 Singosari',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.black.withOpacity(0.35),
@@ -291,131 +251,99 @@ class _LoginState extends State<Login> {
     );
   }
 
+  // ── FIELD BUILDERS ───────────────────────────────────────────────────────────
+
   Widget _buildEmailField() {
     return TextField(
-      controller: emailC,
+      controller: _emailC,
+      onChanged: (_) => _validateEmail(),
       cursorColor: AppColors.bluePrimary,
       style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-      decoration: InputDecoration(
-        isDense: true,
-        hintText: "Email",
-
-        errorText: emailError,
-
-        hintStyle: TextStyle(
-          color: Colors.black.withOpacity(0.35),
-          fontSize: 14,
-        ),
-
-        prefixIcon: Icon(
-          Icons.mail_outline_rounded,
-          color: Colors.grey.shade600,
-          size: 20,
-        ),
-
-        filled: true,
-        fillColor: const Color(0xFFF3F4F6),
-
-        contentPadding: const EdgeInsets.symmetric(vertical: 14),
-
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(
-            color: AppColors.bluePrimary,
-            width: 1.4,
-          ),
-        ),
-
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(
-            color: AppColors.bluePrimary,
-            width: 1.4,
-          ),
-        ),
+      decoration: _fieldDecoration(
+        hint: 'Email',
+        error: _emailError,
+        prefixIcon: Icons.mail_outline_rounded,
       ),
     );
   }
 
   Widget _buildPasswordField() {
     return TextField(
-      controller: passwordC,
-      obscureText: obscure,
+      controller: _passwordC,
+      obscureText: _obscure,
+      onChanged: (_) =>
+          setState(() => _passwordError = null), // ✅ clear error saat ngetik
       cursorColor: AppColors.bluePrimary,
-
       style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-
-      decoration: InputDecoration(
-        isDense: true,
-
-        hintText: "Kata sandi",
-
-        errorText: passwordError,
-
-        hintStyle: TextStyle(
-          color: Colors.black.withOpacity(0.35),
-          fontSize: 14,
-        ),
-
-        prefixIcon: Icon(
-          Icons.lock_outline_rounded,
-          color: Colors.grey.shade600,
-          size: 20,
-        ),
-
+      decoration: _fieldDecoration(
+        hint: 'Kata sandi',
+        error: _passwordError,
+        prefixIcon: Icons.lock_outline_rounded,
         suffixIcon: IconButton(
-          onPressed: () {
-            setState(() {
-              obscure = !obscure;
-            });
-          },
+          onPressed: () => setState(() => _obscure = !_obscure),
           icon: Icon(
-            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+            _obscure
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined,
             color: Colors.grey.shade500,
             size: 20,
           ),
         ),
+      ),
+    );
+  }
 
-        filled: true,
-        fillColor: const Color(0xFFF7F8FA),
+  InputDecoration _fieldDecoration({
+    required String hint,
+    required IconData prefixIcon,
+    String? error,
+    Widget? suffixIcon,
+  }) {
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide(color: Colors.grey.shade300),
+    );
+    const focusedBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(16)),
+      borderSide: BorderSide(color: AppColors.bluePrimary, width: 1.4),
+    );
 
-        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+    return InputDecoration(
+      isDense: true,
+      hintText: hint,
+      errorText: error,
+      hintStyle: TextStyle(
+        color: AppColors.hinttext.withOpacity(0.35),
+        fontSize: 14,
+      ),
+      prefixIcon: Icon(prefixIcon, color: Colors.grey.shade600, size: 20),
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: const Color(0xFFF3F4F6),
+      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+      enabledBorder: border,
+      focusedBorder: focusedBorder,
+      errorBorder: border,
+      focusedErrorBorder: focusedBorder,
+    );
+  }
+}
 
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
+// ── FIELD LABEL ───────────────────────────────────────────────────────────────
 
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(
-            color: AppColors.bluePrimary,
-            width: 1.4,
-          ),
-        ),
+class _FieldLabel extends StatelessWidget {
+  final String text;
+  const _FieldLabel({required this.text});
 
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(
-            color: AppColors.bluePrimary,
-            width: 1.4,
-          ),
-        ),
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.5,
+        color: AppColors.hinttext,
       ),
     );
   }

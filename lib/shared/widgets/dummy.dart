@@ -14,7 +14,7 @@ class DummySurat {
 
       'toRole': 'kepsek',
 
-      'disposisiKe': '',
+      'diteruskanKe': 'Waka Kurikulum',
 
       'catatan': '',
 
@@ -42,7 +42,7 @@ class DummySurat {
 
       'toRole': 'tu',
 
-      'disposisiKe': 'waka kurikulum',
+      'diteruskanKe': 'waka kurikulum',
 
       'catatan': 'Segera diproses',
 
@@ -69,7 +69,7 @@ class DummySurat {
 
       'toRole': 'tu',
 
-      'disposisiKe': 'waka kurikulum',
+      'diteruskanKe': 'waka kurikulum',
 
       'catatan': 'Segera diproses',
 
@@ -96,7 +96,7 @@ class DummySurat {
 
       'toRole': 'kepsek',
 
-      'disposisiKe': '',
+      'diteruskanKe': 'Prakerin',
 
       'catatan': '',
 
@@ -123,7 +123,7 @@ class DummySurat {
 
       'toRole': 'kepsek',
 
-      'disposisiKe': '',
+      'diteruskanKe': 'Waka Kesiswaan',
 
       'catatan': '',
 
@@ -150,7 +150,7 @@ class DummySurat {
 
       'toRole': 'tu',
 
-      'disposisiKe': 'waka kurikulum',
+      'diteruskanKe': 'waka kurikulum',
 
       'catatan': 'Segera diproses',
 

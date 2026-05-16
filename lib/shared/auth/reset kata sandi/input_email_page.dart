@@ -92,7 +92,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Masukkan email',
-                    hintStyle: const TextStyle(color: Colors.black26, fontSize: 14),
+                    hintStyle: const TextStyle(color: AppColors.hinttext, fontSize: 14),
                     prefixIcon: const Icon(Icons.email_outlined, size: 20, color: Colors.black38),
                     filled: true,
                     fillColor: const Color(0xFFF9FAFB),

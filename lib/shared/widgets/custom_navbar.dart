@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
+// ── WIDGET ────────────────────────────────────────────────────────────────────
+
 class CustomNavbar extends StatelessWidget {
   final Role role;
   final int currentIndex;
@@ -32,7 +34,11 @@ class CustomNavbar extends StatelessWidget {
             height: 54,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: _buildItems(),
+              children: [
+                Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
+                Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
+                Expanded(child: _navIcon('assets/icons/ic_profile.svg', 2)),
+              ],
             ),
           ),
         ),
@@ -40,17 +46,10 @@ class CustomNavbar extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildItems() {
-    return [
-      Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
-      Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
-      Expanded(child: _navIcon('assets/icons/ic_profile.svg', 2)),
-    ];
-  }
+  // ── NAV ICON ─────────────────────────────────────────────────────────────────
 
-  // ================= ICON =================
   Widget _navIcon(String asset, int index) {
-    final bool isActive = currentIndex == index;
+    final isActive = currentIndex == index;
 
     return GestureDetector(
       onTap: () => onTap(index),
@@ -58,7 +57,7 @@ class CustomNavbar extends StatelessWidget {
         tween: Tween<double>(begin: 1, end: isActive ? 1.1 : 1.0),
         duration: const Duration(milliseconds: 300),
         curve: Curves.elasticOut,
-        builder: (context, scale, child) {
+        builder: (context, scale, _) {
           return Transform.scale(
             scale: scale,
             child: SvgPicture.asset(
@@ -66,7 +65,7 @@ class CustomNavbar extends StatelessWidget {
               width: 22,
               height: 22,
               colorFilter: ColorFilter.mode(
-                isActive ? const Color(0xFF2E8BC0) : Color(0xFF9FB8C2),
+                isActive ? const Color(0xFF2E8BC0) : const Color(0xFF9FB8C2),
                 BlendMode.srcIn,
               ),
             ),
@@ -77,11 +76,11 @@ class CustomNavbar extends StatelessWidget {
   }
 }
 
+// ── NO NOTCH SHAPE ────────────────────────────────────────────────────────────
+
 class _NoNotch extends NotchedShape {
   const _NoNotch();
 
   @override
-  Path getOuterPath(Rect host, Rect? guest) {
-    return Path()..addRect(host);
-  }
+  Path getOuterPath(Rect host, Rect? guest) => Path()..addRect(host);
 }

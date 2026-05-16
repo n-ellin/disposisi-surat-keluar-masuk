@@ -227,7 +227,7 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
                   },
                   decoration: InputDecoration(
                     hintText: "Cari surat...",
-                    hintStyle: TextStyle(color: Colors.grey.shade400),
+                    hintStyle: TextStyle(color: AppColors.hintsearch),
                     prefixIcon: Icon(
                       Icons.search_rounded,
                       color: Colors.grey.shade400,

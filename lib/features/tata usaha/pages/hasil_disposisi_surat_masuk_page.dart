@@ -37,17 +37,19 @@ class OutputSuratmasuk extends StatelessWidget {
               const SizedBox(height: 20),
 
               /// BACK + TITLE
+              // AFTER
               Row(
                 children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
+                  // AFTER
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new,
                       color: AppColors.bluePrimary,
                       size: 20,
                     ),
                   ),
-                  const SizedBox(width: 2),
+                  const SizedBox(width: 6),
                   const Text(
                     "Detail Surat Masuk",
                     style: TextStyle(
@@ -204,6 +206,7 @@ class OutputSuratmasuk extends StatelessWidget {
   Widget _sectionCard({required List<Widget> children}) {
     return Card(
       elevation: 3,
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),

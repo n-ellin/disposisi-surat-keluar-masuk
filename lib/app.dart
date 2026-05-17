@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/constants/role.dart';
 
@@ -34,6 +35,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('id', 'ID'),
+        Locale('en', 'US'),
+      ],
+      locale: const Locale('id', 'ID'),
+
       debugShowCheckedModeBanner: false,
       title: 'E-Disposisi',
 
@@ -52,17 +64,18 @@ class MyApp extends StatelessWidget {
       routes: {
         // ── AUTH ───────────────────────────────────────────────────────────
         '/splash_screen': (context) => const SplashScreen(),
-        '/signin':        (context) => const Login(),
-        '/gantipw':       (context) => const GantiKataSandiPage(),
+        '/signin': (context) => const Login(),
+        '/gantipw': (context) => const GantiKataSandiPage(),
 
         // ── SHARED ─────────────────────────────────────────────────────────
         '/profile': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments
-              as Map<String, dynamic>;
+          final args =
+              ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>;
           return ProfilePage(
-            role:    args['role']    as Role,
-            nama:    args['nama']    as String,
-            email:   args['email']   as String,
+            role: args['role'] as Role,
+            nama: args['nama'] as String,
+            email: args['email'] as String,
             jabatan: args['jabatan'] as String,
           );
         },
@@ -70,35 +83,39 @@ class MyApp extends StatelessWidget {
             NotificationPage(role: Role.tu, notifications: const []),
 
         // ── TATA USAHA ─────────────────────────────────────────────────────
-        '/menu_tu':    (context) => const TuDashboardPage(jenisSurat: 'Surat Masuk'),
+        '/menu_tu': (context) =>
+            const TuDashboardPage(jenisSurat: 'Surat Masuk'),
         '/history_tu': (context) => const HistoryTUPage(),
         '/output_suratmasuk': (context) => const OutputSuratmasuk(
-          isApproved:   true,
-          catatan:      '-',
-          tujuan:       '-',
-          instruksi:    '-',
-          koordinasi:   '-',
+          isApproved: true,
+          catatan: '-',
+          tujuan: '-',
+          instruksi: '-',
+          koordinasi: '-',
           diteruskanKe: '-',
         ),
         '/output_suratkeluar': (context) =>
             const OutputSuratkeluar(catatan: '-'),
 
         // ── KEPALA SEKOLAH ─────────────────────────────────────────────────
-        '/menu_kepsek':    (context) => const KepsekDashboardPage(jenisSurat: 'Surat Masuk'),
+        '/menu_kepsek': (context) =>
+            const KepsekDashboardPage(jenisSurat: 'Surat Masuk'),
         '/history_kepsek': (context) => const HistoryKepsekPage(),
         '/input_suratmasuk': (context) {
-          final surat = ModalRoute.of(context)!.settings.arguments
-              as Map<String, dynamic>;
+          final surat =
+              ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>;
           return InputSuratMasuk(surat: surat);
         },
         '/input_suratkeluar': (context) => const InputSuratKeluar(),
 
         // ── USER / OTHER ───────────────────────────────────────────────────
-        '/menu_other':    (context) => const MenuUser(),
+        '/menu_other': (context) => const MenuUser(),
         '/history_other': (context) => const HistoryUsersPage(),
         '/detail_suratUsers': (context) {
-          final surat = ModalRoute.of(context)!.settings.arguments
-              as Map<String, dynamic>;
+          final surat =
+              ModalRoute.of(context)!.settings.arguments
+                  as Map<String, dynamic>;
           return DetailSuratUsers(surat: surat);
         },
       },

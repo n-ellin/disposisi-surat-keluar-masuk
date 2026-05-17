@@ -163,5 +163,31 @@ class DummySurat {
 
       'lampiran': ['assets/images/undangan.png'],
     },
+    {
+      'id': 7,
+
+      'jenisSurat': 'Surat Keluar',
+
+      'tanggal': '8 Mei 2026',
+
+      'status': 'menunggu',
+
+      'fromRole': 'kepsek',
+
+      'toRole': 'tu',
+
+      'diteruskanKe': 'waka kurikulum',
+
+      'catatan': 'Segera diproses',
+
+      'data': {
+        'Nomor Surat': '420/SMKN2/V/2026',
+        'Tanggal Surat': '25 Juni 2026',
+        'Dari': 'SMKN 2 Singosari',
+        'Perihal': 'Rapat Pleno',
+      },
+
+      'lampiran': ['assets/images/undangan.png'],
+    },
   ];
 }

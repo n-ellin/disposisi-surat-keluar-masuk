@@ -19,27 +19,22 @@ class CustomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
       child: Material(
-        color: Colors.transparent,
-        elevation: 4,
-        shadowColor: Colors.black12,
+        color: Colors.white,
+        elevation: 8,
+        shadowColor: Colors.black26,
         borderRadius: BorderRadius.circular(24),
         clipBehavior: Clip.antiAlias,
-        child: BottomAppBar(
-          color: Colors.white,
-          elevation: 0,
-          shape: const _NoNotch(),
-          child: SizedBox(
-            height: 54,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
-                Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
-                Expanded(child: _navIcon('assets/icons/ic_profile.svg', 2)),
-              ],
-            ),
+        child: Container(
+          height: 70,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
+              Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
+              Expanded(child: _navIcon('assets/icons/ic_profile.svg', 2)),
+            ],
           ),
         ),
       ),

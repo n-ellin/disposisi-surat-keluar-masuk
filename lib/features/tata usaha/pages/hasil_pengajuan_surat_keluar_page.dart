@@ -31,15 +31,16 @@ class OutputSuratkeluar extends StatelessWidget {
               // HEADER
               Row(
                 children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
+                  // AFTER
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new,
                       color: AppColors.orangePrimary,
                       size: 20,
                     ),
                   ),
-                  const SizedBox(width: 2),
+                  const SizedBox(width: 6),
                   const Text(
                     "Detail Surat Keluar",
                     style: TextStyle(
@@ -74,6 +75,7 @@ class OutputSuratkeluar extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Container(
+                        color: Colors.white,
                         width: double.infinity,
                         constraints: const BoxConstraints(minHeight: 120),
                         padding: const EdgeInsets.all(12),
@@ -250,7 +252,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
                       width: double.infinity,
-                      color: Colors.grey.shade200,
+                      color: Colors.white,
                       child: Image.asset(
                         path,
                         fit: BoxFit.contain,

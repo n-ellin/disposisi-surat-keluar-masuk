@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/search_bar.dart';
+
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 
@@ -174,7 +176,7 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Color(0xFFF2F2F2),
+        backgroundColor: AppColors.bg,
         surfaceTintColor: Colors.transparent,
 
         actions: [
@@ -214,40 +216,8 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
             SizedBox(height: h * 0.015),
 
             /// SEARCH
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFE2E5EA), width: 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: TextField(
-                onChanged: (value) => setState(() => _searchQuery = value),
-                style: TextStyle(fontSize: w * 0.036),
-                decoration: InputDecoration(
-                  hintText: "Cari surat...",
-                  hintStyle: TextStyle(
-                    color: AppColors.hintsearch,
-                    fontSize: w * 0.036,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search_rounded,
-                    color: Colors.grey.shade400,
-                    size: w * 0.052,
-                  ),
-                  // [2] Sedikit kurangi height dengan contentPadding
-                  contentPadding: EdgeInsets.symmetric(vertical: h * 0.014),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                ),
-              ),
+            SearchBarInput(
+              onChanged: (value) => setState(() => _searchQuery = value),
             ),
 
             SizedBox(height: h * 0.015),
@@ -325,49 +295,43 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
                 itemBuilder: (context, index) {
                   final surat = _filteredSurat[index];
 
-                  return Padding(
-                    padding: EdgeInsets.only(bottom: h * 0.015),
-                    child: SuratCard(
-                      jenisSurat: surat['jenisSurat'].toString(),
-                      tanggal: surat['tanggal'].toString(),
-                      status: surat['status']?.toString(),
+                  return SuratCard(
+                    jenisSurat: surat['jenisSurat'].toString(),
+                    tanggal: surat['tanggal'].toString(),
+                    status: surat['status']?.toString(),
 
-                      role: CardRole.tu,
-                      type: CardType.menu,
+                    role: CardRole.tu,
+                    type: CardType.menu,
 
-                      data: Map<String, String>.from(surat['data']),
+                    data: Map<String, String>.from(surat['data']),
 
-                      onDetail: () {
-                        final status = surat['status']
-                            ?.toString()
-                            .toLowerCase();
-                        final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
+                    onDetail: () {
+                      final status = surat['status']?.toString().toLowerCase();
+                      final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
 
-                        if (status == 'menunggu') {
-                          _showProcessDialog();
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => isMasuk
-                                  ? OutputSuratmasuk(
-                                      isApproved: status == 'disetujui',
-                                      catatan: surat['catatan'] ?? '-',
-                                      tujuan: surat['tujuan'] ?? '-',
-                                      instruksi: surat['instruksi'] ?? '-',
-                                      koordinasi: surat['koordinasi'] ?? '-',
-                                      diteruskanKe:
-                                          surat['diteruskanKe'] ?? '-',
-                                      isReadOnly: false,
-                                    )
-                                  : OutputSuratkeluar(
-                                      catatan: surat['catatan'] ?? '-',
-                                    ),
-                            ),
-                          );
-                        }
-                      },
-                    ),
+                      if (status == 'diproses') {
+                        _showProcessDialog();
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => isMasuk
+                                ? OutputSuratmasuk(
+                                    isApproved: status == 'disetujui',
+                                    catatan: surat['catatan'] ?? '-',
+                                    tujuan: surat['tujuan'] ?? '-',
+                                    instruksi: surat['instruksi'] ?? '-',
+                                    koordinasi: surat['koordinasi'] ?? '-',
+                                    diteruskanKe: surat['diteruskanKe'] ?? '-',
+                                    isReadOnly: false,
+                                  )
+                                : OutputSuratkeluar(
+                                    catatan: surat['catatan'] ?? '-',
+                                  ),
+                          ),
+                        );
+                      }
+                    },
                   );
                 },
               ),

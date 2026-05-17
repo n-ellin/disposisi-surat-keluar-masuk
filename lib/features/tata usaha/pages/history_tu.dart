@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/search_bar.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
@@ -27,10 +28,7 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
   List<Map<String, dynamic>> get _filteredSurat {
     return _historySurat.where((s) {
       final status = s['status'].toString().toLowerCase();
-
-      if (status != 'disetujui' && status != 'ditolak') {
-        return false;
-      }
+      if (status != 'disetujui' && status != 'ditolak') return false;
 
       final query = _searchQuery.toLowerCase();
       final jenis = s['jenisSurat'].toString().toLowerCase();
@@ -48,32 +46,22 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
       final matchStatus = _statusFilter == 'semua' || status == _statusFilter;
 
       bool matchDate = true;
-
       try {
         final parts = tanggal.split(' ');
         final day = int.parse(parts[0]);
-
         final monthMap = {
-          'januari': 1,
-          'februari': 2,
-          'maret': 3,
-          'april': 4,
-          'mei': 5,
-          'juni': 6,
-          'juli': 7,
-          'agustus': 8,
-          'september': 9,
-          'oktober': 10,
-          'november': 11,
-          'desember': 12,
+          'januari': 1, 'februari': 2, 'maret': 3, 'april': 4,
+          'mei': 5, 'juni': 6, 'juli': 7, 'agustus': 8,
+          'september': 9, 'oktober': 10, 'november': 11, 'desember': 12,
         };
-
         final month = monthMap[parts[1].toLowerCase()] ?? 1;
         final year = int.parse(parts[2]);
         final suratDate = DateTime(year, month, day);
         final now = DateTime.now();
 
-        if (_dateFilter == 'Hari ini') {
+        if (_dateFilter == FilterState.defaultDateFilter) {
+          matchDate = true;
+        } else if (_dateFilter == 'Hari ini') {
           matchDate =
               suratDate.day == now.day &&
               suratDate.month == now.month &&
@@ -98,23 +86,15 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
   void _showDateFilter() async {
     final result = await showDialog<String>(
       context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.35),
       builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          title: const Text(
-            'Filter Tanggal',
-            style: TextStyle(fontWeight: FontWeight.w700),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _dateTile('Hari ini'),
-              _dateTile('Bulan ini'),
-              _dateTile('Pilih tanggal'),
-            ],
-          ),
+        final w = MediaQuery.of(context).size.width;
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.symmetric(horizontal: w * 0.08),
+          elevation: 0,
+          child: DateFilterDialog(currentFilter: _dateFilter),
         );
       },
     );
@@ -164,19 +144,6 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
     }
   }
 
-  Widget _dateTile(String title) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-      ),
-      onTap: () {
-        Navigator.pop(context, title);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
@@ -184,15 +151,14 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-
       body: SafeArea(
         child: Column(
           children: [
-            // HEADER
             Padding(
               padding: EdgeInsets.fromLTRB(w * 0.04, h * 0.018, w * 0.04, 0),
               child: Column(
                 children: [
+                  // TITLE
                   Text(
                     "Riwayat",
                     style: TextStyle(
@@ -205,45 +171,14 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
 
                   SizedBox(height: h * 0.016),
 
-                  // SEARCH BAR
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: const Color(0xFFE2E5EA)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          _searchQuery = value;
-                          FilterState.tuSearchQuery = value;
-                        });
-                      },
-                      style: TextStyle(fontSize: w * 0.036),
-                      decoration: InputDecoration(
-                        hintText: "Cari surat...",
-                        hintStyle: TextStyle(
-                          color: AppColors.hintsearch,
-                          fontSize: w * 0.036,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.search_rounded,
-                          color: Colors.grey.shade400,
-                          size: w * 0.052,
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          vertical: h * 0.014,
-                        ),
-                        border: InputBorder.none,
-                      ),
-                    ),
+                  // SEARCH
+                  SearchBarInput(
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                        FilterState.tuSearchQuery = value;
+                      });
+                    },
                   ),
 
                   SizedBox(height: h * 0.014),
@@ -344,10 +279,7 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                     )
                   : ListView.builder(
                       padding: EdgeInsets.fromLTRB(
-                        w * 0.04,
-                        0,
-                        w * 0.04,
-                        h * 0.01,
+                        w * 0.04, 0, w * 0.04, h * 0.01,
                       ),
                       itemCount: _filteredSurat.length,
                       itemBuilder: (context, index) {
@@ -367,14 +299,12 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                               MaterialPageRoute(
                                 builder: (_) => isMasuk
                                     ? OutputSuratmasuk(
-                                        isApproved:
-                                            surat['status'] == 'disetujui',
+                                        isApproved: surat['status'] == 'disetujui',
                                         catatan: surat['catatan'] ?? '-',
                                         tujuan: surat['tujuan'] ?? '-',
                                         instruksi: surat['instruksi'] ?? '-',
                                         koordinasi: surat['koordinasi'] ?? '-',
-                                        diteruskanKe:
-                                            surat['diteruskanKe'] ?? '-',
+                                        diteruskanKe: surat['diteruskanKe'] ?? '-',
                                         isReadOnly: true,
                                       )
                                     : OutputSuratkeluar(
@@ -407,12 +337,7 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
           currentIndex: 1,
           onTap: (index) {
             handleNavbarTap(
-              context,
-              index,
-              Role.tu,
-              "Tata Usaha",
-              "tu@gmail.com",
-              "Tata Usaha",
+              context, index, Role.tu, "Tata Usaha", "tu@gmail.com", "Tata Usaha",
             );
           },
         ),

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
@@ -52,9 +52,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
     final singleUrl = widget.imageUrl ?? '';
 
     // Tentukan URL yang aktif saat ini
-    final String targetUrl = urls.isNotEmpty
-        ? urls[_currentIndex]
-        : singleUrl;
+    final String targetUrl = urls.isNotEmpty ? urls[_currentIndex] : singleUrl;
 
     if (targetUrl.isEmpty) {
       _showSnackbar('Tidak ada URL lampiran', isError: true);
@@ -72,14 +70,11 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
       _isDownloading = true;
       _downloadProgress = 0;
     });
-
     try {
-      // Temp file path
       final dir = await getTemporaryDirectory();
       final fileName = 'lampiran_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final savePath = '${dir.path}/$fileName';
 
-      // Download dengan progress
       await Dio().download(
         targetUrl,
         savePath,
@@ -92,18 +87,12 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
         },
       );
 
-      // Simpan ke galeri
-      final result = await ImageGallerySaver.saveFile(savePath);
+      await Gal.putImage(savePath);
 
-      // Hapus temp file
       final tempFile = File(savePath);
       if (await tempFile.exists()) await tempFile.delete();
 
-      if (result['isSuccess'] == true) {
-        _showSnackbar('Tersimpan ke galeri');
-      } else {
-        _showSnackbar('Gagal menyimpan ke galeri', isError: true);
-      }
+      _showSnackbar('Tersimpan ke galeri');
     } catch (e) {
       _showSnackbar('Gagal mengunduh, coba lagi', isError: true);
     } finally {
@@ -118,9 +107,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
     // Android 13+ pakai READ_MEDIA_IMAGES, di bawahnya pakai STORAGE
     if (Platform.isAndroid) {
       final sdkInt = await _getAndroidSdkInt();
-      final permission = sdkInt >= 33
-          ? Permission.photos
-          : Permission.storage;
+      final permission = sdkInt >= 33 ? Permission.photos : Permission.storage;
 
       if (await permission.isGranted) return true;
       final result = await permission.request();
@@ -156,10 +143,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                message,
-                style: const TextStyle(fontSize: 13),
-              ),
+              child: Text(message, style: const TextStyle(fontSize: 13)),
             ),
           ],
         ),
@@ -182,7 +166,6 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-
           // ── KONTEN GAMBAR ──
           if (multipleImages.isNotEmpty)
             PageView.builder(
@@ -239,7 +222,10 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
               right: 0,
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(20),
@@ -259,7 +245,9 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
           // ── ARROW KIRI ──
           if (total > 1 && _currentIndex > 0)
             Positioned(
-              left: 8, top: 0, bottom: 0,
+              left: 8,
+              top: 0,
+              bottom: 0,
               child: Center(
                 child: Material(
                   color: Colors.black38,
@@ -272,8 +260,11 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
                     customBorder: const CircleBorder(),
                     child: const Padding(
                       padding: EdgeInsets.all(10),
-                      child: Icon(Icons.arrow_back_ios_new,
-                          color: Colors.white, size: 20),
+                      child: Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -283,7 +274,9 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
           // ── ARROW KANAN ──
           if (total > 1 && _currentIndex < total - 1)
             Positioned(
-              right: 8, top: 0, bottom: 0,
+              right: 8,
+              top: 0,
+              bottom: 0,
               child: Center(
                 child: Material(
                   color: Colors.black38,
@@ -296,8 +289,11 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
                     customBorder: const CircleBorder(),
                     child: const Padding(
                       padding: EdgeInsets.all(10),
-                      child: Icon(Icons.arrow_forward_ios,
-                          color: Colors.white, size: 20),
+                      child: Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -308,7 +304,8 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
           if (total > 1)
             Positioned(
               bottom: MediaQuery.of(context).padding.bottom + 72,
-              left: 0, right: 0,
+              left: 0,
+              right: 0,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(total, (index) {
@@ -329,7 +326,9 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
 
           // ── BOTTOM BAR: PROGRESS atau TOMBOL DOWNLOAD ──
           Positioned(
-            bottom: 0, left: 0, right: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
             child: Container(
               padding: EdgeInsets.only(
                 left: 20,
@@ -419,7 +418,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
       child: CircularProgressIndicator(
         value: loadingProgress.expectedTotalBytes != null
             ? loadingProgress.cumulativeBytesLoaded /
-                loadingProgress.expectedTotalBytes!
+                  loadingProgress.expectedTotalBytes!
             : null,
         color: AppColors.bluePrimary,
       ),

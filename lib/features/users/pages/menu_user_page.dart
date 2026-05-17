@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/search_bar.dart';
 
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
@@ -207,30 +208,9 @@ class _MenuUserState extends State<MenuUser> {
             SizedBox(height: h * 0.02),
 
             /// SEARCH
-            TextField(
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
-              },
-
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-
-                hintText: "Cari surat...",
-
-                filled: true,
-                fillColor: AppColors.hintsearch,
-
-                contentPadding: EdgeInsets.symmetric(vertical: h * 0.018),
-
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-              ),
+            SearchBarInput(
+              onChanged: (value) => setState(() => searchQuery = value),
             ),
-
             SizedBox(height: h * 0.025),
 
             /// LIST SURAT

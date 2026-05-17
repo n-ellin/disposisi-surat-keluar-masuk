@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
+import 'package:ta_mobile_disposisi_surat/shared/widgets/search_bar.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
-
 import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/filter_date.dart';
-
 import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_disposisi_surat_masuk_page.dart';
 import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
 
@@ -47,32 +46,22 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
           (_jenisFilter == 'keluar' && jenis.contains('keluar'));
 
       bool matchDate = true;
-
       try {
         final parts = tanggal.split(' ');
         final day = int.parse(parts[0]);
-
         final monthMap = {
-          'januari': 1,
-          'februari': 2,
-          'maret': 3,
-          'april': 4,
-          'mei': 5,
-          'juni': 6,
-          'juli': 7,
-          'agustus': 8,
-          'september': 9,
-          'oktober': 10,
-          'november': 11,
-          'desember': 12,
+          'januari': 1, 'februari': 2, 'maret': 3, 'april': 4,
+          'mei': 5, 'juni': 6, 'juli': 7, 'agustus': 8,
+          'september': 9, 'oktober': 10, 'november': 11, 'desember': 12,
         };
-
         final month = monthMap[parts[1].toLowerCase()] ?? 1;
         final year = int.parse(parts[2]);
         final suratDate = DateTime(year, month, day);
         final now = DateTime.now();
 
-        if (_dateFilter == 'Hari ini') {
+        if (_dateFilter == FilterState.defaultDateFilter) {
+          matchDate = true;
+        } else if (_dateFilter == 'Hari ini') {
           matchDate =
               suratDate.day == now.day &&
               suratDate.month == now.month &&
@@ -97,23 +86,15 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
   void _showDateFilter() async {
     final result = await showDialog<String>(
       context: context,
+      barrierDismissible: true,
+      barrierColor: Colors.black.withOpacity(0.35),
       builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          title: const Text(
-            'Filter Tanggal',
-            style: TextStyle(fontWeight: FontWeight.w700),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _dateTile('Hari ini'),
-              _dateTile('Bulan ini'),
-              _dateTile('Pilih tanggal'),
-            ],
-          ),
+        final w = MediaQuery.of(context).size.width;
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.symmetric(horizontal: w * 0.08),
+          elevation: 0,
+          child: DateFilterDialog(currentFilter: _dateFilter),
         );
       },
     );
@@ -132,7 +113,7 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
               colorScheme: ColorScheme.light(
                 primary: AppColors.bluePrimary,
                 onPrimary: Colors.white,
-                onSurface: Colors.black,
+                onSurface: Colors.black87,
               ),
               datePickerTheme: DatePickerThemeData(
                 shape: RoundedRectangleBorder(
@@ -163,19 +144,6 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
     }
   }
 
-  Widget _dateTile(String title) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(
-        title,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-      ),
-      onTap: () {
-        Navigator.pop(context, title);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -184,7 +152,6 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(w * 0.04),
@@ -205,37 +172,13 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
               SizedBox(height: h * 0.02),
 
               // SEARCH
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFE2E5EA)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                      FilterState.kepsekSearchQuery = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Cari surat...",
-                    hintStyle: TextStyle(color: AppColors.hintsearch),
-                    prefixIcon: Icon(
-                      Icons.search_rounded,
-                      color: Colors.grey.shade400,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: h * 0.015),
-                  ),
-                ),
+              SearchBarInput(
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                    FilterState.kepsekSearchQuery = value;
+                  });
+                },
               ),
 
               SizedBox(height: h * 0.018),
@@ -346,24 +289,18 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
                               type: CardType.history,
                               data: Map<String, String>.from(surat['data']),
                               onDetail: () {
-                                final isMasuk =
-                                    surat['jenisSurat'] == 'Surat Masuk';
-
+                                final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => isMasuk
                                         ? OutputSuratmasuk(
-                                            isApproved:
-                                                surat['status'] == 'disetujui',
+                                            isApproved: surat['status'] == 'disetujui',
                                             catatan: surat['catatan'] ?? '-',
                                             tujuan: surat['tujuan'] ?? '-',
-                                            instruksi:
-                                                surat['instruksi'] ?? '-',
-                                            koordinasi:
-                                                surat['koordinasi'] ?? '-',
-                                            diteruskanKe:
-                                                surat['diteruskanKe'] ?? '-',
+                                            instruksi: surat['instruksi'] ?? '-',
+                                            koordinasi: surat['koordinasi'] ?? '-',
+                                            diteruskanKe: surat['diteruskanKe'] ?? '-',
                                             isReadOnly: true,
                                           )
                                         : OutputSuratkeluar(
@@ -383,18 +320,12 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
         ),
       ),
 
-      // NAVBAR
       bottomNavigationBar: CustomNavbar(
         role: Role.kepsek,
         currentIndex: 1,
         onTap: (index) {
           handleNavbarTap(
-            context,
-            index,
-            Role.kepsek,
-            "Kepala Sekolah",
-            "kepsek@gmail.com",
-            "Kepala Sekolah",
+            context, index, Role.kepsek, "Kepala Sekolah", "kepsek@gmail.com", "Kepala Sekolah",
           );
         },
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/core/utils/full-img-viewer.dart';
+import 'package:ta_mobile_disposisi_surat/core/utils/full-imges-viewer.dart';
 
 class OutputSuratmasuk extends StatelessWidget {
   final bool isApproved;

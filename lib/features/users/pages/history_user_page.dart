@@ -6,7 +6,7 @@ import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/filter_date.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
-import 'package:ta_mobile_disposisi_surat/core/utils/full-img-viewer.dart';
+import 'package:ta_mobile_disposisi_surat/core/utils/full-imges-viewer.dart';
 
 class HistoryUsersPage extends StatefulWidget {
   const HistoryUsersPage({super.key});

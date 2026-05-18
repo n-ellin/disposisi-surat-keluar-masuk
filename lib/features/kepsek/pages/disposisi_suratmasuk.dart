@@ -131,36 +131,103 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               _detailCard(context),
               const SizedBox(height: 20),
 
-              // ── STATUS DROPDOWN ─────────────────────────────────────────
+              // ── STATUS RADIO BUTTON ─────────────────────────────────────────
               const Text(
                 "Status",
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
               const SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: DropdownButtonFormField<String>(
-                  value: _selectedStatus,
-                  decoration: const InputDecoration(
-                    hintText: "Pilih status",
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 2,
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedStatus = 'terima'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _selectedStatus == 'terima'
+                              ? AppColors.bluePrimary
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _selectedStatus == 'terima'
+                                ? AppColors.bluePrimary
+                                : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              _selectedStatus == 'terima'
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              color: _selectedStatus == 'terima'
+                                  ? Colors.white
+                                  : Colors.grey.shade400,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              "Terima",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: _selectedStatus == 'terima'
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'terima', child: Text("Terima")),
-                    DropdownMenuItem(value: 'tolak', child: Text("Tolak")),
-                  ],
-                  onChanged: (value) => setState(() => _selectedStatus = value),
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedStatus = 'tolak'),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _selectedStatus == 'tolak'
+                              ? Colors.red.shade400
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _selectedStatus == 'tolak'
+                                ? Colors.red.shade400
+                                : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              _selectedStatus == 'tolak'
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              color: _selectedStatus == 'tolak'
+                                  ? Colors.white
+                                  : Colors.grey.shade400,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              "Tolak",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: _selectedStatus == 'tolak'
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 18),
 
               // ── FORM BERDASARKAN STATUS ─────────────────────────────────
               if (isApproved) ...[

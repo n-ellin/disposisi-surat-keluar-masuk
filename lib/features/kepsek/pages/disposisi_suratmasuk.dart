@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/utils/full-imges-viewer.dart';
-import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_disposisi_surat_masuk_page.dart';
 
 class InputSuratMasuk extends StatefulWidget {
   final Map<String, dynamic> surat;
@@ -20,7 +19,6 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
   final TextEditingController tanggapanController = TextEditingController();
   final TextEditingController instruksiController = TextEditingController();
   final TextEditingController koordinasiController = TextEditingController();
-  final TextEditingController multiSelectController = TextEditingController();
 
   List<String> selectedTujuan = [];
 
@@ -32,6 +30,26 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
   Map<String, dynamic> get suratData => widget.surat['data'] ?? {};
 
+  // ── VALIDASI ───────────────────────────────────────────────────────────────
+
+  String? _validate() {
+    if (_selectedStatus == null) return "Pilih status terlebih dahulu.";
+
+    if (isApproved) {
+      if (selectedTujuan.isEmpty) {
+        return "Pilih minimal satu penerima disposisi.";
+      }
+    }
+
+    if (isRejected) {
+      if (catatanTolakController.text.trim().isEmpty) {
+        return "Catatan penolakan wajib diisi.";
+      }
+    }
+
+    return null;
+  }
+
   @override
   void dispose() {
     catatanTerimaController.dispose();
@@ -39,11 +57,26 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     tanggapanController.dispose();
     instruksiController.dispose();
     koordinasiController.dispose();
-    multiSelectController.dispose();
     super.dispose();
   }
 
   // ── CONFIRM DIALOG ─────────────────────────────────────────────────────────
+
+  void _onKirimPressed() {
+    final error = _validate();
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error),
+          backgroundColor: Colors.red.shade400,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    _showConfirmDialog(context);
+  }
+
   void _showConfirmDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -72,8 +105,8 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               ),
             ),
             onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
+              Navigator.pop(context); // tutup dialog
+              _submitDisposisi();
             },
             child: const Text("Yakin"),
           ),
@@ -81,6 +114,29 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       ),
     );
   }
+
+  // ── SUBMIT LOGIC ───────────────────────────────────────────────────────────
+
+  void _submitDisposisi() {
+    final payload = {
+      'status': _selectedStatus,
+      if (isApproved) ...{
+        'tujuan': selectedTujuan,
+        'catatan': catatanTerimaController.text.trim(),
+        'tanggapan': tanggapanController.text.trim(),
+        'instruksi': instruksiController.text.trim(),
+        'koordinasi': koordinasiController.text.trim(),
+      },
+      if (isRejected) 'catatan': catatanTolakController.text.trim(),
+    };
+
+    // TODO: kirim payload ke API / BLoC / Provider
+    debugPrint('Payload disposisi: $payload');
+
+    Navigator.pop(context);
+  }
+
+  // ── BUILD ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +150,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
             children: [
               const SizedBox(height: 18),
 
-              // ── HEADER ──────────────────────────────────────────────────
+              // ── HEADER ───────────────────────────────────────────────────
               Padding(
                 padding: const EdgeInsets.only(top: 8, bottom: 10),
                 child: Row(
@@ -125,11 +181,11 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               ),
               const SizedBox(height: 16),
 
-              // ── DETAIL CARD ─────────────────────────────────────────────
+              // ── DETAIL CARD ──────────────────────────────────────────────
               _detailCard(context),
               const SizedBox(height: 20),
 
-              // ── STATUS RADIO BUTTON ─────────────────────────────────────
+              // ── STATUS ───────────────────────────────────────────────────
               const Text(
                 "Status",
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
@@ -142,9 +198,9 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                   Expanded(child: _radioOption('tolak', 'Tolak')),
                 ],
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 20),
 
-              // ── FORM BERDASARKAN STATUS ─────────────────────────────────
+              // ── FORM BERDASARKAN STATUS ──────────────────────────────────
               if (isApproved) ...[
                 _formDisposisi(),
                 const SizedBox(height: 16),
@@ -165,7 +221,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
               const SizedBox(height: 20),
 
-              // ── TOMBOL KIRIM ────────────────────────────────────────────
+              // ── TOMBOL KIRIM ─────────────────────────────────────────────
               if (_selectedStatus != null)
                 Align(
                   alignment: Alignment.centerRight,
@@ -182,7 +238,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () => _showConfirmDialog(context),
+                    onPressed: _onKirimPressed,
                     child: const Text("Kirim"),
                   ),
                 ),
@@ -195,7 +251,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     );
   }
 
-  // ── RADIO BUTTON VARIASI 4 ─────────────────────────────────────────────────
+  // ── RADIO OPTION ───────────────────────────────────────────────────────────
 
   Widget _radioOption(String value, String label) {
     final isSelected = _selectedStatus == value;
@@ -247,7 +303,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
           BoxShadow(
             blurRadius: 12,
             offset: const Offset(0, 4),
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
           ),
         ],
       ),
@@ -309,7 +365,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.attach_file_rounded,
                       color: AppColors.bluePrimary,
                       size: 20,
@@ -383,7 +439,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     return _sectionCard(
       title: "Form Disposisi",
       children: [
-        _buildLabel("Diteruskan Ke"),
+        _buildLabel("Diteruskan Ke *"),
         _multiSelectField(),
         const SizedBox(height: 12),
         _buildLabel("Catatan"),
@@ -420,7 +476,10 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     );
   }
 
-  Widget _sectionCard({required String title, required List<Widget> children}) {
+  Widget _sectionCard({
+    required String title,
+    required List<Widget> children,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -431,7 +490,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
           BoxShadow(
             blurRadius: 10,
             offset: const Offset(0, 4),
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
           ),
         ],
       ),
@@ -475,7 +534,10 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     );
   }
 
-  Widget _textField({required String hint, TextEditingController? controller}) {
+  Widget _textField({
+    required String hint,
+    TextEditingController? controller,
+  }) {
     return TextField(
       controller: controller,
       maxLines: 2,
@@ -494,7 +556,8 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.bluePrimary, width: 1.5),
+          borderSide:
+              const BorderSide(color: AppColors.bluePrimary, width: 1.5),
         ),
       ),
     );
@@ -502,227 +565,114 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
   // ── MULTI SELECT ───────────────────────────────────────────────────────────
 
+  static const List<String> _tujuanOptions = [
+    "Waka Kurikulum",
+    "Waka Kesiswaan",
+    "Waka Humas",
+    "Waka Sarpras",
+    "Ketua Konsli",
+    "Koordinator",
+    "BK",
+    "BKK",
+    "Prakerin",
+  ];
+
   Widget _multiSelectField() {
-    return TextField(
-      controller: multiSelectController,
-      readOnly: true,
-      enableInteractiveSelection: false,
-      showCursor: false,
-      decoration: InputDecoration(
-        hintText: "Pilih penerima",
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 14,
-        ),
-        enabledBorder: OutlineInputBorder(
+    final displayText = selectedTujuan.isEmpty
+        ? "Pilih penerima"
+        : selectedTujuan.join(", ");
+    final isPlaceholder = selectedTujuan.isEmpty;
+
+    return GestureDetector(
+      onTap: _showTujuanDialog,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          border: Border.all(color: Colors.grey.shade300),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.bluePrimary),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                displayText,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isPlaceholder
+                      ? AppColors.hinttext
+                      : Colors.black87,
+                ),
+              ),
+            ),
+            const Icon(Icons.keyboard_arrow_down_rounded),
+          ],
         ),
-        suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
       ),
-      onTap: () async {
-        final result = await showDialog<List<String>>(
-          context: context,
-          builder: (_) {
-            final options = [
-              "Waka Kurikulum",
-              "Waka Kesiswaan",
-              "Waka Humas",
-              "Waka Sarpras",
-              "Ketua Konsli",
-              "Koordinator",
-              "BK",
-              "BKK",
-              "Prakerin",
-            ];
-            List<String> temp = List.from(selectedTujuan);
+    );
+  }
 
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: const Text(
-                "Pilih Tujuan",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: StatefulBuilder(
-                builder: (context, setStateDialog) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: options.map((e) {
-                        return CheckboxListTile(
-                          value: temp.contains(e),
-                          activeColor: AppColors.bluePrimary,
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(e),
-                          controlAffinity: ListTileControlAffinity.leading,
-                          onChanged: (v) {
-                            setStateDialog(() {
-                              v == true ? temp.add(e) : temp.remove(e);
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  );
-                },
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    "Batal",
-                    style: TextStyle(color: AppColors.bluePrimary),
-                  ),
+  Future<void> _showTujuanDialog() async {
+    final result = await showDialog<List<String>>(
+      context: context,
+      builder: (_) {
+        List<String> temp = List.from(selectedTujuan);
+
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            "Pilih Tujuan",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: StatefulBuilder(
+            builder: (context, setStateDialog) {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: _tujuanOptions.map((e) {
+                    return CheckboxListTile(
+                      value: temp.contains(e),
+                      activeColor: AppColors.bluePrimary,
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(e),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      onChanged: (v) {
+                        setStateDialog(() {
+                          v == true ? temp.add(e) : temp.remove(e);
+                        });
+                      },
+                    );
+                  }).toList(),
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.bluePrimary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                  ),
-                  onPressed: () => Navigator.pop(context, temp),
-                  child: const Text("OK"),
-                ),
-              ],
-            );
-          },
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Batal",
+                style: TextStyle(color: AppColors.bluePrimary),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.bluePrimary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+              ),
+              onPressed: () => Navigator.pop(context, temp),
+              child: const Text("OK"),
+            ),
+          ],
         );
-
-        if (result != null) {
-          setState(() {
-            selectedTujuan = result;
-            multiSelectController.text = result.join(", ");
-          });
-        }
       },
     );
-  }
-}
 
-// ── ATTACHMENT CAROUSEL ────────────────────────────────────────────────────
-
-class _AttachmentCarousel extends StatefulWidget {
-  const _AttachmentCarousel({required this.attachmentUrls});
-  final List<String> attachmentUrls;
-
-  @override
-  State<_AttachmentCarousel> createState() => _AttachmentCarouselState();
-}
-
-class _AttachmentCarouselState extends State<_AttachmentCarousel> {
-  late final PageController _pageController;
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(viewportFraction: 0.92);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final attachmentUrls = widget.attachmentUrls;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 230,
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              PageView.builder(
-                controller: _pageController,
-                itemCount: attachmentUrls.length,
-                onPageChanged: (index) => setState(() => _currentIndex = index),
-                itemBuilder: (context, index) {
-                  final path = attachmentUrls[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => FullScreenImageViewer(
-                              imageAssetPath: path,
-                              imageUrls: attachmentUrls,
-                              initialIndex: index,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
-                          child: Image.asset(
-                            path,
-                            fit: BoxFit.contain,
-                            width: double.infinity,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.broken_image_rounded,
-                                    size: 50,
-                                    color: Colors.grey,
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text("Gagal memuat gambar"),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-              Positioned(
-                bottom: 12,
-                child: Row(
-                  children: List.generate(attachmentUrls.length, (index) {
-                    final isActive = _currentIndex == index;
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                      width: isActive ? 18 : 7,
-                      height: 7,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: isActive
-                            ? AppColors.bluePrimary
-                            : Colors.grey.shade400,
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+    if (result != null) {
+      setState(() => selectedTujuan = result);
+    }
   }
 }

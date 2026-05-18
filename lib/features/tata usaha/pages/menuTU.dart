@@ -304,33 +304,33 @@ class _TuDashboardPageState extends State<TuDashboardPage> {
                     type: CardType.menu,
 
                     data: Map<String, String>.from(surat['data']),
-
                     onDetail: () {
                       final status = surat['status']?.toString().toLowerCase();
                       final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
 
-                      if (status == 'diproses') {
+                      if (isMasuk && status == 'diproses') {
                         _showProcessDialog();
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => isMasuk
-                                ? OutputSuratmasuk(
-                                    isApproved: status == 'disetujui',
-                                    catatan: surat['catatan'] ?? '-',
-                                    tujuan: surat['tujuan'] ?? '-',
-                                    instruksi: surat['instruksi'] ?? '-',
-                                    koordinasi: surat['koordinasi'] ?? '-',
-                                    diteruskanKe: surat['diteruskanKe'] ?? '-',
-                                    isReadOnly: false,
-                                  )
-                                : OutputSuratkeluar(
-                                    catatan: surat['catatan'] ?? '-',
-                                  ),
-                          ),
-                        );
+                        return;
                       }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => isMasuk
+                              ? OutputSuratmasuk(
+                                  isApproved: status == 'disetujui',
+                                  catatan: surat['catatan'] ?? '-',
+                                  tujuan: surat['tujuan'] ?? '-',
+                                  instruksi: surat['instruksi'] ?? '-',
+                                  koordinasi: surat['koordinasi'] ?? '-',
+                                  diteruskanKe: surat['diteruskanKe'] ?? '-',
+                                  isReadOnly: false,
+                                )
+                              : OutputSuratkeluar(
+                                  catatan: surat['catatan'] ?? '-',
+                                ),
+                        ),
+                      );
                     },
                   );
                 },

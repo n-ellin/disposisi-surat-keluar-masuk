@@ -240,7 +240,7 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
                 ),
               ),
 
-              SizedBox(height: h * 0.02),
+              SizedBox(height: h * 0.016),
 
               // LIST
               Expanded(
@@ -280,7 +280,7 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
                           final surat = _filteredSurat[index];
 
                           return Padding(
-                            padding: EdgeInsets.only(bottom: h * 0.02),
+                            padding: EdgeInsets.only(bottom: h * 0.001),
                             child: SuratCard(
                               jenisSurat: surat['jenisSurat'],
                               tanggal: surat['tanggal'],

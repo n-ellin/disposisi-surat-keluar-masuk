@@ -520,7 +520,7 @@ class _HomeState extends State<Home> {
           child: Material(
             color: Colors.transparent,
             child: Container(
-              width: w * 0.75,
+              width: w * 0.60,
               padding: EdgeInsets.symmetric(
                 vertical: w * 0.08,
                 horizontal: w * 0.06,
@@ -548,16 +548,16 @@ class _HomeState extends State<Home> {
                   Text(
                     "Surat Dalam Proses",
                     style: TextStyle(
-                      fontSize: w * 0.04,
+                      fontSize: w * 0.06,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   SizedBox(height: w * 0.025),
                   Text(
-                    "Surat masih dalam\nproses pengajuan",
+                    "Surat masih dalam proses\npengajuan",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: w * 0.032,
+                      fontSize: w * 0.045,
                       color: Colors.grey[600],
                     ),
                   ),

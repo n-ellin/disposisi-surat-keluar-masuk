@@ -289,7 +289,7 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
                           final surat = _filteredSurat[index];
 
                           return Padding(
-                            padding: EdgeInsets.only(bottom: h * 0.02),
+                            padding: EdgeInsets.only(bottom: h * 0.001),
                             child: SuratCard(
                               jenisSurat: surat['jenisSurat'].toString(),
                               tanggal: surat['tanggal'].toString(),

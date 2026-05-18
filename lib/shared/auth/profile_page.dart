@@ -200,7 +200,7 @@ class ProfilePage extends StatelessWidget {
       barrierColor: Colors.black.withOpacity(0.5),
       builder: (ctx) => Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 60),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -222,34 +222,35 @@ class ProfilePage extends StatelessWidget {
                       'Keluar dari akun?',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 25,
                         fontWeight: FontWeight.w700,
                         color: Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Anda yakin ingin keluar dari akun ini?',
+                      'Anda yakin\ningin keluar dari akun ini?',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 16,
                         color: Colors.grey.shade500,
                         height: 1.6,
                       ),
                     ),
+                    const SizedBox(height: 4),
                   ],
                 ),
               ),
 
               // Actions
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.fromLTRB(15, 0.5, 15, 15),
                 child: Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
                           side: BorderSide(color: Colors.grey.shade300),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -272,7 +273,7 @@ class ProfilePage extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFE24B4A),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),

@@ -15,8 +15,6 @@ class InputSuratMasuk extends StatefulWidget {
 class _InputSuratMasukState extends State<InputSuratMasuk> {
   String? _selectedStatus;
 
-  bool _showLampiran = false;
-
   final TextEditingController catatanTerimaController = TextEditingController();
   final TextEditingController catatanTolakController = TextEditingController();
   final TextEditingController tanggapanController = TextEditingController();
@@ -131,34 +129,18 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               _detailCard(context),
               const SizedBox(height: 20),
 
-              // ── STATUS DROPDOWN ─────────────────────────────────────────
+              // ── STATUS RADIO BUTTON ─────────────────────────────────────
               const Text(
                 "Status",
                 style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
               ),
               const SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: DropdownButtonFormField<String>(
-                  value: _selectedStatus,
-                  decoration: const InputDecoration(
-                    hintText: "Pilih status",
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 2,
-                    ),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'terima', child: Text("Terima")),
-                    DropdownMenuItem(value: 'tolak', child: Text("Tolak")),
-                  ],
-                  onChanged: (value) => setState(() => _selectedStatus = value),
-                ),
+              Row(
+                children: [
+                  Expanded(child: _radioOption('terima', 'Terima')),
+                  const SizedBox(width: 8),
+                  Expanded(child: _radioOption('tolak', 'Tolak')),
+                ],
               ),
               const SizedBox(height: 18),
 
@@ -208,6 +190,45 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               const SizedBox(height: 30),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // ── RADIO BUTTON VARIASI 4 ─────────────────────────────────────────────────
+
+  Widget _radioOption(String value, String label) {
+    final isSelected = _selectedStatus == value;
+    final isTerima = value == 'terima';
+    final activeColor =
+        isTerima ? const Color(0xFF1D9E75) : const Color(0xFFE24B4A);
+    final activeTextColor =
+        isTerima ? const Color(0xFF0F6E56) : const Color(0xFFA32D2D);
+
+    return GestureDetector(
+      onTap: () => setState(() => _selectedStatus = value),
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: isSelected ? activeTextColor : Colors.black87,
+                ),
+              ),
+            ),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              height: 3,
+              color: isSelected ? activeColor : Colors.transparent,
+            ),
+          ],
         ),
       ),
     );

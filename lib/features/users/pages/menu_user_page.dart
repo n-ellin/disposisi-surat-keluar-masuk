@@ -208,10 +208,12 @@ class _MenuUserState extends State<MenuUser> {
             SizedBox(height: h * 0.02),
 
             /// SEARCH
+            /// SEARCH
             SearchBarInput(
+              hintText: 'Cari surat...',
               onChanged: (value) => setState(() => searchQuery = value),
             ),
-            SizedBox(height: h * 0.025),
+            SizedBox(height: h * 0.02),
 
             /// LIST SURAT
             Expanded(
@@ -224,7 +226,7 @@ class _MenuUserState extends State<MenuUser> {
                   final surat = filteredSurat[index];
 
                   return Padding(
-                    padding: EdgeInsets.only(bottom: h * 0.015),
+                    padding: EdgeInsets.only(bottom: h * 0.002),
 
                     child: SuratCard(
                       jenisSurat: surat["jenisSurat"].toString(),

@@ -38,6 +38,7 @@ class SuratCard extends StatelessWidget {
   bool get showStatus => role == CardRole.tu;
   bool get isHome => type == CardType.home;
   bool get isHistory => type == CardType.history;
+  bool get isMenu => type == CardType.menu;
   bool get showDiteruskanKe =>
       role == CardRole.Users &&
       diteruskanKe != null &&
@@ -87,7 +88,7 @@ class SuratCard extends StatelessWidget {
     }
   }
 
-  Color _buttonColor() {
+  Color _accentColor() {
     return jenisSurat.toLowerCase() == 'surat keluar'
         ? AppColors.orangePrimary
         : AppColors.bluePrimary;
@@ -98,6 +99,9 @@ class SuratCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
+
+    // History & menu pakai left stroke, home tidak
+    final bool hasStroke = isHistory || isMenu;
 
     return GestureDetector(
       onTap: isHome ? onDetail : null,
@@ -121,15 +125,15 @@ class SuratCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Left stroke — history only
-                if (isHistory)
-                  Container(width: w * 0.015, color: _buttonColor()),
+                // Left stroke — history & menu
+                if (hasStroke)
+                  Container(width: w * 0.015, color: _accentColor()),
 
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: isHistory ? w * 0.03 : w * 0.045,
-                      vertical: isHistory ? w * 0.025 : w * 0.038,
+                      horizontal: hasStroke ? w * 0.03 : w * 0.045,
+                      vertical: hasStroke ? w * 0.025 : w * 0.038,
                     ),
                     child: isHome
                         ? _buildHomeCard(w)
@@ -147,12 +151,6 @@ class SuratCard extends StatelessWidget {
   }
 
   // ── HOME CARD ────────────────────────────────────────────────────────────────
-  // Layout visual:
-  //   [Icon]  [Perihal ............] [tanggal ]
-  //           [Dari ................] [badge   ]
-  //
-  // Kolom kanan (tanggal + badge) menggunakan CrossAxisAlignment.end
-  // dan tinggi tiap slot menyesuaikan tinggi baris kiri (Perihal & Dari).
 
   Widget _buildHomeCard(double w) {
     final isMasuk = jenisSurat == 'Surat Masuk';
@@ -160,297 +158,13 @@ class SuratCard extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // ── Icon ──
+        // Icon
         Container(
-          width: w * 0.11,
-          height: w * 0.11,
+          width: w * 0.115,
+          height: w * 0.115,
           decoration: BoxDecoration(
             color: isMasuk ? const Color(0xFFE7F6F8) : const Color(0xFFFFF1E3),
             borderRadius: BorderRadius.circular(w * 0.035),
-          ),
-          child: Center(
-            child: SvgPicture.asset(
-              isMasuk
-                  ? 'assets/icons/ic_inmail.svg'
-                  : 'assets/icons/ic_outmail.svg',
-              width: w * 0.055,
-              height: w * 0.055,
-              colorFilter: ColorFilter.mode(
-                isMasuk ? AppColors.bluePrimary : AppColors.orangePrimary,
-                BlendMode.srcIn,
-              ),
-            ),
-          ),
-        ),
-
-        SizedBox(width: w * 0.035),
-
-        // ── Perihal & Dari ──
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Baris Perihal
-              Text(
-                data['Perihal'] ?? '-',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: w * 0.036,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              SizedBox(height: w * 0.007),
-              // Baris Dari
-              Text(
-                data['Dari'] ?? '-',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: w * 0.030,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(width: w * 0.02),
-
-        // ── Kolom kanan: tanggal (sejajar Perihal) + badge (sejajar Dari) ──
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Tanggal — tinggi sama dengan baris Perihal
-            SizedBox(
-              height: w * 0.036 * 1.4,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  tanggal,
-                  style: TextStyle(
-                    fontSize: w * 0.032,
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: w * 0.007),
-            // Badge status — tinggi sama dengan baris Dari
-            SizedBox(
-              height: w * 0.030 * 1.4,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: showStatus && status != null
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: w * 0.03,
-                          vertical: w * 0.004,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _bgColor(),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          _label(),
-                          style: TextStyle(
-                            fontSize: w * 0.028,
-                            fontWeight: FontWeight.w700,
-                            color: _textColor(),
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // ── HISTORY CARD ─────────────────────────────────────────────────────────────
-
-  Widget _buildHistoryCard(double w) {
-    final isMasuk = jenisSurat == 'Surat Masuk';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // ── BARIS ATAS: icon + jenis surat + badge status + tanggal ──
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Container(
-                    width: w * 0.07,
-                    height: w * 0.07,
-                    decoration: BoxDecoration(
-                      color: isMasuk
-                          ? const Color(0xFFE7F6F8)
-                          : const Color(0xFFFFF1E3),
-                      borderRadius: BorderRadius.circular(w * 0.02),
-                    ),
-                    child: Center(
-                      child: SvgPicture.asset(
-                        isMasuk
-                            ? 'assets/icons/ic_inmail.svg'
-                            : 'assets/icons/ic_outmail.svg',
-                        width: w * 0.035,
-                        height: w * 0.035,
-                        colorFilter: ColorFilter.mode(
-                          isMasuk
-                              ? AppColors.bluePrimary
-                              : AppColors.orangePrimary,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: w * 0.02),
-                  Text(
-                    jenisSurat,
-                    style: TextStyle(
-                      fontSize: w * 0.036,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  // Badge status setelah label jenis surat
-                  if (showStatus && status != null) ...[
-                    SizedBox(width: w * 0.018),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: w * 0.025,
-                        vertical: w * 0.006,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _bgColor(),
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: Text(
-                        _label(),
-                        style: TextStyle(
-                          fontSize: w * 0.026,
-                          fontWeight: FontWeight.w700,
-                          color: _textColor(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-
-            // Tanggal
-            Text(
-              tanggal,
-              style: TextStyle(
-                fontSize: w * 0.032,
-                color: Colors.grey.shade500,
-              ),
-            ),
-          ],
-        ),
-
-        SizedBox(height: w * 0.018),
-        Divider(height: 1, color: Colors.grey.shade100),
-        SizedBox(height: w * 0.018),
-
-        // ── BARIS BAWAH: perihal + dari + eye button ──
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    data['Perihal'] ?? '-',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: w * 0.034,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  SizedBox(height: w * 0.005),
-                  Text(
-                    data['Dari'] ?? '-',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: w * 0.029,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(width: w * 0.02),
-
-            // Eye button
-            GestureDetector(
-              onTap: onDetail,
-              child: Container(
-                width: w * 0.085,
-                height: w * 0.085,
-                decoration: BoxDecoration(
-                  color: _buttonColor().withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(w * 0.025),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.remove_red_eye_rounded,
-                    color: _buttonColor(),
-                    size: w * 0.045,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // ── MENU CARD ────────────────────────────────────────────────────────────────
-  // Layout visual:
-  //   [Icon]  [Surat Masuk  badge] [tanggal      ]
-  //           [Perihal            ] [              ]
-  //           [Dari               ] [button Detail ]
-  //
-  // Kolom kanan: tanggal sejajar baris jenis surat, button sejajar Perihal+Dari.
-
-  Widget _buildMenuCard(double w) {
-    final isMasuk = jenisSurat == 'Surat Masuk';
-
-    // Tinggi baris "Jenis Surat" agar tanggal & button bisa disejajarkan
-    final double rowJenisSuratH = w * 0.042 * 1.4;
-    // Tinggi gabungan Perihal + gap + Dari
-    final double rowPerihalDariH =
-        (w * 0.036 * 1.4) + (w * 0.003) + (w * 0.032 * 1.4);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // ── Icon — sejajar tengah dengan seluruh kolom teks ──
-        Container(
-          width: w * 0.13,
-          height: w * 0.13,
-          decoration: BoxDecoration(
-            color: isMasuk
-                ? const Color(0xFFE7F6F8)
-                : const Color(0xFFFFF1E3),
-            borderRadius: BorderRadius.circular(w * 0.03),
           ),
           child: Center(
             child: SvgPicture.asset(
@@ -467,181 +181,440 @@ class SuratCard extends StatelessWidget {
           ),
         ),
 
-        SizedBox(width: w * 0.03),
+        SizedBox(width: w * 0.035),
 
-        // ── Konten tengah ──
+        // Perihal & Dari
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Baris 1: Jenis surat + badge
-              SizedBox(
-                height: rowJenisSuratH,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        jenisSurat,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: w * 0.042,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    if (showStatus && status != null) ...[
-                      SizedBox(width: w * 0.02),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: w * 0.025,
-                          vertical: w * 0.008,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _bgColor(),
-                          borderRadius: BorderRadius.circular(w * 0.05),
-                        ),
-                        child: Text(
-                          _label(),
-                          style: TextStyle(
-                            fontSize: w * 0.026,
-                            fontWeight: FontWeight.w700,
-                            color: _textColor(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-
-              SizedBox(height: w * 0.006),
-
-              // Baris 2: Perihal
               Text(
                 data['Perihal'] ?? '-',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: w * 0.036,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  fontSize: w * 0.042,   // naik dari 0.036
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-
-              SizedBox(height: w * 0.003),
-
-              // Baris 3: Dari
+              SizedBox(height: w * 0.007),
               Text(
                 data['Dari'] ?? '-',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: w * 0.032,
+                  fontSize: w * 0.036,   // naik dari 0.030
                   color: Colors.grey.shade600,
                 ),
               ),
-
-              if (showDiteruskanKe) ...[
-                SizedBox(height: w * 0.012),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: w * 0.022,
-                    vertical: w * 0.007,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(w * 0.02),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.person_outline_rounded,
-                        size: w * 0.033,
-                        color: Colors.grey.shade600,
-                      ),
-                      SizedBox(width: w * 0.01),
-                      Flexible(
-                        child: Text(
-                          'Untuk: ${diteruskanKe!}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: w * 0.027,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
             ],
           ),
         ),
 
         SizedBox(width: w * 0.02),
 
-        // ── Kolom kanan: tanggal sejajar jenis surat, button sejajar perihal+dari ──
+        // Kolom kanan: tanggal + badge
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Tanggal — tinggi = tinggi baris jenis surat
             SizedBox(
-              height: rowJenisSuratH,
+              height: w * 0.042 * 1.4,
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
                   tanggal,
                   style: TextStyle(
-                    fontSize: w * 0.032,
+                    fontSize: w * 0.036,   // naik dari 0.032
                     color: Colors.grey.shade500,
                   ),
                 ),
               ),
             ),
-
-            SizedBox(height: w * 0.006),
-
-            // Button Detail — tinggi = tinggi perihal + gap + dari
+            SizedBox(height: w * 0.007),
             SizedBox(
-              height: rowPerihalDariH,
+              height: w * 0.036 * 1.4,
               child: Align(
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  onPressed: onDetail,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _buttonColor(),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    minimumSize: Size(0, w * 0.078),
-                    padding: EdgeInsets.symmetric(horizontal: w * 0.032),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(w * 0.022),
+                alignment: Alignment.centerRight,
+                child: showStatus && status != null
+                    ? Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: w * 0.03,
+                          vertical: w * 0.004,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _bgColor(),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          _label(),
+                          style: TextStyle(
+                            fontSize: w * 0.032,   // naik dari 0.028
+                            fontWeight: FontWeight.w700,
+                            color: _textColor(),
+                          ),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── HISTORY CARD ─────────────────────────────────────────────────────────────
+  // Layout:
+  //   [Icon + Jenis Surat + badge]  [tanggal]
+  //   ─────────────────────────────────────
+  //   [Perihal]                     [eye]
+  //   [Dari   ]
+
+  Widget _buildHistoryCard(double w) {
+    final isMasuk = jenisSurat == 'Surat Masuk';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Baris atas
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                    width: w * 0.075,
+                    height: w * 0.075,
+                    decoration: BoxDecoration(
+                      color: isMasuk
+                          ? const Color(0xFFE7F6F8)
+                          : const Color(0xFFFFF1E3),
+                      borderRadius: BorderRadius.circular(w * 0.02),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Detail',
-                        style: TextStyle(
-                          fontSize: w * 0.030,
-                          fontWeight: FontWeight.w600,
-                          height: 1,
+                    child: Center(
+                      child: SvgPicture.asset(
+                        isMasuk
+                            ? 'assets/icons/ic_inmail.svg'
+                            : 'assets/icons/ic_outmail.svg',
+                        width: w * 0.038,
+                        height: w * 0.038,
+                        colorFilter: ColorFilter.mode(
+                          isMasuk
+                              ? AppColors.bluePrimary
+                              : AppColors.orangePrimary,
+                          BlendMode.srcIn,
                         ),
                       ),
-                      SizedBox(width: w * 0.006),
-                      Icon(Icons.arrow_forward_rounded, size: w * 0.031),
-                    ],
+                    ),
+                  ),
+                  SizedBox(width: w * 0.022),
+                  Text(
+                    jenisSurat,
+                    style: TextStyle(
+                      fontSize: w * 0.042,   // naik dari 0.036
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  if (showStatus && status != null) ...[
+                    SizedBox(width: w * 0.018),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: w * 0.025,
+                        vertical: w * 0.006,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _bgColor(),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Text(
+                        _label(),
+                        style: TextStyle(
+                          fontSize: w * 0.030,   // naik dari 0.026
+                          fontWeight: FontWeight.w700,
+                          color: _textColor(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            Text(
+              tanggal,
+              style: TextStyle(
+                fontSize: w * 0.036,   // naik dari 0.032
+                color: Colors.grey.shade500,
+              ),
+            ),
+          ],
+        ),
+
+        SizedBox(height: w * 0.018),
+        Divider(height: 1, color: Colors.grey.shade100),
+        SizedBox(height: w * 0.018),
+
+        // Baris bawah: perihal + dari + eye button
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    data['Perihal'] ?? '-',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: w * 0.040,   // naik dari 0.034
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: w * 0.005),
+                  Text(
+                    data['Dari'] ?? '-',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: w * 0.034,   // naik dari 0.029
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(width: w * 0.02),
+
+            // Eye button
+            GestureDetector(
+              onTap: onDetail,
+              child: Container(
+                width: w * 0.09,
+                height: w * 0.09,
+                decoration: BoxDecoration(
+                  color: _accentColor().withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(w * 0.025),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.remove_red_eye_rounded,
+                    color: _accentColor(),
+                    size: w * 0.048,
                   ),
                 ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── MENU CARD ────────────────────────────────────────────────────────────────
+  // Struktur sama persis dengan history card.
+  // Beda: button Detail (ElevatedButton) menggantikan eye button.
+  //
+  // Layout:
+  //   [Icon + Jenis Surat + badge]  [tanggal]
+  //   ─────────────────────────────────────
+  //   [Perihal                  ]   [Detail→]
+  //   [Dari                     ]
+  //   [chip diteruskanKe?       ]
+
+  Widget _buildMenuCard(double w) {
+    final isMasuk = jenisSurat == 'Surat Masuk';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Baris atas — sama dengan history
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                    width: w * 0.075,
+                    height: w * 0.075,
+                    decoration: BoxDecoration(
+                      color: isMasuk
+                          ? const Color(0xFFE7F6F8)
+                          : const Color(0xFFFFF1E3),
+                      borderRadius: BorderRadius.circular(w * 0.02),
+                    ),
+                    child: Center(
+                      child: SvgPicture.asset(
+                        isMasuk
+                            ? 'assets/icons/ic_inmail.svg'
+                            : 'assets/icons/ic_outmail.svg',
+                        width: w * 0.038,
+                        height: w * 0.038,
+                        colorFilter: ColorFilter.mode(
+                          isMasuk
+                              ? AppColors.bluePrimary
+                              : AppColors.orangePrimary,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: w * 0.022),
+                  Text(
+                    jenisSurat,
+                    style: TextStyle(
+                      fontSize: w * 0.042,   // naik dari 0.036
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  if (showStatus && status != null) ...[
+                    SizedBox(width: w * 0.018),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: w * 0.025,
+                        vertical: w * 0.006,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _bgColor(),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Text(
+                        _label(),
+                        style: TextStyle(
+                          fontSize: w * 0.030,   // naik dari 0.026
+                          fontWeight: FontWeight.w700,
+                          color: _textColor(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            Text(
+              tanggal,
+              style: TextStyle(
+                fontSize: w * 0.036,   // naik dari 0.032
+                color: Colors.grey.shade500,
+              ),
+            ),
+          ],
+        ),
+
+        SizedBox(height: w * 0.018),
+        Divider(height: 1, color: Colors.grey.shade100),
+        SizedBox(height: w * 0.018),
+
+        // Baris bawah: perihal + dari + chip + Detail button
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    data['Perihal'] ?? '-',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: w * 0.040,   // naik dari 0.036
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: w * 0.005),
+                  Text(
+                    data['Dari'] ?? '-',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: w * 0.034,   // naik dari 0.032
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  if (showDiteruskanKe) ...[
+                    SizedBox(height: w * 0.012),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: w * 0.022,
+                        vertical: w * 0.007,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(w * 0.02),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.person_outline_rounded,
+                            size: w * 0.036,   // naik dari 0.033
+                            color: Colors.grey.shade600,
+                          ),
+                          SizedBox(width: w * 0.01),
+                          Flexible(
+                            child: Text(
+                              'Untuk: ${diteruskanKe!}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: w * 0.031,   // naik dari 0.027
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+            SizedBox(width: w * 0.02),
+
+            // Detail button
+            ElevatedButton(
+              onPressed: onDetail,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _accentColor(),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                minimumSize: Size(0, w * 0.085),
+                padding: EdgeInsets.symmetric(horizontal: w * 0.034),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(w * 0.022),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Detail',
+                    style: TextStyle(
+                      fontSize: w * 0.035,   // naik dari 0.030
+                      fontWeight: FontWeight.w600,
+                      height: 1,
+                    ),
+                  ),
+                  SizedBox(width: w * 0.008),
+                  Icon(Icons.arrow_forward_rounded, size: w * 0.035),
+                ],
               ),
             ),
           ],

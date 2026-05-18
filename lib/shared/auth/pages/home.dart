@@ -20,6 +20,10 @@ import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_peng
 import 'package:ta_mobile_disposisi_surat/features/kepsek/pages/disposisi_suratmasuk.dart';
 import 'package:ta_mobile_disposisi_surat/features/kepsek/pages/pengajuan_suratkeluar.dart';
 
+// Sesuaikan dengan ukuran CustomNavbar kamu:
+// container height 70 + bottom padding 15 = 85
+const double _kNavbarHeight = 85.0;
+
 class Home extends StatefulWidget {
   final Role role;
   final String nama;
@@ -47,7 +51,6 @@ class _HomeState extends State<Home> {
     _initNotifications();
   }
 
-  /// INIT NOTIF BERDASARKAN ROLE
   void _initNotifications() {
     if (widget.role == Role.tu) {
       notifications = [
@@ -124,13 +127,12 @@ class _HomeState extends State<Home> {
     }
   }
 
-  /// UNREAD COUNT
   int get notifCount => notifications.where((n) => n['isRead'] == false).length;
 
   List<Map<String, dynamic>> get _allSurat => DummySurat.allSurat;
 
   List<Map<String, dynamic>> get _suratTerbaru =>
-      DummySurat.allSurat.reversed.take(5).toList();
+      DummySurat.allSurat.reversed.take(7).toList();
 
   int get jumlahSuratMasuk =>
       _allSurat.where((s) => s['jenisSurat'] == 'Surat Masuk').length;
@@ -138,7 +140,6 @@ class _HomeState extends State<Home> {
   int get jumlahSuratKeluar =>
       _allSurat.where((s) => s['jenisSurat'] == 'Surat Keluar').length;
 
-  /// BUKA NOTIF → SETELAH KEMBALI SET SEMUA JADI READ
   Future<void> _openNotifikasi() async {
     await Navigator.push(
       context,
@@ -147,8 +148,6 @@ class _HomeState extends State<Home> {
             NotificationPage(role: widget.role, notifications: notifications),
       ),
     );
-
-    // Setelah kembali dari NotificationPage, tandai semua sudah dibaca
     setState(() {
       for (var notif in notifications) {
         notif['isRead'] = true;
@@ -164,254 +163,293 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: w * 0.06),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: h * 0.03),
 
-                /// HEADER
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset(
-                      "assets/images/logosmk.jpg",
-                      width: w * 0.1,
-                      height: w * 0.1,
-                    ),
+      // ❌ HAPUS bottomNavigationBar dari sini
+      // ✅ Navbar dipindah ke Stack supaya list bisa scroll ke baliknya
 
-                    /// ICON NOTIF + BADGE
-                    GestureDetector(
-                      onTap: _openNotifikasi,
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Icon(
-                            Icons.notifications_none,
-                            size: w * 0.075,
-                            color: AppColors.bluePrimary,
-                          ),
+      body: Stack(
+        children: [
+          // ── LAYER 1: KONTEN UTAMA ──────────────────────────────────────────
+          SafeArea(
+            // bottom: false → biarkan konten extend ke area navbar
+            bottom: false,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: w * 0.06),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: h * 0.03),
 
-                          /// BADGE — hanya tampil jika ada notif belum dibaca
-                          if (notifCount > 0)
-                            Positioned(
-                              right: -2,
-                              top: -2,
-                              child: Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
-                                ),
-                                constraints: const BoxConstraints(
-                                  minWidth: 16,
-                                  minHeight: 16,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    notifCount.toString(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
+                  /// HEADER
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset(
+                        "assets/images/logosmk.jpg",
+                        width: w * 0.1,
+                        height: w * 0.1,
+                      ),
+
+                      /// ICON NOTIF + BADGE
+                      GestureDetector(
+                        onTap: _openNotifikasi,
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Icon(
+                              Icons.notifications_none,
+                              size: w * 0.075,
+                              color: AppColors.bluePrimary,
+                            ),
+
+                            /// BADGE
+                            if (notifCount > 0)
+                              Positioned(
+                                right: -2,
+                                top: -2,
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 16,
+                                    minHeight: 16,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      notifCount.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                /// TITLE
-                const Text(
-                  "Disposisi Surat",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-
-                SizedBox(height: h * 0.03),
-
-                /// STAT CARD
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (widget.role == Role.tu) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const TuDashboardPage(
-                                  jenisSurat: 'Surat Masuk',
-                                ),
-                              ),
-                            );
-                          } else if (widget.role == Role.kepsek) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const KepsekDashboardPage(
-                                  jenisSurat: 'Surat Masuk',
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: _statCard(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF6DA8B4), Color(0xFF0F6E7A)],
-                          ),
-                          iconPath: "assets/icons/ic_inmail.svg",
-                          jumlah: jumlahSuratMasuk.toString(),
-                          label: "Masuk",
+                          ],
                         ),
                       ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  /// TITLE
+                  const Text(
+                    "Disposisi Surat",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
 
-                    SizedBox(width: w * 0.04),
+                  SizedBox(height: h * 0.03),
 
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (widget.role == Role.tu) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const TuDashboardPage(
-                                  jenisSurat: 'Surat Keluar',
-                                ),
-                              ),
-                            );
-                          } else if (widget.role == Role.kepsek) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const KepsekDashboardPage(
-                                  jenisSurat: 'Surat Keluar',
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: _statCard(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFD6A66B), Color(0xFFDA7B17)],
-                          ),
-                          iconPath: "assets/icons/ic_outmail.svg",
-                          jumlah: jumlahSuratKeluar.toString(),
-                          label: "Keluar",
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: h * 0.04),
-
-                /// HEADER SURAT TERBARU
-                const Text(
-                  "Surat Terbaru",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-
-                SizedBox(height: h * 0.015),
-
-                /// LIST SURAT
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _suratTerbaru.length,
-                  itemBuilder: (context, index) {
-                    final surat = _suratTerbaru[index];
-                    final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
-
-                    return SuratCard(
-                      jenisSurat: surat['jenisSurat'] ?? '',
-                      tanggal: surat['tanggal'] ?? '-',
-                      data: Map<String, String>.from(surat['data'] ?? {}),
-                      role: widget.role == Role.kepsek
-                          ? CardRole.kepsek
-                          : CardRole.tu,
-                      type: CardType.home,
-
-                      /// Status hanya ditampilkan untuk TU
-                      status: widget.role == Role.kepsek
-                          ? null
-                          : surat['status'],
-
-                      onDetail: () {
-                        /// KEPSEK → input disposisi
-                        if (widget.role == Role.kepsek) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => isMasuk
-                                  ? InputSuratMasuk(surat: surat)
-                                  : const InputSuratKeluar(),
-                            ),
-                          );
-                          return;
-                        }
-
-                        /// TU → cek status dulu
-                        final status = surat['status']
-                            ?.toString()
-                            .toLowerCase();
-
-                        if (status == 'menunggu') {
-                          _showProcessDialog(); // ← tambahin ini
-                          return;
-                        }
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => isMasuk
-                                ? OutputSuratmasuk(
-                                    isApproved: status == 'disetujui',
-                                    catatan: surat['catatan'] ?? '-',
-                                    tujuan: surat['tujuan'] ?? '-',
-                                    instruksi: surat['instruksi'] ?? '-',
-                                    koordinasi: surat['koordinasi'] ?? '-',
-                                    diteruskanKe: surat['diteruskanKe'] ?? '-',
-                                  )
-                                : OutputSuratkeluar(
-                                    catatan: surat['catatan'] ?? '-',
+                  /// STAT CARD
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (widget.role == Role.tu) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const TuDashboardPage(
+                                    jenisSurat: 'Surat Masuk',
                                   ),
+                                ),
+                              );
+                            } else if (widget.role == Role.kepsek) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const KepsekDashboardPage(
+                                    jenisSurat: 'Surat Masuk',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: _statCard(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF6DA8B4), Color(0xFF0F6E7A)],
+                            ),
+                            iconPath: "assets/icons/ic_inmail.svg",
+                            jumlah: jumlahSuratMasuk.toString(),
+                            label: "Masuk",
                           ),
+                        ),
+                      ),
+
+                      SizedBox(width: w * 0.04),
+
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (widget.role == Role.tu) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const TuDashboardPage(
+                                    jenisSurat: 'Surat Keluar',
+                                  ),
+                                ),
+                              );
+                            } else if (widget.role == Role.kepsek) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const KepsekDashboardPage(
+                                    jenisSurat: 'Surat Keluar',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: _statCard(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFD6A66B), Color(0xFFDA7B17)],
+                            ),
+                            iconPath: "assets/icons/ic_outmail.svg",
+                            jumlah: jumlahSuratKeluar.toString(),
+                            label: "Keluar",
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: h * 0.04),
+
+                  /// HEADER SURAT
+                  const Text(
+                    "Surat Terbaru",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  SizedBox(height: h * 0.015),
+
+                  /// LIST SURAT
+                  /// padding bottom = _kNavbarHeight + sedikit ruang extra
+                  /// → card terakhir bisa di-scroll naik sampai kelihatan penuh
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: _kNavbarHeight),
+                      itemCount: _suratTerbaru.length,
+                      itemBuilder: (context, index) {
+                        final surat = _suratTerbaru[index];
+                        final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
+
+                        return SuratCard(
+                          jenisSurat: surat['jenisSurat'] ?? '',
+                          tanggal: surat['tanggal'] ?? '-',
+                          data: Map<String, String>.from(surat['data'] ?? {}),
+                          role: widget.role == Role.kepsek
+                              ? CardRole.kepsek
+                              : CardRole.tu,
+                          type: CardType.home,
+
+                          /// STATUS HANYA UNTUK TU
+                          status: widget.role == Role.kepsek
+                              ? null
+                              : surat['status'],
+
+                          onDetail: () {
+                            /// KEPSEK
+                            if (widget.role == Role.kepsek) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => isMasuk
+                                      ? InputSuratMasuk(surat: surat)
+                                      : const InputSuratKeluar(),
+                                ),
+                              );
+                              return;
+                            }
+
+                            /// TU
+                            final status =
+                                surat['status']?.toString().toLowerCase();
+
+                            if (status == 'menunggu') {
+                              _showProcessDialog();
+                              return;
+                            }
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => isMasuk
+                                    ? OutputSuratmasuk(
+                                        isApproved: status == 'disetujui',
+                                        catatan: surat['catatan'] ?? '-',
+                                        tujuan: surat['tujuan'] ?? '-',
+                                        instruksi: surat['instruksi'] ?? '-',
+                                        koordinasi: surat['koordinasi'] ?? '-',
+                                        diteruskanKe:
+                                            surat['diteruskanKe'] ?? '-',
+                                      )
+                                    : OutputSuratkeluar(
+                                        catatan: surat['catatan'] ?? '-',
+                                      ),
+                              ),
+                            );
+                          },
                         );
                       },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // ── LAYER 2: NAVBAR MENGAMBANG DI ATAS LIST ───────────────────────
+          // ColoredBox di bawah CustomNavbar menutup area padding bottom
+          // (15px transparan dari CustomNavbar) supaya card tidak tembus keluar
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomNavbar(
+                  role: widget.role,
+                  currentIndex: 0,
+                  onTap: (index) {
+                    handleNavbarTap(
+                      context,
+                      index,
+                      widget.role,
+                      widget.nama,
+                      widget.email,
+                      widget.jabatan,
                     );
                   },
                 ),
 
-                SizedBox(height: h * 0.03),
+                // Penutup solid di bawah navbar
+                // Mencegah card tembus keluar dari sisi bawah navbar
+                ColoredBox(
+                  color: AppColors.bg,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).padding.bottom,
+                    width: double.infinity,
+                  ),
+                ),
               ],
             ),
           ),
-        ),
-      ),
-
-      bottomNavigationBar: CustomNavbar(
-        role: widget.role,
-        currentIndex: 0,
-        onTap: (index) {
-          handleNavbarTap(
-            context,
-            index,
-            widget.role,
-            widget.nama,
-            widget.email,
-            widget.jabatan,
-          );
-        },
+        ],
       ),
     );
   }

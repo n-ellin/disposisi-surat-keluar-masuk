@@ -16,10 +16,10 @@ class SearchBarInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
-    final h = MediaQuery.of(context).size.height;
-    final fs = fontSize ?? w * 0.036;
+    final fs = fontSize ?? w * 0.038;
 
     return Container(
+      height: w * 0.128,              // lebih tinggi, radius tetap 14
       decoration: BoxDecoration(
         color: AppColors.searchBg,
         borderRadius: BorderRadius.circular(14),
@@ -32,25 +32,44 @@ class SearchBarInput extends StatelessWidget {
           ),
         ],
       ),
-      child: TextField(
-        onChanged: onChanged,
-        style: TextStyle(fontSize: fs),
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(
-            color: AppColors.hintsearch,
-            fontSize: fs,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // ── Icon ──────────────────────────────────────────────────────
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: w * 0.035),
+            child: Icon(
+              Icons.search_rounded,
+              color: AppColors.searchIcon,
+              size: w * 0.055,
+            ),
           ),
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            color: AppColors.searchIcon,
-            size: w * 0.052,
+
+          // ── TextField ─────────────────────────────────────────────────
+          Expanded(
+            child: TextField(
+              onChanged: onChanged,
+              textAlign: TextAlign.left,             // hint & input kiri
+              textAlignVertical: TextAlignVertical.center,
+              style: TextStyle(fontSize: fs, height: 1.0),
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: TextStyle(
+                  color: AppColors.hintsearch,
+                  fontSize: fs,
+                  height: 1.0,
+                ),
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+              ),
+            ),
           ),
-          contentPadding: EdgeInsets.symmetric(vertical: h * 0.014),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-        ),
+
+          SizedBox(width: w * 0.035),
+        ],
       ),
     );
   }

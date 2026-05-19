@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'core/constants/role.dart';
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
@@ -43,21 +44,25 @@ class NoAnimationTransitionBuilder extends PageTransitionsBuilder {
   }
 }
 
+/// ── APP ─────────────────────────────────────────────────────────────────────
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'E-Disposisi',
+
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('id', 'ID'), Locale('en', 'US')],
-      locale: const Locale('id', 'ID'),
 
-      debugShowCheckedModeBanner: false,
-      title: 'E-Disposisi',
+      supportedLocales: const [Locale('id', 'ID'), Locale('en', 'US')],
+
+      locale: const Locale('id', 'ID'),
 
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -80,12 +85,12 @@ class MyApp extends StatelessWidget {
       initialRoute: '/splash_screen',
 
       routes: {
-        // ── AUTH ───────────────────────────────────────────────────────────
         '/splash_screen': (context) => const SplashScreen(),
+
         '/signin': (context) => const Login(),
+
         '/gantipw': (context) => const GantiKataSandiPage(),
 
-        // ── SHARED ─────────────────────────────────────────────────────────
         '/profile': (context) {
           final args =
               ModalRoute.of(context)!.settings.arguments
@@ -97,13 +102,16 @@ class MyApp extends StatelessWidget {
             jabatan: args['jabatan'] as String,
           );
         },
+
         '/notif': (context) =>
             NotificationPage(role: Role.tu, notifications: const []),
 
-        // ── TATA USAHA ─────────────────────────────────────────────────────
+        // ── TU ───────────────────────────────────────────────────────────────
         '/menu_tu': (context) =>
             const TuDashboardPage(jenisSurat: 'Surat Masuk'),
+
         '/history_tu': (context) => const HistoryTUPage(),
+
         '/output_suratmasuk': (context) => const OutputSuratmasuk(
           isApproved: true,
           catatan: '-',
@@ -112,24 +120,30 @@ class MyApp extends StatelessWidget {
           koordinasi: '-',
           diteruskanKe: '-',
         ),
+
         '/output_suratkeluar': (context) =>
             const OutputSuratkeluar(catatan: '-'),
 
-        // ── KEPALA SEKOLAH ─────────────────────────────────────────────────
+        // ── KEPSEK ───────────────────────────────────────────────────────────
         '/menu_kepsek': (context) =>
             const KepsekDashboardPage(jenisSurat: 'Surat Masuk'),
+
         '/history_kepsek': (context) => const HistoryKepsekPage(),
+
         '/input_suratmasuk': (context) {
           final surat =
               ModalRoute.of(context)!.settings.arguments
                   as Map<String, dynamic>;
           return InputSuratMasuk(surat: surat);
         },
+
         '/input_suratkeluar': (context) => const InputSuratKeluar(),
 
-        // ── USER / OTHER ───────────────────────────────────────────────────
+        // ── USER ─────────────────────────────────────────────────────────────
         '/menu_other': (context) => const MenuUser(),
+
         '/history_other': (context) => const HistoryUsersPage(),
+
         '/detail_suratUsers': (context) {
           final surat =
               ModalRoute.of(context)!.settings.arguments

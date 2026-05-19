@@ -192,257 +192,224 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
   }
 
   // ── BUILD ────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
-        child: Column(
-          children: [
-            // HEADER
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: Row(
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 18),
+
+              // ── HEADER ───────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 10),
+                child: Row(
+                  children: [
+                    InkWell(
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: () => Navigator.pop(context),
+                      child: const Padding(
+                        padding: EdgeInsets.all(6),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: AppColors.bluePrimary,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    const Expanded(
+                      child: Text(
+                        "Detail Surat Masuk",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.bluePrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // CONTENT
+              _detailCard(context),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "Status",
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
+
+              const SizedBox(height: 8),
+
+              Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: const Icon(
-                      Icons.arrow_back_ios_new,
-                      color: AppColors.bluePrimary,
-                      size: 20,
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedStatus = 'terima';
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 9),
+                        decoration: BoxDecoration(
+                          color: _selectedStatus == 'terima'
+                              ? AppColors.bluePrimary
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _selectedStatus == 'terima'
+                                ? AppColors.bluePrimary
+                                : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              _selectedStatus == 'terima'
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              size: 16,
+                              color: _selectedStatus == 'terima'
+                                  ? Colors.white
+                                  : Colors.grey.shade400,
+                            ),
+
+                            const SizedBox(width: 6),
+
+                            Text(
+                              "Terima",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: _selectedStatus == 'terima'
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
 
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
 
-                  const Expanded(
-                    child: Text(
-                      "Detail Surat Masuk",
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.bluePrimary,
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedStatus = 'tolak';
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _selectedStatus == 'tolak'
+                              ? AppColors.bluePrimary.withOpacity(0.75)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _selectedStatus == 'tolak'
+                                ? AppColors.bluePrimary
+                                : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              _selectedStatus == 'tolak'
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              size: 16,
+                              color: _selectedStatus == 'tolak'
+                                  ? Colors.white
+                                  : Colors.grey.shade400,
+                            ),
+
+                            const SizedBox(width: 6),
+
+                            Text(
+                              "Tolak",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: _selectedStatus == 'tolak'
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 20),
+              // FORM TERIMA
+              if (isApproved) ...[
+                const SizedBox(height: 20),
 
-            // CONTENT
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                _formDisposisi(),
+
+                const SizedBox(height: 16),
+
+                _formTambahan(),
+              ],
+
+              // FORM TOLAK
+              if (isRejected)
+                _sectionCard(
+                  title: "Form Disposisi",
                   children: [
-                    const SizedBox(height: 6),
-
-                    _detailCard(context),
-
-                    const SizedBox(height: 20),
-
-                    const Text(
-                      "Status",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                      ),
+                    _buildLabel("Catatan"),
+                    _textField(
+                      hint: "Masukkan catatan...",
+                      controller: catatanTolakController,
                     ),
-
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedStatus = 'terima';
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 9),
-                              decoration: BoxDecoration(
-                                color: _selectedStatus == 'terima'
-                                    ? AppColors.bluePrimary
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: _selectedStatus == 'terima'
-                                      ? AppColors.bluePrimary
-                                      : Colors.grey.shade300,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    _selectedStatus == 'terima'
-                                        ? Icons.radio_button_checked
-                                        : Icons.radio_button_off,
-                                    size: 16,
-                                    color: _selectedStatus == 'terima'
-                                        ? Colors.white
-                                        : Colors.grey.shade400,
-                                  ),
-
-                                  const SizedBox(width: 6),
-
-                                  Text(
-                                    "Terima",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: _selectedStatus == 'terima'
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _selectedStatus = 'tolak';
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: _selectedStatus == 'tolak'
-                                    ? AppColors.bluePrimary.withOpacity(0.75)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: _selectedStatus == 'tolak'
-                                      ? AppColors.bluePrimary
-                                      : Colors.grey.shade300,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    _selectedStatus == 'tolak'
-                                        ? Icons.radio_button_checked
-                                        : Icons.radio_button_off,
-                                    size: 16,
-                                    color: _selectedStatus == 'tolak'
-                                        ? Colors.white
-                                        : Colors.grey.shade400,
-                                  ),
-
-                                  const SizedBox(width: 6),
-
-                                  Text(
-                                    "Tolak",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: _selectedStatus == 'tolak'
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // FORM TERIMA
-                    if (isApproved) ...[
-                      const SizedBox(height: 20),
-
-                      _formDisposisi(),
-
-                      const SizedBox(height: 16),
-
-                      _formTambahan(),
-                    ],
-
-                    // FORM TOLAK
-                    if (isRejected) ...[
-                      const SizedBox(height: 20),
-
-                      _sectionCard(
-                        title: "Form Disposisi",
-                        children: [
-                          _buildLabel("Catatan *"),
-
-                          Container(
-                            key: _catatanKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _textField(
-                                  hint: "Masukkan catatan...",
-                                  controller: catatanTolakController,
-                                ),
-
-                                if (catatanError != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 6,
-                                      left: 4,
-                                    ),
-                                    child: Text(
-                                      catatanError!,
-                                      style: const TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-
-                    const SizedBox(height: 20),
-
-                    if (_selectedStatus != null)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.bluePrimary,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 30,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: _onKirimPressed,
-                          child: const Text("Kirim"),
-                        ),
-                      ),
-
-                    const SizedBox(height: 30),
                   ],
                 ),
-              ),
-            ),
-          ],
+
+              const SizedBox(height: 20),
+
+              if (_selectedStatus != null)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.bluePrimary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: _onKirimPressed,
+                    child: const Text("Kirim"),
+                  ),
+                ),
+
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );

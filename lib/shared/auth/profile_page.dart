@@ -30,10 +30,7 @@ class ProfilePage extends StatelessWidget {
     /// NOTE:
     /// responsive font scale
     double rf(double size) {
-      return (w * (size / 375)).clamp(
-        size * 0.9,
-        size * 1.2,
-      );
+      return (w * (size / 375)).clamp(size * 0.9, size * 1.2);
     }
 
     return Scaffold(
@@ -42,16 +39,12 @@ class ProfilePage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 700,
-            ),
+            constraints: const BoxConstraints(maxWidth: 700),
 
             /// NOTE:
             /// maxWidth supaya tetap rapi di tablet
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: w * 0.055,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: w * 0.055),
 
               child: Column(
                 children: [
@@ -71,24 +64,18 @@ class ProfilePage extends StatelessWidget {
 
                   /// AVATAR
                   Container(
-                    padding: EdgeInsets.all(
-                      (w * 0.008).clamp(3, 6),
-                    ),
+                    padding: EdgeInsets.all((w * 0.008).clamp(3, 6)),
 
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
 
-                      border: Border.all(
-                        color: Colors.grey.shade200,
-                        width: 2,
-                      ),
+                      border: Border.all(color: Colors.grey.shade200, width: 2),
                     ),
 
                     child: CircleAvatar(
                       radius: (w * 0.10).clamp(38, 52),
 
-                      backgroundColor:
-                          Colors.grey.shade200,
+                      backgroundColor: Colors.grey.shade200,
 
                       child: Icon(
                         Icons.person,
@@ -158,8 +145,7 @@ class ProfilePage extends StatelessWidget {
                     w: w,
 
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
 
                       children: [
                         Text(
@@ -174,15 +160,13 @@ class ProfilePage extends StatelessWidget {
                         SizedBox(height: h * 0.02),
 
                         InkWell(
-                          borderRadius:
-                              BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(14),
 
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) =>
-                                    const GantiKataSandiPage(),
+                                builder: (_) => const GantiKataSandiPage(),
                               ),
                             );
                           },
@@ -191,28 +175,21 @@ class ProfilePage extends StatelessWidget {
                             children: [
                               Container(
                                 padding: EdgeInsets.all(
-                                  (w * 0.03).clamp(
-                                    10,
-                                    14,
-                                  ),
+                                  (w * 0.03).clamp(10, 14),
                                 ),
 
                                 decoration: BoxDecoration(
-                                  color: AppColors
-                                      .bluePrimary
-                                      .withOpacity(0.10),
-
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                    12,
+                                  color: AppColors.bluePrimary.withOpacity(
+                                    0.10,
                                   ),
+
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
 
                                 child: Icon(
                                   Icons.lock_outline,
 
-                                  color:
-                                      AppColors.bluePrimary,
+                                  color: AppColors.bluePrimary,
 
                                   size: rf(22),
                                 ),
@@ -224,14 +201,12 @@ class ProfilePage extends StatelessWidget {
                                 child: Text(
                                   'Ubah Kata Sandi',
 
-                                  overflow:
-                                      TextOverflow.ellipsis,
+                                  overflow: TextOverflow.ellipsis,
 
                                   style: TextStyle(
                                     fontSize: rf(15),
 
-                                    fontWeight:
-                                        FontWeight.w500,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
@@ -241,8 +216,7 @@ class ProfilePage extends StatelessWidget {
 
                                 size: rf(28),
 
-                                color:
-                                    Colors.grey.shade500,
+                                color: Colors.grey.shade500,
                               ),
                             ],
                           ),
@@ -259,9 +233,7 @@ class ProfilePage extends StatelessWidget {
 
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          vertical: h * 0.018,
-                        ),
+                        padding: EdgeInsets.symmetric(vertical: h * 0.018),
 
                         side: BorderSide(
                           color: Colors.red.shade400,
@@ -269,13 +241,11 @@ class ProfilePage extends StatelessWidget {
                         ),
 
                         shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                       ),
 
-                      onPressed: () =>
-                          _showLogoutDialog(context, rf),
+                      onPressed: () => _showLogoutDialog(context, rf),
 
                       child: Text(
                         'Keluar',
@@ -306,14 +276,7 @@ class ProfilePage extends StatelessWidget {
             currentIndex: 2,
             role: role,
             onTap: (index) {
-              handleNavbarTap(
-                context,
-                index,
-                role,
-                nama,
-                email,
-                jabatan,
-              );
+              handleNavbarTap(context, index, role, nama, email, jabatan);
             },
           ),
 
@@ -321,8 +284,7 @@ class ProfilePage extends StatelessWidget {
             color: AppColors.bg,
 
             child: SizedBox(
-              height:
-                  MediaQuery.of(context).padding.bottom,
+              height: MediaQuery.of(context).padding.bottom,
 
               width: double.infinity,
             ),
@@ -334,23 +296,17 @@ class ProfilePage extends StatelessWidget {
 
   // ── LOGOUT DIALOG ─────────────────────────────────────────────────────────────
 
-  void _showLogoutDialog(
-    BuildContext context,
-    double Function(double) rf,
-  ) {
+  // ── LOGOUT DIALOG ─────────────────────────────────────────────────────────────
+
+  void _showLogoutDialog(BuildContext context, double Function(double) rf) {
     final w = MediaQuery.of(context).size.width;
 
     showGeneralDialog(
       context: context,
-
       barrierDismissible: true,
-
       barrierLabel: "Logout",
-
       barrierColor: Colors.black.withOpacity(0.45),
-
-      transitionDuration:
-          const Duration(milliseconds: 180),
+      transitionDuration: const Duration(milliseconds: 180),
 
       pageBuilder: (_, __, ___) {
         return Center(
@@ -360,9 +316,7 @@ class ProfilePage extends StatelessWidget {
             child: Container(
               width: w * 0.82,
 
-              constraints: const BoxConstraints(
-                maxWidth: 340,
-              ),
+              constraints: const BoxConstraints(maxWidth: 340),
 
               padding: EdgeInsets.symmetric(
                 horizontal: w * 0.05,
@@ -372,8 +326,7 @@ class ProfilePage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
 
-                borderRadius:
-                    BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20),
               ),
 
               child: Column(
@@ -386,18 +339,13 @@ class ProfilePage extends StatelessWidget {
                     height: rf(54),
 
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(
-                        0.08,
-                      ),
-
+                      color: Colors.red.withOpacity(0.08),
                       shape: BoxShape.circle,
                     ),
 
                     child: Icon(
                       Icons.logout_rounded,
-
                       color: const Color(0xFFE24B4A),
-
                       size: rf(25),
                     ),
                   ),
@@ -407,14 +355,11 @@ class ProfilePage extends StatelessWidget {
                   /// TITLE
                   Text(
                     "Keluar dari akun?",
-
                     textAlign: TextAlign.center,
 
                     style: TextStyle(
                       fontSize: rf(20),
-
                       fontWeight: FontWeight.w700,
-
                       color: Colors.black87,
                     ),
                   ),
@@ -424,14 +369,11 @@ class ProfilePage extends StatelessWidget {
                   /// SUBTITLE
                   Text(
                     "Anda yakin ingin keluar?",
-
                     textAlign: TextAlign.center,
 
                     style: TextStyle(
                       fontSize: rf(14),
-
                       color: Colors.grey.shade600,
-
                       height: 1.4,
                     ),
                   ),
@@ -446,24 +388,15 @@ class ProfilePage extends StatelessWidget {
                           height: rf(42),
 
                           child: OutlinedButton(
-                            style:
-                                OutlinedButton.styleFrom(
-                              foregroundColor:
-                                  Colors.grey.shade700,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.grey.shade700,
 
-                              side: BorderSide(
-                                color:
-                                    Colors.grey.shade300,
-                              ),
+                              side: BorderSide(color: Colors.grey.shade300),
 
                               padding: EdgeInsets.zero,
 
-                              shape:
-                                  RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                  11,
-                                ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(11),
                               ),
                             ),
 
@@ -476,9 +409,7 @@ class ProfilePage extends StatelessWidget {
 
                               style: TextStyle(
                                 fontSize: rf(13),
-
-                                fontWeight:
-                                    FontWeight.w600,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -492,26 +423,17 @@ class ProfilePage extends StatelessWidget {
                           height: rf(42),
 
                           child: ElevatedButton(
-                            style:
-                                ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color(
-                                0xFFE24B4A,
-                              ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE24B4A),
 
-                              foregroundColor:
-                                  Colors.white,
+                              foregroundColor: Colors.white,
 
                               elevation: 0,
 
                               padding: EdgeInsets.zero,
 
-                              shape:
-                                  RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(
-                                  11,
-                                ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(11),
                               ),
                             ),
 
@@ -521,8 +443,7 @@ class ProfilePage extends StatelessWidget {
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      const Login(),
+                                  builder: (_) => const Login(),
                                 ),
                                 (route) => false,
                               );
@@ -533,9 +454,7 @@ class ProfilePage extends StatelessWidget {
 
                               style: TextStyle(
                                 fontSize: rf(13),
-
-                                fontWeight:
-                                    FontWeight.w600,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
@@ -550,17 +469,13 @@ class ProfilePage extends StatelessWidget {
         );
       },
 
-      transitionBuilder:
-          (_, animation, __, child) {
+      transitionBuilder: (_, animation, __, child) {
         return FadeTransition(
           opacity: animation,
-
           child: ScaleTransition(
-            scale: Tween<double>(
-              begin: 0.95,
-              end: 1,
-            ).animate(animation),
-
+            scale: Tween<double>(begin: 0.95, end: 1).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOut),
+            ),
             child: child,
           ),
         );
@@ -570,25 +485,18 @@ class ProfilePage extends StatelessWidget {
 
   // ── HELPERS ──────────────────────────────────────────────────────────────────
 
-  Widget _cardWrapper({
-    required Widget child,
-    required double w,
-  }) {
+  Widget _cardWrapper({required Widget child, required double w}) {
     return Container(
       width: double.infinity,
 
-      padding: EdgeInsets.all(
-        (w * 0.04).clamp(14, 22),
-      ),
+      padding: EdgeInsets.all((w * 0.04).clamp(14, 22)),
 
       decoration: BoxDecoration(
         color: Colors.white,
 
         borderRadius: BorderRadius.circular(18),
 
-        border: Border.all(
-          color: const Color(0xFFE5E7EB),
-        ),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
 
         boxShadow: [
           BoxShadow(
@@ -615,10 +523,7 @@ class ProfilePage extends StatelessWidget {
     final w = MediaQuery.of(context).size.width;
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: w * 0.035,
-        vertical: w * 0.025,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: w * 0.035, vertical: w * 0.025),
 
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
@@ -629,32 +534,22 @@ class ProfilePage extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(
-              (w * 0.018).clamp(8, 12),
-            ),
+            padding: EdgeInsets.all((w * 0.018).clamp(8, 12)),
 
             decoration: BoxDecoration(
               color: const Color(0xFFEDEFF3),
 
-              borderRadius:
-                  BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10),
             ),
 
-            child: Icon(
-              icon,
-
-              size: rf(18),
-
-              color: AppColors.bluePrimary,
-            ),
+            child: Icon(icon, size: rf(18), color: AppColors.bluePrimary),
           ),
 
           SizedBox(width: w * 0.03),
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
 
               children: [
                 Text(

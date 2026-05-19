@@ -512,57 +512,53 @@ class _HomeState extends State<Home> {
     showDialog(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.35),
+      barrierColor: Colors.black.withOpacity(0.45),
       builder: (context) {
-        final w = MediaQuery.of(context).size.width;
+        return Dialog(
+          backgroundColor: const Color(0xFFF3F0F6),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 60),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF4A4A4A),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.info_outline,
+                    color: Colors.white,
+                    size: 26,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  "Surat Dalam Proses",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Surat masih dalam proses pengajuan.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
 
-        return Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              width: w * 0.60,
-              padding: EdgeInsets.symmetric(
-                vertical: w * 0.08,
-                horizontal: w * 0.06,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3F0F6),
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(w * 0.03),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF4A4A4A),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.info_outline,
-                      color: Colors.white,
-                      size: w * 0.06,
-                    ),
-                  ),
-                  SizedBox(height: w * 0.05),
-                  Text(
-                    "Surat Dalam Proses",
-                    style: TextStyle(
-                      fontSize: w * 0.06,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: w * 0.025),
-                  Text(
-                    "Surat masih dalam proses\npengajuan",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: w * 0.045,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
         );

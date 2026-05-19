@@ -519,7 +519,7 @@ class _HomeState extends State<Home> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 60),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 80),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
             child: Column(
@@ -549,7 +549,7 @@ class _HomeState extends State<Home> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  "Surat masih dalam proses pengajuan.",
+                  "Surat masih dalam proses\npengajuan.",
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey,

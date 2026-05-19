@@ -538,10 +538,7 @@ class _HomeState extends State<Home> {
                 const SizedBox(height: 16),
                 const Text(
                   "Surat Dalam Proses",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
@@ -554,7 +551,6 @@ class _HomeState extends State<Home> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-
               ],
             ),
           ),

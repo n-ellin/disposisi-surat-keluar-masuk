@@ -8,7 +8,7 @@ class DummySurat {
 
       'tanggal': '8 Mei 2026',
 
-      'status': 'menunggu',
+      'status': 'diproses',
 
       'fromRole': 'tu',
 
@@ -144,7 +144,7 @@ class DummySurat {
 
       'tanggal': '8 Mei 2026',
 
-      'status': 'menunggu',
+      'status': 'disetujui',
 
       'fromRole': 'kepsek',
 
@@ -170,7 +170,7 @@ class DummySurat {
 
       'tanggal': '8 Mei 2026',
 
-      'status': 'menunggu',
+      'status': 'diproses',
 
       'fromRole': 'kepsek',
 

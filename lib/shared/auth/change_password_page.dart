@@ -14,9 +14,9 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
   final TextEditingController _newPassC = TextEditingController();
   final TextEditingController _confirmPassC = TextEditingController();
 
-  bool _obscureOld = true;
-  bool _obscureNew = true;
-  bool _obscureConfirm = true;
+  bool _showOld = false;
+  bool _showNew = false;
+  bool _showConfirm = false;
 
   bool _hasNumber = false;
   bool _min8Char = false;
@@ -24,24 +24,53 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
   bool _passwordMatch = false;
   bool _oldPassCorrect = false;
 
-  // ── VALIDATION ───────────────────────────────────────────────────────────────
+  // ── VALIDATION ─────────────────────────────────────
 
-  void _validateOldPassword(String value) {
-    setState(() => _oldPassCorrect = value == 'Admin123');
+  void _onOldChanged(String value) {
+    setState(() {
+      _oldPassCorrect = value == 'Admin123';
+    });
   }
 
-  void _validateNewPassword(String value) {
+  void _onNewChanged(String value) {
     setState(() {
       _hasNumber = RegExp(r'[0-9]').hasMatch(value);
+
       _min8Char = value.length >= 8;
+
       _hasUpperLower = RegExp(r'(?=.*[a-z])(?=.*[A-Z])').hasMatch(value);
+
       _passwordMatch = value == _confirmPassC.text;
     });
   }
 
-  void _validateConfirm(String value) {
-    setState(() => _passwordMatch = _newPassC.text == value);
+  void _onConfirmChanged(String value) {
+    setState(() {
+      _passwordMatch = value == _newPassC.text;
+    });
   }
+
+  // ── TOGGLE ─────────────────────────────────────────
+
+  void _toggleOld() {
+    setState(() {
+      _showOld = !_showOld;
+    });
+  }
+
+  void _toggleNew() {
+    setState(() {
+      _showNew = !_showNew;
+    });
+  }
+
+  void _toggleConfirm() {
+    setState(() {
+      _showConfirm = !_showConfirm;
+    });
+  }
+
+  // ── BUTTON VALID ───────────────────────────────────
 
   bool get _isValid =>
       _oldPassCorrect &&
@@ -50,7 +79,7 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
       _hasUpperLower &&
       _passwordMatch;
 
-  // ── DIALOGS ──────────────────────────────────────────────────────────────────
+  // ── SUCCESS DIALOG ─────────────────────────────────
 
   void _showSuccessDialog() {
     showDialog(
@@ -75,13 +104,17 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                 size: 40,
               ),
             ),
+
             const SizedBox(height: 18),
+
             const Text(
               'Password Berhasil Diubah',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+
             const SizedBox(height: 10),
+
             const Text(
               'Kata sandi akun kamu berhasil diperbarui.',
               textAlign: TextAlign.center,
@@ -91,7 +124,9 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                 height: 1.5,
               ),
             ),
+
             const SizedBox(height: 24),
+
             SizedBox(
               width: double.infinity,
               height: 48,
@@ -104,8 +139,8 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pop(context); // tutup dialog
-                  Navigator.pop(context); // kembali ke halaman sebelumnya
+                  Navigator.pop(context);
+                  Navigator.pop(context);
                 },
                 child: const Text(
                   'OK',
@@ -122,7 +157,7 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
     );
   }
 
-  // ── BUILD ────────────────────────────────────────────────────────────────────
+  // ── BUILD ──────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -133,35 +168,31 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
-              // Header
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      splashRadius: 20,
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: AppColors.bluePrimary,
-                        size: 20,
-                      ),
+              // HEADER
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new,
+                      color: AppColors.bluePrimary,
+                      size: 20,
                     ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'Ganti Kata Sandi',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.bluePrimary,
-                      ),
+                  ),
+
+                  const SizedBox(width: 8),
+
+                  const Text(
+                    'Ganti Kata Sandi',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.bluePrimary,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 20),
@@ -175,21 +206,25 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                         'Keamanan Akun',
                         style: TextStyle(
                           fontSize: 26,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 8),
+
+                      const SizedBox(height: 6),
+
                       const Text(
-                        'Perbarui kata sandi Anda secara berkala untuk menjaga keamanan data akademik dan finansial.',
+                        'Perbarui kata sandi Anda secara berkala untuk menjaga keamanan akun.',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black54,
+                          color: Colors.black45,
                           height: 1.5,
                         ),
                       ),
+
                       const SizedBox(height: 20),
 
-                      // Form card
+                      // CARD
                       Container(
                         padding: const EdgeInsets.all(18),
                         decoration: BoxDecoration(
@@ -199,17 +234,19 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Kata sandi lama
+                            // PASSWORD LAMA
                             _buildLabel('KATA SANDI LAMA'),
+
                             const SizedBox(height: 8),
+
                             _buildField(
                               controller: _oldPassC,
                               hint: 'Masukkan kata sandi lama',
-                              obscure: _obscureOld,
-                              onChanged: _validateOldPassword,
-                              onToggle: () =>
-                                  setState(() => _obscureOld = !_obscureOld),
+                              isVisible: _showOld,
+                              onChanged: _onOldChanged,
+                              onToggle: _toggleOld,
                             ),
+
                             if (_oldPassC.text.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 10),
@@ -223,17 +260,19 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
 
                             const SizedBox(height: 20),
 
-                            // Kata sandi baru
+                            // PASSWORD BARU
                             _buildLabel('KATA SANDI BARU'),
+
                             const SizedBox(height: 8),
+
                             _buildField(
                               controller: _newPassC,
                               hint: 'Masukkan kata sandi baru',
-                              obscure: _obscureNew,
-                              onChanged: _validateNewPassword,
-                              onToggle: () =>
-                                  setState(() => _obscureNew = !_obscureNew),
+                              isVisible: _showNew,
+                              onChanged: _onNewChanged,
+                              onToggle: _toggleNew,
                             ),
+
                             if (_newPassC.text.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 10),
@@ -243,10 +282,12 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                                       'Mengandung minimal satu angka',
                                       _hasNumber,
                                     ),
+
                                     _buildValidationRow(
                                       'Terdiri dari minimal 8 karakter',
                                       _min8Char,
                                     ),
+
                                     _buildValidationRow(
                                       'Mengandung huruf besar & huruf kecil',
                                       _hasUpperLower,
@@ -257,18 +298,19 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
 
                             const SizedBox(height: 20),
 
-                            // Konfirmasi kata sandi
+                            // KONFIRMASI PASSWORD
                             _buildLabel('KONFIRMASI KATA SANDI BARU'),
+
                             const SizedBox(height: 8),
+
                             _buildField(
                               controller: _confirmPassC,
                               hint: 'Ulangi kata sandi baru',
-                              obscure: _obscureConfirm,
-                              onChanged: _validateConfirm,
-                              onToggle: () => setState(
-                                () => _obscureConfirm = !_obscureConfirm,
-                              ),
+                              isVisible: _showConfirm,
+                              onChanged: _onConfirmChanged,
+                              onToggle: _toggleConfirm,
                             ),
+
                             if (_confirmPassC.text.isNotEmpty)
                               Padding(
                                 padding: const EdgeInsets.only(top: 10),
@@ -280,23 +322,33 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                                 ),
                               ),
 
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 8),
 
-                            // Lupa kata sandi
+                            // LUPA PASSWORD
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(
-                                onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const ForgotPasswordPage(),
-                                  ),
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const ForgotPasswordPage(),
+                                    ),
+                                  );
+                                },
                                 child: const Text(
                                   'Lupa kata sandi?',
                                   style: TextStyle(
                                     color: AppColors.bluePrimary,
-                                    fontSize: 14,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
@@ -304,14 +356,16 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                           ],
                         ),
                       ),
+
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
               ),
 
-              // Save button
+              // BUTTON
               Padding(
-                padding: const EdgeInsets.only(bottom: 20, top: 16),
+                padding: const EdgeInsets.only(bottom: 20, top: 4),
                 child: SizedBox(
                   width: double.infinity,
                   height: 52,
@@ -330,7 +384,7 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
                       'Simpan Perubahan',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
                     ),
@@ -344,7 +398,7 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
     );
   }
 
-  // ── WIDGET HELPERS ───────────────────────────────────────────────────────────
+  // ── LABEL ──────────────────────────────────────────
 
   Widget _buildLabel(String text) {
     return Text(
@@ -352,47 +406,80 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
       style: const TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w700,
-        color: Colors.black54,
+        color: Colors.black45,
         letterSpacing: 0.8,
       ),
     );
   }
 
+  // ── FIELD ──────────────────────────────────────────
+
   Widget _buildField({
     required TextEditingController controller,
     required String hint,
-    required bool obscure,
+    required bool isVisible,
     required VoidCallback onToggle,
-    Function(String)? onChanged,
+    required Function(String) onChanged,
   }) {
     return TextField(
       controller: controller,
-      obscureText: obscure,
-      onChanged: onChanged,
+
+      enableInteractiveSelection: true,
+      // DEFAULT HIDE PASSWORD
+      obscureText: !isVisible,
+
       enableSuggestions: false,
       autocorrect: false,
-      contextMenuBuilder: (context, editableTextState) =>
-          AdaptiveTextSelectionToolbar.editableText(
-            editableTextState: editableTextState,
-          ),
-      style: const TextStyle(fontSize: 14),
+
+      onChanged: onChanged,
+
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: Colors.black87,
+      ),
+
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: AppColors.hinttext, fontSize: 14),
+
+        hintStyle: TextStyle(
+          color: AppColors.hinttext,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+
         filled: true,
         fillColor: const Color(0xFFF3F4F7),
+
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 14,
         ),
+
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
         ),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(
+            color: AppColors.bluePrimary,
+            width: 1.4,
+          ),
+        ),
+
         suffixIcon: IconButton(
           onPressed: onToggle,
           icon: Icon(
-            obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+            isVisible
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
             color: Colors.grey,
             size: 20,
           ),
@@ -400,6 +487,8 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
       ),
     );
   }
+
+  // ── VALIDATION ROW ─────────────────────────────────
 
   Widget _buildValidationRow(String text, bool isValid) {
     return Padding(
@@ -411,12 +500,17 @@ class _GantiKataSandiPageState extends State<GantiKataSandiPage> {
             color: isValid ? Colors.green : Colors.red,
             size: 16,
           ),
+
           const SizedBox(width: 6),
-          Text(
-            text,
-            style: TextStyle(
-              color: isValid ? Colors.green : Colors.red,
-              fontSize: 13,
+
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: isValid ? Colors.green : Colors.red,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

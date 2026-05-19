@@ -35,7 +35,7 @@ class SuratCard extends StatelessWidget {
 
   // ── GETTERS ──────────────────────────────────────────────────────────────────
 
-  bool get showStatus => role == CardRole.tu;
+  bool get showStatus => role == CardRole.tu || role == CardRole.kepsek;
   bool get isHome => type == CardType.home;
   bool get isHistory => type == CardType.history;
   bool get isMenu => type == CardType.menu;

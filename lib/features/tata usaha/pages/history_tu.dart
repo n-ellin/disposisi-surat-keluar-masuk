@@ -50,9 +50,18 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
         final parts = tanggal.split(' ');
         final day = int.parse(parts[0]);
         final monthMap = {
-          'januari': 1, 'februari': 2, 'maret': 3, 'april': 4,
-          'mei': 5, 'juni': 6, 'juli': 7, 'agustus': 8,
-          'september': 9, 'oktober': 10, 'november': 11, 'desember': 12,
+          'januari': 1,
+          'februari': 2,
+          'maret': 3,
+          'april': 4,
+          'mei': 5,
+          'juni': 6,
+          'juli': 7,
+          'agustus': 8,
+          'september': 9,
+          'oktober': 10,
+          'november': 11,
+          'desember': 12,
         };
         final month = monthMap[parts[1].toLowerCase()] ?? 1;
         final year = int.parse(parts[2]);
@@ -279,7 +288,10 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                     )
                   : ListView.builder(
                       padding: EdgeInsets.fromLTRB(
-                        w * 0.04, 0, w * 0.04, h * 0.01,
+                        w * 0.04,
+                        0,
+                        w * 0.04,
+                        h * 0.01,
                       ),
                       itemCount: _filteredSurat.length,
                       itemBuilder: (context, index) {
@@ -299,17 +311,22 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
                               MaterialPageRoute(
                                 builder: (_) => isMasuk
                                     ? OutputSuratmasuk(
-                                        isApproved: surat['status'] == 'disetujui',
+                                        isApproved:
+                                            surat['status'] == 'disetujui',
                                         catatan: surat['catatan'] ?? '-',
                                         tujuan: surat['tujuan'] ?? '-',
                                         instruksi: surat['instruksi'] ?? '-',
                                         koordinasi: surat['koordinasi'] ?? '-',
-                                        diteruskanKe: surat['diteruskanKe'] ?? '-',
+                                        diteruskanKe:
+                                            surat['diteruskanKe'] ?? '-',
                                         isReadOnly: true,
                                       )
                                     : OutputSuratkeluar(
                                         catatan: surat['catatan'] ?? '-',
                                         isReadOnly: true,
+                                        lampiranUrls: List<String>.from(
+                                          surat['lampiran'] ?? [],
+                                        ),
                                       ),
                               ),
                             );
@@ -337,7 +354,12 @@ class _HistoryTUPageState extends State<HistoryTUPage> {
           currentIndex: 1,
           onTap: (index) {
             handleNavbarTap(
-              context, index, Role.tu, "Tata Usaha", "tu@gmail.com", "Tata Usaha",
+              context,
+              index,
+              Role.tu,
+              "Tata Usaha",
+              "tu@gmail.com",
+              "Tata Usaha",
             );
           },
         ),

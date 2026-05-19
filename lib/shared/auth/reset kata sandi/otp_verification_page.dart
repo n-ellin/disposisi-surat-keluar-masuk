@@ -6,6 +6,7 @@ import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final String email;
+
   const OtpVerificationPage({super.key, required this.email});
 
   @override
@@ -17,14 +18,17 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     6,
     (_) => TextEditingController(),
   );
+
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
   bool _isLoading = false;
+
   int _timerSeconds = 120;
   int _attemptsLeft = 5;
 
   bool _isBlocked = false;
   int _blockSeconds = 0;
+
   Timer? _timer;
   Timer? _blockTimer;
 
@@ -39,11 +43,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
   void _startTimer() {
     _timer?.cancel();
+
     setState(() => _timerSeconds = 120);
+
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (_timerSeconds == 0) {
         t.cancel();
-        setState(() {});
       } else {
         setState(() => _timerSeconds--);
       }
@@ -53,13 +58,15 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   void _startBlockTimer() {
     setState(() {
       _isBlocked = true;
-      _blockSeconds = 25 * 60; // ← 25 menit
+      _blockSeconds = 25 * 60;
     });
 
     _blockTimer?.cancel();
+
     _blockTimer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (_blockSeconds <= 0) {
         t.cancel();
+
         setState(() {
           _isBlocked = false;
           _attemptsLeft = 5;
@@ -74,22 +81,30 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
   String get _timerText {
     final m = (_timerSeconds ~/ 60).toString().padLeft(2, '0');
+
     final s = (_timerSeconds % 60).toString().padLeft(2, '0');
+
     return '$m:$s';
   }
 
   String get _blockTimerText {
     final m = (_blockSeconds ~/ 60).toString().padLeft(2, '0');
+
     final s = (_blockSeconds % 60).toString().padLeft(2, '0');
+
     return '$m:$s';
   }
 
   String get _maskedEmail {
     final parts = widget.email.split('@');
+
     if (parts.length != 2) return widget.email;
+
     final local = parts[0];
     final domain = parts[1];
+
     if (local.length <= 2) return widget.email;
+
     return '${local.substring(0, 2)}***@$domain';
   }
 
@@ -100,15 +115,17 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
       _notifType = type;
       _notifMessage = message;
     });
+
     if (type != 'block') {
       Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) setState(() => _notifType = null);
+        if (mounted) {
+          setState(() => _notifType = null);
+        }
       });
     }
   }
 
   Future<void> _verifyOtp() async {
-    // VALIDASI INPUT
     if (_otpCode.length < 6) {
       for (int i = 0; i < 6; i++) {
         if (_controllers[i].text.isEmpty) {
@@ -118,6 +135,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
       }
 
       _showNotif('error', 'OTP harus 6 digit');
+
       return;
     }
 
@@ -129,7 +147,6 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
     setState(() => _isLoading = false);
 
-    // OTP BERHASIL
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const NewPasswordPage()),
@@ -140,45 +157,56 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(
-              Icons.warning_amber_rounded,
-              color: Color(0xFFEF4444),
-              size: 28,
-            ),
-            SizedBox(width: 12),
-            Flexible(
+      builder: (context) {
+        final sw = MediaQuery.of(context).size.width;
+
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: const Color(0xFFEF4444),
+                size: sw * 0.07,
+              ),
+              SizedBox(width: sw * 0.03),
+              Flexible(
+                child: Text(
+                  'Batas OTP Tercapai',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: (sw * 0.05).clamp(18.0, 22.0),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            'Terlalu banyak percobaan. Tunggu 25 menit untuk mencoba lagi.',
+            style: TextStyle(fontSize: sw * 0.035, height: 1.5),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+
+                _startBlockTimer();
+                _clearOtpFields();
+              },
               child: Text(
-                'Batas OTP Tercapai',
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+                'OK',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFFEF4444),
+                  fontSize: (sw * 0.045).clamp(16.0, 18.0),
+                ),
               ),
             ),
           ],
-        ),
-        content: const Text(
-          'Terlalu banyak percobaan. Tunggu 25 menit untuk mencoba lagi.',
-          style: TextStyle(fontSize: 14, height: 1.5),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _startBlockTimer();
-              _clearOtpFields();
-            },
-            child: const Text(
-              'OK',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Color(0xFFEF4444),
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -195,79 +223,127 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
 
     _clearOtpFields();
     _startTimer();
+
     setState(() {});
+
     _showNotif('success', 'Kode OTP berhasil dikirim ulang');
   }
 
   void _clearOtpFields() {
-    for (var c in _controllers) c.clear();
+    for (var c in _controllers) {
+      c.clear();
+    }
+
     _focusNodes[0].requestFocus();
+
     setState(() {});
   }
 
   @override
   void dispose() {
-    for (var c in _controllers) c.dispose();
-    for (var f in _focusNodes) f.dispose();
+    for (var c in _controllers) {
+      c.dispose();
+    }
+
+    for (var f in _focusNodes) {
+      f.dispose();
+    }
+
     _timer?.cancel();
     _blockTimer?.cancel();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    final sw = size.width;
+    final sh = size.height;
+
+    // ── Responsive ───────────────────────────
+    final hPad = sw * 0.06;
+
+    final iconSize = sw * 0.14;
+    final iconRadius = sw * 0.04;
+
+    final titleSize = (sw * 0.075).clamp(28.0, 34.0);
+
+    final bodySize = (sw * 0.042).clamp(15.0, 18.0);
+
+    final labelSize = (sw * 0.038).clamp(14.0, 16.0);
+
+    final btnHeight = sh * 0.065;
+
+    final spacingXL = sh * 0.035;
+    final spacingL = sh * 0.022;
+    final spacingM = sh * 0.016;
+    final spacingS = sh * 0.008;
+    // ─────────────────────────────────────────
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF2F2F2),
+        backgroundColor: AppColors.bg,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
-            size: 20,
+            size: sw * 0.055,
             color: Colors.black87,
           ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: hPad,
+            right: hPad,
+            top: spacingS,
+            bottom: spacingM,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: spacingL),
 
-              // ── ICON ────────────────────────────────────────────────────
+              // ── Icon ───────────────────────
               Container(
-                width: 56,
-                height: 56,
+                width: iconSize,
+                height: iconSize,
                 decoration: BoxDecoration(
                   color: const Color(0xFFEFF6FF),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(iconRadius),
                 ),
                 child: Icon(
                   Icons.key_outlined,
                   color: AppColors.bluePrimary,
-                  size: 28,
+                  size: iconSize * 0.5,
                 ),
               ),
-              const SizedBox(height: 24),
 
-              // ── TITLE ───────────────────────────────────────────────────
-              const Text(
+              SizedBox(height: spacingL),
+
+              // ── Title ──────────────────────
+              Text(
                 'Verifikasi OTP',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: titleSize,
                   fontWeight: FontWeight.w700,
                   color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 8),
+
+              SizedBox(height: spacingS),
+
               RichText(
                 text: TextSpan(
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: TextStyle(
+                    fontSize: bodySize,
                     color: Colors.black45,
                     height: 1.5,
                   ),
@@ -283,41 +359,57 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 36),
 
-              // ── LABEL OTP ───────────────────────────────────────────────
-              const Text(
+              SizedBox(height: spacingXL),
+
+              // ── Label ──────────────────────
+              Text(
                 'Kode OTP',
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: labelSize,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
               ),
-              const SizedBox(height: 12),
 
-              // ── OTP BOXES ───────────────────────────────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(6, (i) => _buildOtpBox(i)),
+              SizedBox(height: spacingM),
+
+              // ── OTP BOX ────────────────────
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final spacing = sw * 0.018;
+
+                  final boxWidth = (constraints.maxWidth - (spacing * 5)) / 6;
+
+                  final boxHeight = boxWidth * 1.12;
+
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(
+                      6,
+                      (i) => _buildOtpBox(i, boxWidth, boxHeight, sw),
+                    ),
+                  );
+                },
               ),
-              const SizedBox(height: 16),
 
-              // ── IN-PAGE NOTIF ─────────────────────────────────────────────
-              if (_notifType != null) _buildNotifBanner(),
+              SizedBox(height: spacingM),
 
-              const SizedBox(height: 8),
+              // ── Notification ───────────────
+              if (_notifType != null) _buildNotifBanner(bodySize),
 
-              // ── STATUS ────────────────────────────────────────────────────
+              SizedBox(height: spacingS),
+
+              // ── Status ─────────────────────
               if (_isBlocked)
-                _buildBlockedStatus()
+                _buildBlockedStatus(sw, bodySize)
               else ...[
                 Center(
                   child: _timerSeconds > 0
                       ? RichText(
                           text: TextSpan(
-                            style: const TextStyle(
-                              fontSize: 13,
+                            style: TextStyle(
+                              fontSize: labelSize,
                               color: Colors.black45,
                             ),
                             children: [
@@ -332,20 +424,22 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                             ],
                           ),
                         )
-                      : const Text(
+                      : Text(
                           'Kode sudah kadaluarsa',
                           style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFFEF4444),
+                            fontSize: labelSize,
+                            color: const Color(0xFFEF4444),
                           ),
                         ),
                 ),
-                const SizedBox(height: 6),
+
+                SizedBox(height: spacingS * 0.6),
+
                 Center(
                   child: Text(
                     'Sisa percobaan: $_attemptsLeft',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: labelSize,
                       fontWeight: FontWeight.w600,
                       color: _attemptsLeft <= 2
                           ? const Color(0xFFEF4444)
@@ -355,47 +449,53 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                 ),
               ],
 
-              const SizedBox(height: 24),
+              SizedBox(height: spacingL),
 
-              // ── TOMBOL VERIFIKASI ──────────────────────────────────────────
+              // ── Button ─────────────────────
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: btnHeight,
                 child: ElevatedButton(
                   onPressed: (_isLoading || _timerSeconds == 0 || _isBlocked)
                       ? null
                       : _verifyOtp,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.bluePrimary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.resolveWith((states) {
+                      return AppColors.bluePrimary;
+                    }),
+                    foregroundColor: const WidgetStatePropertyAll(Colors.white),
+                    elevation: const WidgetStatePropertyAll(0),
+                    overlayColor: const WidgetStatePropertyAll(
+                      Colors.transparent,
                     ),
-                    disabledBackgroundColor: const Color(0xFF93C5FD),
+                    shape: WidgetStatePropertyAll(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(sw * 0.03),
+                      ),
+                    ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
+                      ? SizedBox(
+                          width: sw * 0.05,
+                          height: sw * 0.05,
+                          child: const CircularProgressIndicator(
                             strokeWidth: 2,
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
+                      : Text(
                           'Verifikasi',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: (sw * 0.045).clamp(16.0, 18.0),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: spacingM),
 
-              // ── KIRIM ULANG ────────────────────────────────────────────────
+              // ── Resend ─────────────────────
               Center(
                 child: TextButton(
                   onPressed: (_timerSeconds == 0 && !_isBlocked)
@@ -406,7 +506,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                         ? 'Tunggu timer untuk kirim OTP baru'
                         : 'Kirim ulang kode',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: bodySize,
                       fontWeight: FontWeight.w500,
                       color: (_timerSeconds == 0 && !_isBlocked)
                           ? AppColors.bluePrimary
@@ -416,8 +516,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                 ),
               ),
 
-              const Spacer(),
-              const SizedBox(height: 12),
+              SizedBox(height: spacingM),
             ],
           ),
         ),
@@ -425,33 +524,26 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     );
   }
 
-  // ── IN-PAGE BANNER NOTIF ──────────────────────────────────────────────────
-  Widget _buildNotifBanner() {
+  Widget _buildNotifBanner(double fontSize) {
     final isSuccess = _notifType == 'success';
 
     final color = isSuccess ? const Color(0xFF10B981) : const Color(0xFFEF4444);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
-
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-
         children: [
           Container(
             width: 6,
             height: 6,
-
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-
           const SizedBox(width: 8),
-
           Text(
             _notifMessage ?? '',
-
             style: TextStyle(
-              fontSize: 13,
+              fontSize: fontSize,
               color: color,
               fontWeight: FontWeight.w500,
             ),
@@ -461,24 +553,30 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     );
   }
 
-  // ── BLOCKED STATUS ────────────────────────────────────────────────────────
-  Widget _buildBlockedStatus() {
+  Widget _buildBlockedStatus(double sw, double fontSize) {
     return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.all(sw * 0.03),
+      margin: EdgeInsets.only(bottom: sw * 0.02),
       decoration: BoxDecoration(
         color: const Color(0xFFFFFBEB),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(sw * 0.03),
         border: Border.all(color: const Color(0xFFF59E0B)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.lock_clock, color: Color(0xFFF59E0B), size: 20),
-          const SizedBox(width: 8),
+          Icon(
+            Icons.lock_clock,
+            color: const Color(0xFFF59E0B),
+            size: sw * 0.05,
+          ),
+          SizedBox(width: sw * 0.02),
           Expanded(
             child: RichText(
               text: TextSpan(
-                style: const TextStyle(fontSize: 13, color: Color(0xFF92400E)),
+                style: TextStyle(
+                  fontSize: fontSize,
+                  color: const Color(0xFF92400E),
+                ),
                 children: [
                   const TextSpan(text: 'Percobaan tercapai. Coba lagi dalam '),
                   TextSpan(
@@ -494,13 +592,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     );
   }
 
-  // ── OTP BOX ───────────────────────────────────────────────────────────────
-  Widget _buildOtpBox(int index) {
+  Widget _buildOtpBox(int index, double width, double height, double sw) {
     final isFilled = _controllers[index].text.isNotEmpty;
 
     return SizedBox(
-      width: 46,
-      height: 54,
+      width: width,
+      height: height,
       child: KeyboardListener(
         focusNode: FocusNode(),
         onKeyEvent: (event) {
@@ -509,7 +606,9 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               _controllers[index].text.isEmpty &&
               index > 0) {
             _focusNodes[index - 1].requestFocus();
+
             _controllers[index - 1].clear();
+
             setState(() {});
           }
         },
@@ -518,12 +617,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           focusNode: _focusNodes[index],
           keyboardType: TextInputType.text,
           textAlign: TextAlign.center,
-          maxLength: 6,
+          maxLength: 1,
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
           ],
-          style: const TextStyle(
-            fontSize: 20,
+          style: TextStyle(
+            fontSize: (sw * 0.06).clamp(20.0, 24.0),
             fontWeight: FontWeight.w700,
             color: Colors.black87,
           ),
@@ -533,18 +632,18 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             fillColor: Colors.white,
             contentPadding: EdgeInsets.zero,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(sw * 0.04),
               borderSide: BorderSide(color: Colors.grey.shade300),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(sw * 0.04),
               borderSide: BorderSide(
                 color: isFilled ? AppColors.bluePrimary : Colors.grey.shade300,
                 width: isFilled ? 1.5 : 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(sw * 0.04),
               borderSide: const BorderSide(
                 color: AppColors.bluePrimary,
                 width: 2,
@@ -552,21 +651,12 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             ),
           ),
           onChanged: (val) {
-            if (val.length > 1) {
-              final clean = val.replaceAll(RegExp(r'[^A-Za-z0-9]'), '');
-              for (int i = 0; i < 6; i++) {
-                _controllers[i].text = i < clean.length ? clean[i] : '';
-              }
-              _focusNodes[5].requestFocus();
-              setState(() {});
-              return;
-            }
-
             if (val.isNotEmpty && index < 5) {
               _focusNodes[index + 1].requestFocus();
             } else if (val.isEmpty && index > 0) {
               _focusNodes[index - 1].requestFocus();
             }
+
             setState(() {});
           },
         ),

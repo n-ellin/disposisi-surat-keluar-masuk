@@ -29,18 +29,14 @@ class OutputSuratmasuk extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-
-              /// BACK + TITLE
-              // AFTER
-              Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // HEADER — fixed, tidak ikut scroll
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Row(
                 children: [
-                  // AFTER
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
                     child: const Icon(
@@ -60,144 +56,157 @@ class OutputSuratmasuk extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              /// FORM KONTEN
-              if (isApproved) ...[
-                _sectionCard(
-                  children: [_readOnlyField("Diteruskan Ke", diteruskanKe)],
-                ),
-                const SizedBox(height: 16),
-                _sectionCard(children: [_labeledTextArea("Catatan", catatan)]),
-                const SizedBox(height: 16),
-                _sectionCard(
+            // CONTENT — scrollable
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _labeledTextArea("Tanggapan dan Saran", tujuan),
-                    const SizedBox(height: 12),
-                    _labeledTextArea("Proses Lebih Lanjut", instruksi),
-                    const SizedBox(height: 12),
-                    _labeledTextArea("Koordinasi / Konfirmasikan", koordinasi),
+                    // FORM KONTEN
+                    if (isApproved) ...[
+                      _sectionCard(
+                        children: [_readOnlyField("Diteruskan Ke", diteruskanKe)],
+                      ),
+                      const SizedBox(height: 16),
+                      _sectionCard(
+                        children: [_labeledTextArea("Catatan", catatan)],
+                      ),
+                      const SizedBox(height: 16),
+                      _sectionCard(
+                        children: [
+                          _labeledTextArea("Tanggapan dan Saran", tujuan),
+                          const SizedBox(height: 12),
+                          _labeledTextArea("Proses Lebih Lanjut", instruksi),
+                          const SizedBox(height: 12),
+                          _labeledTextArea("Koordinasi / Konfirmasikan", koordinasi),
+                        ],
+                      ),
+                    ] else ...[
+                      _sectionCard(
+                        children: [_labeledTextArea("Catatan", catatan)],
+                      ),
+                    ],
+
+                    const SizedBox(height: 20),
+
+                    // LAMPIRAN — hanya tampil saat isReadOnly
+                    if (isReadOnly && lampiranUrls.isNotEmpty) ...[
+                      Text(
+                        "Lampiran Surat",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.bluePrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _sectionCard(
+                        children: [_AttachmentCarousel(attachmentUrls: lampiranUrls)],
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+
+                    // TOMBOL
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 44),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            side: const BorderSide(
+                              color: AppColors.bluePrimary,
+                              width: 1.2,
+                            ),
+                            foregroundColor: AppColors.bluePrimary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => FullScreenImageViewer(
+                                  imageAssetPath: 'assets/images/undangan.png',
+                                  imageUrls: const [
+                                    'assets/images/undangan.png',
+                                    'assets/images/logo.png',
+                                  ],
+                                  initialIndex: 0,
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.remove_red_eye, size: 18),
+                          label: const Text(
+                            "Lihat Surat",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+
+                        if (!isReadOnly) ...[
+                          const SizedBox(width: 12),
+                          if (isApproved)
+                            ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(0, 44),
+                                backgroundColor: AppColors.bluePrimary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                              icon: const Icon(Icons.send, size: 18),
+                              label: const Text(
+                                "Teruskan",
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                            )
+                          else
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(0, 44),
+                                backgroundColor: AppColors.bluePrimary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text(
+                                "Konfirmasi",
+                                style: TextStyle(fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                        ],
+                      ],
+                    ),
+
+                    const SizedBox(height: 30),
                   ],
                 ),
-              ] else ...[
-                _sectionCard(children: [_labeledTextArea("Catatan", catatan)]),
-              ],
-
-              const SizedBox(height: 20),
-
-              /// LAMPIRAN — hanya tampil saat isReadOnly
-              if (isReadOnly && lampiranUrls.isNotEmpty) ...[
-                Text(
-                  "Lampiran Surat",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.bluePrimary,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                _sectionCard(
-                  children: [_AttachmentCarousel(attachmentUrls: lampiranUrls)],
-                ),
-                const SizedBox(height: 20),
-              ],
-
-              /// TOMBOL
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  /// LIHAT SURAT — selalu tampil (menu maupun history)
-                  OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(0, 44),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      side: BorderSide(
-                        color: AppColors.bluePrimary,
-                        width: 1.2,
-                      ),
-                      foregroundColor: AppColors.bluePrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => FullScreenImageViewer(
-                            imageAssetPath: 'assets/images/undangan.png',
-                            imageUrls: const [
-                              'assets/images/undangan.png',
-                              'assets/images/logo.png',
-                            ],
-                            initialIndex: 0,
-                          ),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.remove_red_eye, size: 18),
-                    label: const Text(
-                      "Lihat Surat",
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                  ),
-
-                  /// TERUSKAN / KONFIRMASI — hanya tampil di menu (bukan history)
-                  if (!isReadOnly) ...[
-                    const SizedBox(width: 12),
-                    if (isApproved)
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(0, 44),
-                          backgroundColor: AppColors.bluePrimary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.send, size: 18),
-                        label: const Text(
-                          "Teruskan",
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      )
-                    else
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(0, 44),
-                          backgroundColor: AppColors.bluePrimary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text(
-                          "Konfirmasi",
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                  ],
-                ],
               ),
-
-              const SizedBox(height: 30),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -207,6 +216,7 @@ class OutputSuratmasuk extends StatelessWidget {
     return Card(
       elevation: 3,
       color: Colors.white,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -226,7 +236,7 @@ class OutputSuratmasuk extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: AppColors.bluePrimary,
@@ -256,7 +266,7 @@ class OutputSuratmasuk extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
             color: AppColors.bluePrimary,
@@ -281,7 +291,7 @@ class OutputSuratmasuk extends StatelessWidget {
   }
 }
 
-/// ATTACHMENT CAROUSEL
+// ATTACHMENT CAROUSEL
 class _AttachmentCarousel extends StatefulWidget {
   const _AttachmentCarousel({required this.attachmentUrls});
   final List<String> attachmentUrls;
@@ -348,11 +358,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.broken_image,
-                                size: 50,
-                                color: Colors.grey,
-                              ),
+                              Icon(Icons.broken_image, size: 50, color: Colors.grey),
                               SizedBox(height: 10),
                               Text("Gagal memuat gambar"),
                             ],
@@ -378,9 +384,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                   height: isActive ? 10 : 6,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isActive
-                        ? AppColors.bluePrimary
-                        : Colors.grey.shade400,
+                    color: isActive ? AppColors.bluePrimary : Colors.grey.shade400,
                   ),
                 );
               }),

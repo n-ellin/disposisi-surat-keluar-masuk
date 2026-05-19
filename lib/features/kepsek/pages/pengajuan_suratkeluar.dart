@@ -27,32 +27,26 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
     super.dispose();
   }
 
-  // ── CONFIRM DIALOG ─────────────────────────────────────────────────────────
   void _showConfirmDialog(BuildContext context, {required bool isApproved}) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-
         titlePadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-
         title: Text(
           isApproved ? "Terima Surat" : "Tolak Surat",
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-
         content: Text(
           isApproved
               ? "Apakah Anda yakin ingin menerima surat ini?"
               : "Apakah Anda yakin ingin menolak surat ini?",
         ),
-
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text("Batal", style: TextStyle(color: Colors.grey)),
           ),
-
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: isApproved ? Colors.green : Colors.red,
@@ -62,12 +56,10 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-
             child: const Text("Yakin"),
           ),
         ],
@@ -80,131 +72,127 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-
-              // ── HEADER ───────────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 10),
-                child: Row(
-                  children: [
-                    InkWell(
-                      borderRadius: BorderRadius.circular(30),
-                      onTap: () => Navigator.pop(context),
-                      child: const Padding(
-                        padding: EdgeInsets.all(6),
-                        child: Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          color: AppColors.orangePrimary,
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Text(
-                      "Detail Surat Keluar",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.orangePrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // ── DETAIL CARD ──────────────────────────────────────────────
-              _detailCard(context),
-              const SizedBox(height: 20),
-
-              // ── FORM DISPOSISI ───────────────────────────────────────────
-              _formDisposisi(),
-              const SizedBox(height: 20),
-
-              // ── BUTTONS ──────────────────────────────────────────────────
-              Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // HEADER — fixed, tidak ikut scroll
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Row(
                 children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
+                  InkWell(
+                    borderRadius: BorderRadius.circular(30),
+                    onTap: () => Navigator.pop(context),
+                    child: const Padding(
+                      padding: EdgeInsets.all(6),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: AppColors.orangePrimary,
+                        size: 22,
                       ),
-                      label: const Text(
-                        "Terima",
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      onPressed: () => _showConfirmDialog(
-                        context,
-                        isApproved: true,
-                      ), // ← ini
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade600,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      label: const Text(
-                        "Tolak",
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      onPressed: () => _showConfirmDialog(
-                        context,
-                        isApproved: false,
-                      ), // ← ini
+                  const SizedBox(width: 10),
+                  const Text(
+                    "Detail Surat Keluar",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.orangePrimary,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
-            ],
-          ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // CONTENT — scrollable
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // DETAIL CARD
+                    _detailCard(context),
+                    const SizedBox(height: 20),
+
+                    // FORM DISPOSISI
+                    _formDisposisi(),
+                    const SizedBox(height: 20),
+
+                    // BUTTONS
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            label: const Text(
+                              "Terima",
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            onPressed: () =>
+                                _showConfirmDialog(context, isApproved: true),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade600,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            label: const Text(
+                              "Tolak",
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            onPressed: () =>
+                                _showConfirmDialog(context, isApproved: false),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // ── DETAIL CARD ────────────────────────────────────────────────────────────
-
   Widget _detailCard(BuildContext context) {
     return Card(
       elevation: 3,
+      color: Colors.white,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _detailItem(
-              Icons.numbers,
-              "Nomor Surat",
-              "421.3/045/SMK-TI/VI/2026",
-            ),
+            _detailItem(Icons.numbers, "Nomor Surat", "421.3/045/SMK-TI/VI/2026"),
             _detailItem(Icons.calendar_today, "Tanggal", "24 Juni 2026"),
             _detailItem(Icons.person, "Pengirim", "SMKN 1 Singosari"),
-            _detailItem(
-              Icons.description,
-              "Perihal",
-              "Permohonan Izin Menghadiri Rapat",
-            ),
+            _detailItem(Icons.description, "Perihal", "Permohonan Izin Menghadiri Rapat"),
             const SizedBox(height: 8),
             Text(
               "Lampiran",
@@ -314,8 +302,6 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
     );
   }
 
-  // ── FORM ───────────────────────────────────────────────────────────────────
-
   Widget _formDisposisi() {
     return _sectionCard(
       title: "Form Disposisi",
@@ -411,8 +397,7 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
   }
 }
 
-// ── ATTACHMENT CAROUSEL ────────────────────────────────────────────────────
-
+// ATTACHMENT CAROUSEL
 class _AttachmentCarousel extends StatefulWidget {
   const _AttachmentCarousel({required this.attachmentUrls});
   final List<String> attachmentUrls;
@@ -483,11 +468,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                           return const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.broken_image_rounded,
-                                size: 50,
-                                color: Colors.grey,
-                              ),
+                              Icon(Icons.broken_image_rounded, size: 50, color: Colors.grey),
                               SizedBox(height: 10),
                               Text("Gagal memuat gambar"),
                             ],
@@ -512,9 +493,7 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                   height: 7,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: isActive
-                        ? AppColors.orangePrimary
-                        : Colors.grey.shade400,
+                    color: isActive ? AppColors.orangePrimary : Colors.grey.shade400,
                   ),
                 );
               }),

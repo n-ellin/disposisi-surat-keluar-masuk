@@ -28,13 +28,16 @@ class NotificationPage extends StatelessWidget {
             children: [
               const SizedBox(height: 24),
               _buildHeader(context),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20), // 24 → 20
               Expanded(
                 child: notifications.isEmpty
                     ? const Center(
                         child: Text(
                           'Belum ada notifikasi',
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ), // 14 → 16
                         ),
                       )
                     : ListView(
@@ -45,21 +48,21 @@ class NotificationPage extends StatelessWidget {
                               Text(
                                 entry.key,
                                 style: const TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 15, // 13 → 15
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(height: 14),
+                              const SizedBox(height: 8), // 14 → 8
                               ...entry.value.map(
                                 (notif) => _NotificationCard(
-                                  title:  notif['title'],
-                                  desc:   notif['desc'],
-                                  color:  notif['color'],
+                                  title: notif['title'],
+                                  desc: notif['desc'],
+                                  color: notif['color'],
                                   isRead: notif['isRead'],
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 12), // 20 → 12
                             ],
                           );
                         }).toList(),
@@ -90,23 +93,23 @@ class NotificationPage extends StatelessWidget {
     return '$diff hari yang lalu';
   }
 
+  // SESUDAH
   Widget _buildHeader(BuildContext context) {
     return Row(
       children: [
-        IconButton(
-          onPressed: () => Navigator.pop(context),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          icon: const Icon(
+        GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const Icon(
             Icons.arrow_back_ios_new_rounded,
             color: AppColors.bluePrimary,
+            size: 22,
           ),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: 10),
         const Text(
           'Notifikasi',
           style: TextStyle(
-            fontSize: 22,
+            fontSize: 24, // 22 → 24
             fontWeight: FontWeight.bold,
             color: AppColors.bluePrimary,
           ),
@@ -153,14 +156,13 @@ class _NotificationCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Unread indicator dot
           if (!isRead)
             Positioned(
               right: 0,
               top: 2,
               child: Container(
-                width: 9,
-                height: 9,
+                width: 10, // 9 → 10
+                height: 10,
                 decoration: BoxDecoration(color: color, shape: BoxShape.circle),
               ),
             ),
@@ -173,7 +175,7 @@ class _NotificationCard extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16, // 14 → 16
                     fontWeight: isRead ? FontWeight.w600 : FontWeight.bold,
                     color: Colors.black87,
                   ),
@@ -182,7 +184,7 @@ class _NotificationCard extends StatelessWidget {
                 Text(
                   desc,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 14, // 13 → 14
                     height: 1.5,
                     color: isRead ? Colors.black54 : Colors.black87,
                   ),
@@ -200,65 +202,72 @@ class _NotificationCard extends StatelessWidget {
 
 final List<Map<String, dynamic>> notifTU = [
   {
-    'title':     'Surat Masuk Ditolak',
-    'desc':      'Surat masuk telah ditolak Kepala Sekolah. Silakan periksa kembali dan tindak lanjuti.',
-    'color':     Colors.red,
-    'isRead':    false,
+    'title': 'Surat Masuk Ditolak',
+    'desc':
+        'Surat masuk telah ditolak Kepala Sekolah. Silakan periksa kembali dan tindak lanjuti.',
+    'color': Colors.red,
+    'isRead': false,
     'createdAt': DateTime.now(),
   },
   {
-    'title':     'Surat Masuk Diterima',
-    'desc':      'Surat masuk telah diterima Kepala Sekolah. Silakan lanjutkan proses.',
-    'color':     Colors.green,
-    'isRead':    false,
+    'title': 'Surat Masuk Diterima',
+    'desc':
+        'Surat masuk telah diterima Kepala Sekolah. Silakan lanjutkan proses.',
+    'color': Colors.green,
+    'isRead': false,
     'createdAt': DateTime.now(),
   },
   {
-    'title':     'Surat Keluar Ditolak',
-    'desc':      'Surat keluar ditolak Kepala Sekolah. Periksa kembali dan tindak lanjuti.',
-    'color':     Colors.red,
-    'isRead':    true,
+    'title': 'Surat Keluar Ditolak',
+    'desc':
+        'Surat keluar ditolak Kepala Sekolah. Periksa kembali dan tindak lanjuti.',
+    'color': Colors.red,
+    'isRead': true,
     'createdAt': DateTime.now().subtract(const Duration(days: 1)),
   },
   {
-    'title':     'Surat Keluar Diterima',
-    'desc':      'Surat keluar telah diterima Kepala Sekolah. Silakan lanjutkan proses.',
-    'color':     Colors.green,
-    'isRead':    true,
+    'title': 'Surat Keluar Diterima',
+    'desc':
+        'Surat keluar telah diterima Kepala Sekolah. Silakan lanjutkan proses.',
+    'color': Colors.green,
+    'isRead': true,
     'createdAt': DateTime.now().subtract(const Duration(days: 1)),
   },
   {
-    'title':     'Surat Masuk Dikonfirmasi',
-    'desc':      'Surat masuk sudah dikonfirmasi oleh penerima.',
-    'color':     Colors.blue,
-    'isRead':    true,
+    'title': 'Surat Masuk Dikonfirmasi',
+    'desc': 'Surat masuk sudah dikonfirmasi oleh penerima.',
+    'color': Colors.blue,
+    'isRead': true,
     'createdAt': DateTime.now().subtract(const Duration(days: 1)),
   },
 ];
 
 final List<Map<String, dynamic>> notifKepsek = [
   {
-    'title':     'Pemberitahuan Pengajuan Surat Keluar',
-    'desc':      'Terdapat pengajuan surat keluar yang memerlukan peninjauan dari Anda.',
-    'color':     Colors.orange,
-    'isRead':    false,
+    'title': 'Pemberitahuan Pengajuan Surat Keluar',
+    'desc':
+        'Terdapat pengajuan surat keluar yang memerlukan peninjauan dari Anda.',
+    'color': Colors.orange,
+    'isRead': false,
     'createdAt': DateTime.now(),
   },
   {
-    'title':     'Pemberitahuan Pengajuan Disposisi Surat Masuk',
-    'desc':      'Terdapat pengajuan disposisi surat masuk yang memerlukan persetujuan Anda.',
-    'color':     Colors.blue,
-    'isRead':    false,
+    'title': 'Pemberitahuan Pengajuan Disposisi Surat Masuk',
+    'desc':
+        'Terdapat pengajuan disposisi surat masuk yang memerlukan persetujuan Anda.',
+    'color': Colors.blue,
+    'isRead': false,
     'createdAt': DateTime.now(),
   },
 ];
 
 final List<Map<String, dynamic>> notifUser = [
   {
-    'title':     'Pemberitahuan Surat Masuk',
-    'desc':      'Anda menerima surat masuk baru. Silakan periksa detail surat untuk informasi lebih lanjut.',
-    'color':     Colors.blue,
-    'isRead':    false,
+    'title': 'Pemberitahuan Surat Masuk',
+    'desc':
+        'Anda menerima surat masuk baru. Silakan periksa detail surat untuk informasi lebih lanjut.',
+    'color': Colors.blue,
+    'isRead': false,
     'createdAt': DateTime.now(),
   },
 ];

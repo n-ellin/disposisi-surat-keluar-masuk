@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
-import 'package:ta_mobile_disposisi_surat/shared/widgets/search_bar.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
+import 'package:ta_mobile_disposisi_surat/shared/widgets/search_bar.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 
@@ -118,7 +118,7 @@ class _KepsekDashboardPageState extends State<KepsekDashboardPage> {
                   final surat = _filteredSurat[index];
 
                   return Padding(
-                    padding: EdgeInsets.only(bottom: h * 0.015),
+                    padding: EdgeInsets.only(bottom: h *0.01),
                     child: SuratCard(
                       jenisSurat: surat['jenisSurat'],
                       tanggal: surat['tanggal'],

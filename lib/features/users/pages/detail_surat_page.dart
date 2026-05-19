@@ -8,59 +8,67 @@ class DetailSuratUsers extends StatelessWidget {
   const DetailSuratUsers({super.key, required this.surat});
 
   Map<String, dynamic> get suratData => surat['data'] ?? {};
+
   List<String> get attachmentUrls => List<String>.from(surat['lampiran'] ?? []);
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    final h = MediaQuery.of(context).size.height;
+
+    double rf(double size) => size * (w / 375);
+
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: w * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
-
-              // ── HEADER ───────────────────────────────────────────────────
-              Row(
-                children: [
-                  InkWell(
-                    borderRadius: BorderRadius.circular(30),
-                    onTap: () => Navigator.pop(context),
-                    child: const Padding(
-                      padding: EdgeInsets.all(6),
+              // HEADER — fixed, tidak ikut scroll
+              Padding(
+                padding: EdgeInsets.only(top: h * 0.025),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
                       child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
+                        Icons.arrow_back_ios_new,
                         color: AppColors.bluePrimary,
-                        size: 22,
+                        size: rf(20),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    "Detail Surat",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.bluePrimary,
+
+                    SizedBox(width: w * 0.02),
+
+                    Expanded(
+                      child: Text(
+                        "Detail Surat",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: rf(18),
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.bluePrimary,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: h * 0.025),
 
-              // ── DETAIL CARD ──────────────────────────────────────────────
+              // CARD
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(rf(20)),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(rf(14)),
                   boxShadow: [
                     BoxShadow(
-                      blurRadius: 12,
+                      blurRadius: rf(12),
                       offset: const Offset(0, 4),
                       color: Colors.black.withOpacity(0.08),
                     ),
@@ -70,42 +78,50 @@ class DetailSuratUsers extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _detailItem(
-                      Icons.description_outlined,
-                      "Nomor Surat",
-                      suratData['Nomor Surat'] ?? '-',
-                    ),
-                    _detailItem(
-                      Icons.calendar_today_outlined,
-                      "Tanggal",
-                      surat['tanggal'] ?? '-',
-                    ),
-                    _detailItem(
-                      Icons.person_outline,
-                      "Pengirim",
-                      suratData['Dari'] ?? '-',
-                    ),
-                    _detailItem(
-                      Icons.notes,
-                      "Perihal",
-                      suratData['Perihal'] ?? '-',
+                      context,
+                      icon: Icons.description_outlined,
+                      label: "Nomor Surat",
+                      value: suratData['Nomor Surat'] ?? '-',
                     ),
 
-                    // ── LAMPIRAN ─────────────────────────────────────────
+                    _detailItem(
+                      context,
+                      icon: Icons.calendar_today_outlined,
+                      label: "Tanggal",
+                      value: surat['tanggal'] ?? '-',
+                    ),
+
+                    _detailItem(
+                      context,
+                      icon: Icons.person_outline,
+                      label: "Pengirim",
+                      value: suratData['Dari'] ?? '-',
+                    ),
+
+                    _detailItem(
+                      context,
+                      icon: Icons.notes,
+                      label: "Perihal",
+                      value: suratData['Perihal'] ?? '-',
+                    ),
+
                     Text(
                       "Lampiran",
                       style: TextStyle(
                         color: Colors.grey.shade500,
-                        fontSize: 14,
+                        fontSize: rf(14),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 8),
+
+                    SizedBox(height: h * 0.01),
+
                     if (attachmentUrls.isEmpty)
                       Text(
                         "Tidak ada lampiran",
                         style: TextStyle(
                           color: Colors.grey.shade400,
-                          fontSize: 14,
+                          fontSize: rf(14),
                         ),
                       )
                     else
@@ -122,13 +138,13 @@ class DetailSuratUsers extends StatelessWidget {
                           );
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 12,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: rf(14),
+                            vertical: rf(12),
                           ),
                           decoration: BoxDecoration(
                             color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(rf(10)),
                             border: Border.all(color: Colors.grey.shade200),
                           ),
                           child: Row(
@@ -136,21 +152,26 @@ class DetailSuratUsers extends StatelessWidget {
                               Icon(
                                 Icons.attach_file_rounded,
                                 color: AppColors.bluePrimary,
-                                size: 20,
+                                size: rf(20),
                               ),
-                              const SizedBox(width: 10),
-                              Text(
-                                "${attachmentUrls.length} File Lampiran",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
+
+                              SizedBox(width: w * 0.025),
+
+                              Expanded(
+                                child: Text(
+                                  "${attachmentUrls.length} File Lampiran",
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: rf(14),
+                                  ),
                                 ),
                               ),
-                              const Spacer(),
+
                               Icon(
                                 Icons.remove_red_eye_outlined,
                                 color: Colors.grey.shade500,
-                                size: 16,
+                                size: rf(16),
                               ),
                             ],
                           ),
@@ -160,22 +181,22 @@ class DetailSuratUsers extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: h * 0.03),
 
-              // ── TOMBOL KONFIRMASI ────────────────────────────────────────
+              // BUTTON
               Align(
                 alignment: Alignment.centerRight,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.bluePrimary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 22,
-                      vertical: 12,
-                    ),
                     elevation: 0,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: rf(22),
+                      vertical: rf(12),
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(rf(12)),
                     ),
                   ),
                   onPressed: () {
@@ -183,16 +204,28 @@ class DetailSuratUsers extends StatelessWidget {
                       context: context,
                       builder: (_) => AlertDialog(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(rf(16)),
                         ),
-                        title: const Row(
+                        title: Row(
                           children: [
-                            Icon(Icons.check_circle, color: Colors.green),
-                            SizedBox(width: 8),
-                            Text("Berhasil"),
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: rf(24),
+                            ),
+
+                            SizedBox(width: w * 0.02),
+
+                            Text(
+                              "Berhasil",
+                              style: TextStyle(fontSize: rf(18)),
+                            ),
                           ],
                         ),
-                        content: const Text("Konfirmasi berhasil dikirim."),
+                        content: Text(
+                          "Konfirmasi berhasil dikirim.",
+                          style: TextStyle(fontSize: rf(14)),
+                        ),
                         actions: [
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -200,27 +233,33 @@ class DetailSuratUsers extends StatelessWidget {
                               foregroundColor: Colors.white,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(rf(8)),
                               ),
                             ),
                             onPressed: () {
                               Navigator.pop(context);
                               Navigator.pop(context);
                             },
-                            child: const Text("OK"),
+                            child: Text(
+                              "OK",
+                              style: TextStyle(fontSize: rf(14)),
+                            ),
                           ),
                         ],
                       ),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     "Konfirmasi",
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: rf(14),
+                    ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 30),
+              SizedBox(height: h * 0.03),
             ],
           ),
         ),
@@ -228,17 +267,28 @@ class DetailSuratUsers extends StatelessWidget {
     );
   }
 
-  Widget _detailItem(IconData icon, String label, String value) {
+  Widget _detailItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    final w = MediaQuery.of(context).size.width;
+
+    double rf(double size) => size * (w / 375);
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(bottom: rf(20)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 3),
-            child: Icon(icon, color: Colors.grey.shade500, size: 24),
+            padding: EdgeInsets.only(top: rf(3)),
+            child: Icon(icon, color: Colors.grey.shade500, size: rf(24)),
           ),
-          const SizedBox(width: 16),
+
+          SizedBox(width: w * 0.04),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,17 +297,19 @@ class DetailSuratUsers extends StatelessWidget {
                   label,
                   style: TextStyle(
                     color: Colors.grey.shade500,
-                    fontSize: 14,
+                    fontSize: rf(14),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 4),
+
+                SizedBox(height: rf(4)),
+
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: rf(16),
                     fontWeight: FontWeight.w500,
-                    height: 1.2,
+                    height: 1.3,
                   ),
                 ),
               ],

@@ -8,7 +8,7 @@ class DummySurat {
 
       'tanggal': '8 Mei 2026',
 
-      'status': 'menunggu',
+      'status': 'diproses',
 
       'fromRole': 'tu',
 
@@ -144,7 +144,7 @@ class DummySurat {
 
       'tanggal': '8 Mei 2026',
 
-      'status': 'menunggu',
+      'status': 'disetujui',
 
       'fromRole': 'kepsek',
 
@@ -170,7 +170,33 @@ class DummySurat {
 
       'tanggal': '8 Mei 2026',
 
-      'status': 'menunggu',
+      'status': 'diproses',
+
+      'fromRole': 'kepsek',
+
+      'toRole': 'tu',
+
+      'diteruskanKe': 'waka kurikulum',
+
+      'catatan': 'Segera diproses',
+
+      'data': {
+        'Nomor Surat': '420/SMKN2/V/2026',
+        'Tanggal Surat': '25 Juni 2026',
+        'Dari': 'SMKN 2 Singosari',
+        'Perihal': 'Rapat Pleno',
+      },
+
+      'lampiran': ['assets/images/undangan.png'],
+    },
+    {
+      'id': 8,
+
+      'jenisSurat': 'Surat Masuk',
+
+      'tanggal': '8 Mei 2026',
+
+      'status': 'disetujui',
 
       'fromRole': 'kepsek',
 

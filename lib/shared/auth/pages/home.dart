@@ -6,23 +6,19 @@ import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/surat_card.dart';
-
+import 'package:ta_mobile_disposisi_surat/shared/widgets/process_dialog.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/notification_page.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/custom_navbar.dart';
+
 import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
 
-import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/menuTU.dart';
-import 'package:ta_mobile_disposisi_surat/features/kepsek/pages/menu_kepsek_page.dart';
-
-import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_disposisi_surat_masuk_page.dart';
-import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
+import 'package:ta_mobile_disposisi_surat/features/tata_usaha/pages/menuTU.dart';
+import 'package:ta_mobile_disposisi_surat/features/tata_usaha/pages/hasil_disposisi_surat_masuk_page.dart';
+import 'package:ta_mobile_disposisi_surat/features/tata_usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
 
 import 'package:ta_mobile_disposisi_surat/features/kepsek/pages/disposisi_suratmasuk.dart';
 import 'package:ta_mobile_disposisi_surat/features/kepsek/pages/pengajuan_suratkeluar.dart';
-
-// Sesuaikan dengan ukuran CustomNavbar kamu:
-// container height 70 + bottom padding 15 = 85
-const double _kNavbarHeight = 85.0;
+import 'package:ta_mobile_disposisi_surat/features/kepsek/pages/menu_kepsek_page.dart';
 
 class Home extends StatefulWidget {
   final Role role;
@@ -70,29 +66,6 @@ class _HomeState extends State<Home> {
           "createdAt": DateTime.now(),
           "isRead": false,
         },
-        {
-          "title": "Surat Keluar Ditolak",
-          "desc":
-              "Surat keluar ditolak Kepala Sekolah. Periksa kembali dan tindak lanjuti.",
-          "color": Colors.red,
-          "createdAt": DateTime.now().subtract(const Duration(days: 1)),
-          "isRead": true,
-        },
-        {
-          "title": "Surat Keluar Diterima",
-          "desc":
-              "Surat keluar telah diterima Kepala Sekolah. Silakan lanjutkan proses.",
-          "color": Colors.green,
-          "createdAt": DateTime.now().subtract(const Duration(days: 1)),
-          "isRead": true,
-        },
-        {
-          "title": "Surat Masuk Dikonfirmasi",
-          "desc": "Surat masuk sudah dikonfirmasi oleh penerima.",
-          "color": Colors.orange,
-          "createdAt": DateTime.now().subtract(const Duration(days: 1)),
-          "isRead": true,
-        },
       ];
     } else if (widget.role == Role.kepsek) {
       notifications = [
@@ -104,21 +77,13 @@ class _HomeState extends State<Home> {
           "createdAt": DateTime.now(),
           "isRead": false,
         },
-        {
-          "title": "Pemberitahuan Pengajuan Disposisi Surat Masuk",
-          "desc":
-              "Terdapat pengajuan disposisi surat masuk yang memerlukan persetujuan Anda.",
-          "color": Colors.blue,
-          "createdAt": DateTime.now(),
-          "isRead": false,
-        },
       ];
     } else {
       notifications = [
         {
           "title": "Pemberitahuan Surat Masuk",
           "desc":
-              "Anda menerima surat masuk baru. Silakan periksa detail surat untuk informasi lebih lanjut.",
+              "Anda menerima surat masuk baru. Silakan periksa detail surat.",
           "color": Colors.green,
           "createdAt": DateTime.now(),
           "isRead": false,
@@ -127,12 +92,13 @@ class _HomeState extends State<Home> {
     }
   }
 
-  int get notifCount => notifications.where((n) => n['isRead'] == false).length;
+  int get notifCount =>
+      notifications.where((n) => n['isRead'] == false).length;
 
   List<Map<String, dynamic>> get _allSurat => DummySurat.allSurat;
 
   List<Map<String, dynamic>> get _suratTerbaru =>
-      DummySurat.allSurat.reversed.take(7).toList();
+      DummySurat.allSurat.reversed.take(5).toList();
 
   int get jumlahSuratMasuk =>
       _allSurat.where((s) => s['jenisSurat'] == 'Surat Masuk').length;
@@ -144,10 +110,13 @@ class _HomeState extends State<Home> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            NotificationPage(role: widget.role, notifications: notifications),
+        builder: (_) => NotificationPage(
+          role: widget.role,
+          notifications: notifications,
+        ),
       ),
     );
+
     setState(() {
       for (var notif in notifications) {
         notif['isRead'] = true;
@@ -158,21 +127,53 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     final w = size.width;
     final h = size.height;
+
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
+    double responsiveText(double size) {
+      return (w * (size / 375)).clamp(size * 0.85, size * 1.25);
+    }
 
     return Scaffold(
       backgroundColor: AppColors.bg,
 
-      // ❌ HAPUS bottomNavigationBar dari sini
-      // ✅ Navbar dipindah ke Stack supaya list bisa scroll ke baliknya
-
-      body: Stack(
+      /// NAVBAR
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // ── LAYER 1: KONTEN UTAMA ──────────────────────────────────────────
-          SafeArea(
-            // bottom: false → biarkan konten extend ke area navbar
-            bottom: false,
+          CustomNavbar(
+            role: widget.role,
+            currentIndex: 0,
+            onTap: (index) {
+              handleNavbarTap(
+                context,
+                index,
+                widget.role,
+                widget.nama,
+                widget.email,
+                widget.jabatan,
+              );
+            },
+          ),
+
+          ColoredBox(
+            color: AppColors.bg,
+            child: SizedBox(
+              height: bottomPadding,
+              width: double.infinity,
+            ),
+          ),
+        ],
+      ),
+
+      body: SafeArea(
+        bottom: false,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: w * 0.06),
               child: Column(
@@ -190,7 +191,6 @@ class _HomeState extends State<Home> {
                         height: w * 0.1,
                       ),
 
-                      /// ICON NOTIF + BADGE
                       GestureDetector(
                         onTap: _openNotifikasi,
                         child: Stack(
@@ -202,28 +202,30 @@ class _HomeState extends State<Home> {
                               color: AppColors.bluePrimary,
                             ),
 
-                            /// BADGE
                             if (notifCount > 0)
                               Positioned(
-                                right: -2,
-                                top: -2,
+                                right: -(w * 0.008),
+                                top: -(w * 0.008),
                                 child: Container(
-                                  padding: const EdgeInsets.all(3),
+                                  padding: EdgeInsets.all(w * 0.008),
                                   decoration: const BoxDecoration(
-                                    color: Colors.red,
+                                    color: Color(0xFFE53935),
                                     shape: BoxShape.circle,
                                   ),
-                                  constraints: const BoxConstraints(
-                                    minWidth: 16,
-                                    minHeight: 16,
+                                  constraints: BoxConstraints(
+                                    minWidth: w * 0.045,
+                                    minHeight: w * 0.045,
                                   ),
                                   child: Center(
                                     child: Text(
-                                      notifCount.toString(),
-                                      style: const TextStyle(
+                                      notifCount > 9
+                                          ? '9+'
+                                          : notifCount.toString(),
+                                      style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 9,
+                                        fontSize: responsiveText(9),
                                         fontWeight: FontWeight.bold,
+                                        height: 1,
                                       ),
                                     ),
                                   ),
@@ -235,13 +237,13 @@ class _HomeState extends State<Home> {
                     ],
                   ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: h * 0.02),
 
                   /// TITLE
-                  const Text(
+                  Text(
                     "Disposisi Surat",
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: responsiveText(22),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -275,8 +277,13 @@ class _HomeState extends State<Home> {
                             }
                           },
                           child: _statCard(
+                            w: w,
+                            responsiveText: responsiveText,
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF6DA8B4), Color(0xFF0F6E7A)],
+                              colors: [
+                                Color(0xFF6DA8B4),
+                                Color(0xFF0F6E7A),
+                              ],
                             ),
                             iconPath: "assets/icons/ic_inmail.svg",
                             jumlah: jumlahSuratMasuk.toString(),
@@ -311,8 +318,13 @@ class _HomeState extends State<Home> {
                             }
                           },
                           child: _statCard(
+                            w: w,
+                            responsiveText: responsiveText,
                             gradient: const LinearGradient(
-                              colors: [Color(0xFFD6A66B), Color(0xFFDA7B17)],
+                              colors: [
+                                Color(0xFFD6A66B),
+                                Color(0xFFDA7B17),
+                              ],
                             ),
                             iconPath: "assets/icons/ic_outmail.svg",
                             jumlah: jumlahSuratKeluar.toString(),
@@ -323,46 +335,44 @@ class _HomeState extends State<Home> {
                     ],
                   ),
 
-                  SizedBox(height: h * 0.04),
+                  SizedBox(height: h * 0.03),
 
-                  /// HEADER SURAT
-                  const Text(
+                  /// HEADER LIST
+                  Text(
                     "Surat Terbaru",
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: responsiveText(18),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
 
                   SizedBox(height: h * 0.015),
 
-                  /// LIST SURAT
-                  /// padding bottom = _kNavbarHeight + sedikit ruang extra
-                  /// → card terakhir bisa di-scroll naik sampai kelihatan penuh
+                  /// LIST
                   Expanded(
                     child: ListView.builder(
-                      padding: const EdgeInsets.only(bottom: _kNavbarHeight),
+                      padding: EdgeInsets.only(bottom: h * 0.02),
                       itemCount: _suratTerbaru.length,
                       itemBuilder: (context, index) {
                         final surat = _suratTerbaru[index];
-                        final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
+
+                        final isMasuk =
+                            surat['jenisSurat'] == 'Surat Masuk';
 
                         return SuratCard(
                           jenisSurat: surat['jenisSurat'] ?? '',
                           tanggal: surat['tanggal'] ?? '-',
-                          data: Map<String, String>.from(surat['data'] ?? {}),
+                          data: Map<String, String>.from(
+                            surat['data'] ?? {},
+                          ),
                           role: widget.role == Role.kepsek
                               ? CardRole.kepsek
                               : CardRole.tu,
                           type: CardType.home,
-
-                          /// STATUS HANYA UNTUK TU
                           status: widget.role == Role.kepsek
                               ? null
                               : surat['status'],
-
                           onDetail: () {
-                            /// KEPSEK
                             if (widget.role == Role.kepsek) {
                               Navigator.push(
                                 context,
@@ -372,15 +382,18 @@ class _HomeState extends State<Home> {
                                       : const InputSuratKeluar(),
                                 ),
                               );
+
                               return;
                             }
 
-                            /// TU
                             final status =
-                                surat['status']?.toString().toLowerCase();
+                                surat['status']
+                                        ?.toString()
+                                        .toLowerCase() ??
+                                    '';
 
-                            if (status == 'menunggu') {
-                              _showProcessDialog();
+                            if (status == 'diproses') {
+                              showProcessDialog(context);
                               return;
                             }
 
@@ -389,16 +402,28 @@ class _HomeState extends State<Home> {
                               MaterialPageRoute(
                                 builder: (_) => isMasuk
                                     ? OutputSuratmasuk(
-                                        isApproved: status == 'disetujui',
-                                        catatan: surat['catatan'] ?? '-',
-                                        tujuan: surat['tujuan'] ?? '-',
-                                        instruksi: surat['instruksi'] ?? '-',
-                                        koordinasi: surat['koordinasi'] ?? '-',
+                                        isApproved:
+                                            status == 'disetujui',
+                                        catatan:
+                                            surat['catatan'] ?? '-',
+                                        tujuan:
+                                            surat['tujuan'] ?? '-',
+                                        instruksi:
+                                            surat['instruksi'] ?? '-',
+                                        koordinasi:
+                                            surat['koordinasi'] ?? '-',
                                         diteruskanKe:
-                                            surat['diteruskanKe'] ?? '-',
+                                            surat['diteruskanKe'] ??
+                                                '-',
                                       )
                                     : OutputSuratkeluar(
-                                        catatan: surat['catatan'] ?? '-',
+                                        catatan:
+                                            surat['catatan'] ?? '-',
+                                        isReadOnly: false,
+                                        lampiranUrls:
+                                            List<String>.from(
+                                          surat['lampiran'] ?? [],
+                                        ),
                                       ),
                               ),
                             );
@@ -411,60 +436,21 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-
-          // ── LAYER 2: NAVBAR MENGAMBANG DI ATAS LIST ───────────────────────
-          // ColoredBox di bawah CustomNavbar menutup area padding bottom
-          // (15px transparan dari CustomNavbar) supaya card tidak tembus keluar
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CustomNavbar(
-                  role: widget.role,
-                  currentIndex: 0,
-                  onTap: (index) {
-                    handleNavbarTap(
-                      context,
-                      index,
-                      widget.role,
-                      widget.nama,
-                      widget.email,
-                      widget.jabatan,
-                    );
-                  },
-                ),
-
-                // Penutup solid di bawah navbar
-                // Mencegah card tembus keluar dari sisi bawah navbar
-                ColoredBox(
-                  color: AppColors.bg,
-                  child: SizedBox(
-                    height: MediaQuery.of(context).padding.bottom,
-                    width: double.infinity,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  /// STAT CARD WIDGET
   Widget _statCard({
+    required double w,
+    required double Function(double) responsiveText,
     required LinearGradient gradient,
     required String iconPath,
     required String jumlah,
     required String label,
   }) {
-    final w = MediaQuery.of(context).size.width;
-
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(w * 0.04),
       decoration: BoxDecoration(
         gradient: gradient,
         borderRadius: BorderRadius.circular(w * 0.05),
@@ -472,12 +458,12 @@ class _HomeState extends State<Home> {
       child: Row(
         children: [
           CircleAvatar(
-            radius: 22,
+            radius: w * 0.055,
             backgroundColor: Colors.white.withOpacity(0.3),
             child: SvgPicture.asset(
               iconPath,
-              width: 24,
-              height: 24,
+              width: w * 0.06,
+              height: w * 0.06,
               colorFilter: const ColorFilter.mode(
                 Colors.white,
                 BlendMode.srcIn,
@@ -485,7 +471,7 @@ class _HomeState extends State<Home> {
             ),
           ),
 
-          const SizedBox(width: 12),
+          SizedBox(width: w * 0.03),
 
           Expanded(
             child: Column(
@@ -493,76 +479,29 @@ class _HomeState extends State<Home> {
               children: [
                 Text(
                   jumlah,
-                  style: const TextStyle(
-                    fontSize: 20,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: responsiveText(20),
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(label, style: const TextStyle(color: Colors.white)),
+
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: responsiveText(14),
+                    color: Colors.white,
+                  ),
+                ),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  void _showProcessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.45),
-      builder: (context) {
-        return Dialog(
-          backgroundColor: const Color(0xFFF3F0F6),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 80),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF4A4A4A),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.info_outline,
-                    color: Colors.white,
-                    size: 26,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  "Surat Dalam Proses",
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Surat masih dalam proses\npengajuan.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                    height: 1.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

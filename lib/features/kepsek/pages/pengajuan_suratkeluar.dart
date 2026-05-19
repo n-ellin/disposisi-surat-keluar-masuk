@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/utils/full-imges-viewer.dart';
-import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
+import 'package:ta_mobile_disposisi_surat/features/tata_usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
 
 class InputSuratKeluar extends StatefulWidget {
   const InputSuratKeluar({super.key});
@@ -13,6 +13,12 @@ class InputSuratKeluar extends StatefulWidget {
 class _InputSuratKeluarState extends State<InputSuratKeluar> {
   final TextEditingController catatanController = TextEditingController();
 
+  final ScrollController _scrollController = ScrollController();
+
+  final GlobalKey _catatanKey = GlobalKey();
+
+  String? catatanError;
+
   bool _showLampiran = false;
 
   static const List<String> _attachmentUrls = [
@@ -23,36 +29,63 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     catatanController.dispose();
     super.dispose();
   }
 
-  // ── CONFIRM DIALOG ─────────────────────────────────────────────────────────
+  bool _validate() {
+    catatanError = null;
+
+    bool hasError = false;
+
+    if (catatanController.text.trim().isEmpty) {
+      catatanError = "Catatan wajib diisi.";
+      hasError = true;
+    }
+
+    setState(() {});
+
+    if (hasError) {
+      _scrollToField(_catatanKey);
+    }
+
+    return !hasError;
+  }
+
+  void _scrollToField(GlobalKey key) {
+    final context = key.currentContext;
+
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
+    }
+  }
+
   void _showConfirmDialog(BuildContext context, {required bool isApproved}) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-
         titlePadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-
         title: Text(
           isApproved ? "Terima Surat" : "Tolak Surat",
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-
         content: Text(
           isApproved
               ? "Apakah Anda yakin ingin menerima surat ini?"
               : "Apakah Anda yakin ingin menolak surat ini?",
         ),
-
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text("Batal", style: TextStyle(color: Colors.grey)),
           ),
-
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: isApproved ? Colors.green : Colors.red,
@@ -62,12 +95,10 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-
             child: const Text("Yakin"),
           ),
         ],
@@ -77,116 +108,141 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    final w = size.width;
+    final h = size.height;
+
+    double rf(double size) {
+      return (w * (size / 375)).clamp(size * 0.9, size * 1.15);
+    }
+
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-
-              // ── HEADER ───────────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 10),
-                child: Row(
-                  children: [
-                    InkWell(
-                      borderRadius: BorderRadius.circular(30),
-                      onTap: () => Navigator.pop(context),
-                      child: const Padding(
-                        padding: EdgeInsets.all(6),
-                        child: Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          color: AppColors.orangePrimary,
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Text(
-                      "Detail Surat Keluar",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.orangePrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // ── DETAIL CARD ──────────────────────────────────────────────
-              _detailCard(context),
-              const SizedBox(height: 20),
-
-              // ── FORM DISPOSISI ───────────────────────────────────────────
-              _formDisposisi(),
-              const SizedBox(height: 20),
-
-              // ── BUTTONS ──────────────────────────────────────────────────
-              Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // HEADER — fixed, tidak ikut scroll
+            // HEADER — fixed, responsive
+            Padding(
+              padding: EdgeInsets.fromLTRB(w * 0.05, h * 0.025, w * 0.05, 0),
+              child: Row(
                 children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      label: const Text(
-                        "Terima",
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      onPressed: () => _showConfirmDialog(
-                        context,
-                        isApproved: true,
-                      ), // ← ini
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: AppColors.orangePrimary,
+                      size: rf(20),
                     ),
                   ),
-                  const SizedBox(width: 12),
+
+                  SizedBox(width: w * 0.02),
+
                   Expanded(
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade600,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
+                    child: Text(
+                      "Detail Surat Keluar",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: rf(18),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.orangePrimary,
                       ),
-                      label: const Text(
-                        "Tolak",
-                        style: TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      onPressed: () => _showConfirmDialog(
-                        context,
-                        isApproved: false,
-                      ), // ← ini
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
-            ],
-          ),
+            ),
+
+            SizedBox(height: h * 0.025),
+            // CONTENT — scrollable
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // DETAIL CARD
+                    _detailCard(context),
+                    const SizedBox(height: 20),
+
+                    // FORM DISPOSISI
+                    _formDisposisi(),
+                    const SizedBox(height: 20),
+
+                    // BUTTONS
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF66BB6A),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            label: const Text(
+                              "Terima",
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            onPressed: () {
+                              final isValid = _validate();
+
+                              if (!isValid) return;
+
+                              _showConfirmDialog(context, isApproved: true);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFEF5350),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            label: const Text(
+                              "Tolak",
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            onPressed: () {
+                              final isValid = _validate();
+
+                              if (!isValid) return;
+
+                              _showConfirmDialog(context, isApproved: false);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // ── DETAIL CARD ────────────────────────────────────────────────────────────
-
   Widget _detailCard(BuildContext context) {
     return Card(
       elevation: 3,
+      color: Colors.white,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -314,14 +370,39 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
     );
   }
 
-  // ── FORM ───────────────────────────────────────────────────────────────────
-
   Widget _formDisposisi() {
     return _sectionCard(
       title: "Form Disposisi",
       children: [
-        _buildLabel("Catatan"),
-        _textField(hint: "Masukkan catatan...", controller: catatanController),
+        _buildLabel("Catatan *"),
+        Container(
+          key: _catatanKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _textField(
+                hint: "Masukkan catatan...",
+                controller: catatanController,
+              ),
+
+              if (catatanError != null)
+                Transform.translate(
+                  offset: const Offset(0, -6),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: Text(
+                      catatanError!,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
+                        height: 1,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -411,8 +492,7 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
   }
 }
 
-// ── ATTACHMENT CAROUSEL ────────────────────────────────────────────────────
-
+// ATTACHMENT CAROUSEL
 class _AttachmentCarousel extends StatefulWidget {
   const _AttachmentCarousel({required this.attachmentUrls});
   final List<String> attachmentUrls;

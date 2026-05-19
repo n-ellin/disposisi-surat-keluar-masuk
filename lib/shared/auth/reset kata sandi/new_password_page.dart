@@ -11,150 +11,241 @@ class NewPasswordPage extends StatefulWidget {
 
 class _NewPasswordPageState extends State<NewPasswordPage> {
   final _passwordController = TextEditingController();
-
   final _confirmController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
+
+  // Simpan nilai asli terpisah dari controller
+  String _passwordReal = '';
+  String _confirmReal = '';
 
   bool _showPassword = false;
   bool _showConfirm = false;
   bool _isLoading = false;
 
-  // VALIDATION
   bool hasNumber = false;
   bool min8Char = false;
   bool hasUpperLower = false;
   bool passwordMatch = false;
 
-  void validatePassword(String value) {
+  // ── PASSWORD DISPLAY LOGIC ───────────────────────────────────────────────────
+
+  void _onPasswordChanged(String displayValue) {
+    final oldReal = _passwordReal;
+    final oldDisplay = _showPassword ? oldReal : '•' * oldReal.length;
+
+    _passwordReal = _resolveReal(
+      oldReal: oldReal,
+      oldDisplay: oldDisplay,
+      newDisplay: displayValue,
+      isVisible: _showPassword,
+    );
+
+    // Sync controller display
+    if (!_showPassword) {
+      _passwordController.value = TextEditingValue(
+        text: '•' * _passwordReal.length,
+        selection: TextSelection.collapsed(offset: _passwordReal.length),
+      );
+    }
+
     setState(() {
-      hasNumber = RegExp(r'[0-9]').hasMatch(value);
-
-      min8Char = value.length >= 8;
-
-      hasUpperLower = RegExp(r'(?=.*[a-z])(?=.*[A-Z])').hasMatch(value);
-
-      passwordMatch = value == _confirmController.text;
+      hasNumber = RegExp(r'[0-9]').hasMatch(_passwordReal);
+      min8Char = _passwordReal.length >= 8;
+      hasUpperLower =
+          RegExp(r'(?=.*[a-z])(?=.*[A-Z])').hasMatch(_passwordReal);
+      passwordMatch = _passwordReal == _confirmReal;
     });
   }
 
-  void validateConfirm(String value) {
+  void _onConfirmChanged(String displayValue) {
+    final oldReal = _confirmReal;
+    final oldDisplay = _showConfirm ? oldReal : '•' * oldReal.length;
+
+    _confirmReal = _resolveReal(
+      oldReal: oldReal,
+      oldDisplay: oldDisplay,
+      newDisplay: displayValue,
+      isVisible: _showConfirm,
+    );
+
+    if (!_showConfirm) {
+      _confirmController.value = TextEditingValue(
+        text: '•' * _confirmReal.length,
+        selection: TextSelection.collapsed(offset: _confirmReal.length),
+      );
+    }
+
     setState(() {
-      passwordMatch = _passwordController.text == value;
+      passwordMatch = _passwordReal == _confirmReal;
     });
   }
 
-  bool get isValid {
-    return hasNumber && min8Char && hasUpperLower && passwordMatch;
+  /// Resolve nilai asli dari perubahan display (support paste & delete)
+  String _resolveReal({
+    required String oldReal,
+    required String oldDisplay,
+    required String newDisplay,
+    required bool isVisible,
+  }) {
+    if (isVisible) return newDisplay;
+
+    // Hitung diff panjang
+    final diff = newDisplay.length - oldDisplay.length;
+
+    if (diff > 0) {
+      // Ada karakter baru (ketik / paste)
+      // Cari posisi karakter baru yang bukan •
+      final newChars = newDisplay.split('').asMap().entries.where((e) {
+        return e.value != '•';
+      });
+
+      if (newChars.isEmpty) {
+        // Semua •, berarti paste dari field obscure lain — abaikan
+        return oldReal;
+      }
+
+      // Susun ulang: bagian lama (•) + karakter baru
+      String result = '';
+      int realIdx = 0;
+      for (int i = 0; i < newDisplay.length; i++) {
+        if (newDisplay[i] == '•') {
+          if (realIdx < oldReal.length) {
+            result += oldReal[realIdx++];
+          }
+        } else {
+          result += newDisplay[i];
+        }
+      }
+      return result;
+    } else if (diff < 0) {
+      // Ada yang dihapus
+      return oldReal.substring(0, oldReal.length + diff);
+    }
+
+    return oldReal;
   }
+
+  void _toggleShowPassword() {
+    setState(() {
+      _showPassword = !_showPassword;
+      _passwordController.value = TextEditingValue(
+        text: _showPassword ? _passwordReal : '•' * _passwordReal.length,
+        selection: TextSelection.collapsed(
+          offset: _passwordReal.length,
+        ),
+      );
+    });
+  }
+
+  void _toggleShowConfirm() {
+    setState(() {
+      _showConfirm = !_showConfirm;
+      _confirmController.value = TextEditingValue(
+        text: _showConfirm ? _confirmReal : '•' * _confirmReal.length,
+        selection: TextSelection.collapsed(
+          offset: _confirmReal.length,
+        ),
+      );
+    });
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────
+
+  bool get isValid => hasNumber && min8Char && hasUpperLower && passwordMatch;
 
   void _savePassword() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    if (!isValid) {
-      return;
-    }
+    if (!_formKey.currentState!.validate() || !isValid) return;
 
     setState(() => _isLoading = true);
-
     await Future.delayed(const Duration(seconds: 2));
-
-    setState(() => _isLoading = false);
-
     if (!mounted) return;
+    setState(() => _isLoading = false);
 
     showDialog(
       context: context,
       barrierDismissible: false,
+      builder: (_) {
+        final sw = MediaQuery.of(context).size.width;
+        final sh = MediaQuery.of(context).size.height;
 
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-
-        contentPadding: const EdgeInsets.all(24),
-
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-
-              decoration: BoxDecoration(
-                color: const Color(0xFFEFF6FF),
-                borderRadius: BorderRadius.circular(50),
-              ),
-
-              child: Icon(
-                Icons.check_circle_outline,
-                color: AppColors.bluePrimary,
-                size: 36,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            const Text(
-              'Password Berhasil Diubah!',
-              textAlign: TextAlign.center,
-
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-            ),
-
-            const SizedBox(height: 8),
-
-            const Text(
-              'Silakan login menggunakan\npassword baru kamu.',
-
-              textAlign: TextAlign.center,
-
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.black45,
-                height: 1.5,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            SizedBox(
-              width: double.infinity,
-              height: 44,
-
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const Login()),
-                    (route) => false,
-                  );
-                },
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.bluePrimary,
-
-                  elevation: 0,
-
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          contentPadding: EdgeInsets.all(sw * 0.06),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: sw * 0.16,
+                height: sw * 0.16,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(sw * 0.08),
                 ),
-
-                child: const Text(
-                  'Ke Halaman Login',
-
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+                child: Icon(
+                  Icons.check_circle_outline,
+                  color: AppColors.bluePrimary,
+                  size: sw * 0.09,
+                ),
+              ),
+              SizedBox(height: sh * 0.020),
+              Text(
+                'Password Berhasil Diubah!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: sw * 0.042,
+                ),
+              ),
+              SizedBox(height: sh * 0.010),
+              Text(
+                'Silakan login menggunakan\npassword baru kamu.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: sw * 0.033,
+                  color: Colors.black45,
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: sh * 0.025),
+              SizedBox(
+                width: double.infinity,
+                height: sh * 0.055,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const Login()),
+                      (route) => false,
+                    );
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                      AppColors.bluePrimary,
+                    ),
+                    foregroundColor:
+                        const WidgetStatePropertyAll(Colors.white),
+                    elevation: const WidgetStatePropertyAll(0),
+                    shape: WidgetStatePropertyAll(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(sw * 0.025),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Ke Halaman Login',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: (sw * 0.042).clamp(15.0, 18.0),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -162,50 +253,41 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
   void dispose() {
     _passwordController.dispose();
     _confirmController.dispose();
-
     super.dispose();
   }
 
   InputDecoration _inputDecoration({
     required String hint,
     required IconData prefixIcon,
+    required double sw,
+    required double sh,
     Widget? suffixIcon,
   }) {
     return InputDecoration(
       hintText: hint,
-
-      hintStyle: const TextStyle(color: AppColors.hinttext, fontSize: 14),
-
-      prefixIcon: Icon(prefixIcon, size: 20, color: Colors.black38),
-
+      hintStyle: TextStyle(color: AppColors.hinttext, fontSize: sw * 0.036),
+      prefixIcon: Icon(prefixIcon, size: sw * 0.05, color: Colors.black38),
       suffixIcon: suffixIcon,
-
       filled: true,
       fillColor: const Color(0xFFF9FAFB),
-
-      contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-
+      contentPadding: EdgeInsets.symmetric(
+        vertical: sh * 0.017,
+        horizontal: sw * 0.04,
+      ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-
+        borderRadius: BorderRadius.circular(sw * 0.03),
         borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
       ),
-
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-
+        borderRadius: BorderRadius.circular(sw * 0.03),
         borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
       ),
-
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-
+        borderRadius: BorderRadius.circular(sw * 0.03),
         borderSide: BorderSide(color: AppColors.bluePrimary, width: 1.5),
       ),
-
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-
+        borderRadius: BorderRadius.circular(sw * 0.03),
         borderSide: const BorderSide(color: Color(0xFFEF4444)),
       ),
     );
@@ -213,267 +295,257 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final sw = size.width;
+    final sh = size.height;
+
+    final hPad = sw * 0.06;
+    final iconSize = sw * 0.14;
+    final iconRadius = sw * 0.04;
+    final titleSize = (sw * 0.075).clamp(28.0, 34.0);
+    final bodySize = (sw * 0.042).clamp(15.0, 18.0);
+    final labelSize = (sw * 0.038).clamp(14.0, 16.0);
+    final btnHeight = sh * 0.065;
+    final spacingXL = sh * 0.035;
+    final spacingL = sh * 0.022;
+    final spacingM = sh * 0.016;
+    final spacingS = sh * 0.008;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
-
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF2F2F2),
-
+        backgroundColor: AppColors.bg,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
-
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
-            size: 20,
+            size: sw * 0.055,
             color: Colors.black87,
           ),
-
           onPressed: () => Navigator.pop(context),
         ),
       ),
-
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: hPad,
+              right: hPad,
+              top: spacingS,
+              bottom: spacingM,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: spacingL),
 
-          child: Form(
-            key: _formKey,
-
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: [
-                const SizedBox(height: 20),
-
-                // ICON
-                Container(
-                  width: 56,
-                  height: 56,
-
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEFF6FF),
-
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-
-                  child: Icon(
-                    Icons.lock_outline_rounded,
-                    color: AppColors.bluePrimary,
-                    size: 28,
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // TITLE
-                const Text(
-                  'Password Baru',
-
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black87,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                const Text(
-                  'Buat password baru untuk akunmu.\nPastikan mudah diingat tapi sulit ditebak.',
-
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black45,
-                    height: 1.5,
-                  ),
-                ),
-
-                const SizedBox(height: 36),
-
-                // PASSWORD
-                const Text(
-                  'Password Baru',
-
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                TextFormField(
-                  controller: _passwordController,
-
-                  obscureText: !_showPassword,
-
-                  onChanged: validatePassword,
-
-                  decoration: _inputDecoration(
-                    hint: 'Minimal 8 karakter',
-
-                    prefixIcon: Icons.lock_outline,
-
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _showPassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-
-                        size: 20,
-                        color: Colors.black38,
-                      ),
-
-                      onPressed: () {
-                        setState(() {
-                          _showPassword = !_showPassword;
-                        });
-                      },
+                  // ── Icon ─────────────────────────────
+                  Container(
+                    width: iconSize,
+                    height: iconSize,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(iconRadius),
+                    ),
+                    child: Icon(
+                      Icons.lock_outline_rounded,
+                      color: AppColors.bluePrimary,
+                      size: iconSize * 0.5,
                     ),
                   ),
 
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password tidak boleh kosong';
-                    }
+                  SizedBox(height: spacingL),
 
-                    return null;
-                  },
-                ),
+                  // ── Title ────────────────────────────
+                  Text(
+                    'Password Baru',
+                    style: TextStyle(
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: spacingS),
+                  Text(
+                    'Buat password baru untuk akunmu.\nPastikan mudah diingat tapi sulit ditebak.',
+                    style: TextStyle(
+                      fontSize: bodySize,
+                      color: Colors.black45,
+                      height: 1.5,
+                    ),
+                  ),
 
-                if (_passwordController.text.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12),
+                  SizedBox(height: spacingL),
 
-                    child: Column(
-                      children: [
-                        buildValidation(
-                          "Mengandung minimal satu angka",
-                          hasNumber,
+                  // ── Password ─────────────────────────
+                  Text(
+                    'Password Baru',
+                    style: TextStyle(
+                      fontSize: labelSize,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: spacingS),
+                  TextFormField(
+                    controller: _passwordController,
+                    enableInteractiveSelection: true,
+                    onChanged: _onPasswordChanged,
+                    style: TextStyle(fontSize: bodySize),
+                    decoration: _inputDecoration(
+                      hint: 'Minimal 8 karakter',
+                      prefixIcon: Icons.lock_outline,
+                      sw: sw,
+                      sh: sh,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showPassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          size: sw * 0.055,
+                          color: Colors.black38,
                         ),
-
-                        buildValidation("Minimal 8 karakter", min8Char),
-
-                        buildValidation("Huruf besar & kecil", hasUpperLower),
-                      ],
-                    ),
-                  ),
-
-                const SizedBox(height: 20),
-
-                // CONFIRM
-                const Text(
-                  'Konfirmasi Password',
-
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                TextFormField(
-                  controller: _confirmController,
-
-                  obscureText: !_showConfirm,
-
-                  onChanged: validateConfirm,
-
-                  decoration: _inputDecoration(
-                    hint: 'Ulangi password baru',
-
-                    prefixIcon: Icons.lock_outline,
-
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _showConfirm
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-
-                        size: 20,
-                        color: Colors.black38,
+                        onPressed: _toggleShowPassword,
                       ),
-
-                      onPressed: () {
-                        setState(() {
-                          _showConfirm = !_showConfirm;
-                        });
-                      },
                     ),
+                    validator: (_) {
+                      if (_passwordReal.isEmpty) {
+                        return 'Password tidak boleh kosong';
+                      }
+                      return null;
+                    },
                   ),
 
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Konfirmasi password wajib diisi';
-                    }
-
-                    return null;
-                  },
-                ),
-
-                if (_confirmController.text.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12),
-
-                    child: buildValidation(
-                      passwordMatch
-                          ? "Konfirmasi password cocok"
-                          : "Konfirmasi password tidak cocok",
-
-                      passwordMatch,
-                    ),
-                  ),
-
-                const Spacer(),
-
-                // BUTTON
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-
-                  child: ElevatedButton(
-                    onPressed: (_isLoading || !isValid) ? null : _savePassword,
-
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.bluePrimary,
-
-                      foregroundColor: Colors.white,
-
-                      elevation: 0,
-
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-
-                      disabledBackgroundColor: const Color(0xFF93C5FD),
-                    ),
-
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text(
-                            'Simpan Password',
-
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
+                  if (_passwordReal.isNotEmpty)
+                    Padding(
+                      padding: EdgeInsets.only(top: spacingM),
+                      child: Column(
+                        children: [
+                          _buildValidation(
+                            'Mengandung minimal satu angka',
+                            hasNumber,
+                            sw,
                           ),
-                  ),
-                ),
+                          _buildValidation(
+                            'Minimal 8 karakter',
+                            min8Char,
+                            sw,
+                          ),
+                          _buildValidation(
+                            'Huruf besar & kecil',
+                            hasUpperLower,
+                            sw,
+                          ),
+                        ],
+                      ),
+                    ),
 
-                const SizedBox(height: 12),
-              ],
+                  SizedBox(height: spacingM),
+
+                  // ── Confirm Password ─────────────────
+                  Text(
+                    'Konfirmasi Password',
+                    style: TextStyle(
+                      fontSize: labelSize,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  SizedBox(height: spacingS),
+                  TextFormField(
+                    controller: _confirmController,
+                    enableInteractiveSelection: true,
+                    onChanged: _onConfirmChanged,
+                    style: TextStyle(fontSize: bodySize),
+                    decoration: _inputDecoration(
+                      hint: 'Ulangi password baru',
+                      prefixIcon: Icons.lock_outline,
+                      sw: sw,
+                      sh: sh,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _showConfirm
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          size: sw * 0.055,
+                          color: Colors.black38,
+                        ),
+                        onPressed: _toggleShowConfirm,
+                      ),
+                    ),
+                    validator: (_) {
+                      if (_confirmReal.isEmpty) {
+                        return 'Konfirmasi password wajib diisi';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  if (_confirmReal.isNotEmpty)
+                    Padding(
+                      padding: EdgeInsets.only(top: spacingM),
+                      child: _buildValidation(
+                        passwordMatch
+                            ? 'Konfirmasi password cocok'
+                            : 'Konfirmasi password tidak cocok',
+                        passwordMatch,
+                        sw,
+                      ),
+                    ),
+
+                  SizedBox(height: spacingXL),
+
+                  // ── Button ───────────────────────────
+                  SizedBox(
+                    width: double.infinity,
+                    height: btnHeight,
+                    child: ElevatedButton(
+                      onPressed:
+                          (_isLoading || !isValid) ? null : _savePassword,
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.resolveWith(
+                          (states) => states.contains(WidgetState.disabled)
+                              ? AppColors.bluePrimary.withOpacity(0.5)
+                              : AppColors.bluePrimary,
+                        ),
+                        foregroundColor:
+                            const WidgetStatePropertyAll(Colors.white),
+                        elevation: const WidgetStatePropertyAll(0),
+                        overlayColor: const WidgetStatePropertyAll(
+                          Colors.transparent,
+                        ),
+                        shape: WidgetStatePropertyAll(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(sw * 0.03),
+                          ),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? SizedBox(
+                              width: sw * 0.05,
+                              height: sw * 0.05,
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Text(
+                              'Simpan Password',
+                              style: TextStyle(
+                                fontSize: (sw * 0.045).clamp(16.0, 18.0),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
+                  ),
+
+                  SizedBox(height: spacingM),
+                ],
+              ),
             ),
           ),
         ),
@@ -481,29 +553,24 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
     );
   }
 
-  Widget buildValidation(String text, bool isValid) {
+  Widget _buildValidation(String text, bool isValid, double sw) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-
+      padding: EdgeInsets.only(bottom: sw * 0.015),
       child: Row(
         children: [
           Icon(
             isValid ? Icons.check_circle : Icons.error_outline,
-
             color: isValid ? Colors.green : Colors.red,
-
-            size: 16,
+            size: sw * 0.05,
           ),
-
-          const SizedBox(width: 6),
-
-          Text(
-            text,
-
-            style: TextStyle(
-              fontSize: 13,
-
-              color: isValid ? Colors.green : Colors.red,
+          SizedBox(width: sw * 0.015),
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: (sw * 0.036).clamp(13.0, 15.0),
+                color: isValid ? Colors.green : Colors.red,
+              ),
             ),
           ),
         ],

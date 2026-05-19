@@ -7,8 +7,8 @@ import 'package:ta_mobile_disposisi_surat/core/helpers/navigation_helper.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/dummy.dart';
 import 'package:ta_mobile_disposisi_surat/shared/widgets/filter_date.dart';
-import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_disposisi_surat_masuk_page.dart';
-import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
+import 'package:ta_mobile_disposisi_surat/features/tata_usaha/pages/hasil_disposisi_surat_masuk_page.dart';
+import 'package:ta_mobile_disposisi_surat/features/tata_usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
 
 class HistoryKepsekPage extends StatefulWidget {
   const HistoryKepsekPage({super.key});
@@ -18,10 +18,13 @@ class HistoryKepsekPage extends StatefulWidget {
 }
 
 class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
-  String _searchQuery = FilterState.kepsekSearchQuery;
-  String _jenisFilter = FilterState.kepsekJenisFilter;
-  String _dateFilter = FilterState.kepsekDateFilter;
-  DateTime? _selectedDate = FilterState.kepsekSelectedDate;
+  String _searchQuery = '';
+  String _jenisFilter = 'semua';
+  String _dateFilter = 'Hari ini';
+  String _activeChip = 'Hari ini';
+
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   List<Map<String, dynamic>> get _historySurat => DummySurat.allSurat;
 
@@ -46,102 +49,75 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
           (_jenisFilter == 'keluar' && jenis.contains('keluar'));
 
       bool matchDate = true;
+
       try {
         final parts = tanggal.split(' ');
+
         final day = int.parse(parts[0]);
+
         final monthMap = {
-          'januari': 1, 'februari': 2, 'maret': 3, 'april': 4,
-          'mei': 5, 'juni': 6, 'juli': 7, 'agustus': 8,
-          'september': 9, 'oktober': 10, 'november': 11, 'desember': 12,
+          'januari': 1,
+          'februari': 2,
+          'maret': 3,
+          'april': 4,
+          'mei': 5,
+          'juni': 6,
+          'juli': 7,
+          'agustus': 8,
+          'september': 9,
+          'oktober': 10,
+          'november': 11,
+          'desember': 12,
         };
+
         final month = monthMap[parts[1].toLowerCase()] ?? 1;
         final year = int.parse(parts[2]);
-        final suratDate = DateTime(year, month, day);
-        final now = DateTime.now();
 
-        if (_dateFilter == FilterState.defaultDateFilter) {
-          matchDate = true;
-        } else if (_dateFilter == 'Hari ini') {
+        final suratDate = DateTime(year, month, day);
+
+        if (_startDate != null && _endDate != null) {
+          final start = DateTime(
+            _startDate!.year,
+            _startDate!.month,
+            _startDate!.day,
+          );
+
+          final end = DateTime(
+            _endDate!.year,
+            _endDate!.month,
+            _endDate!.day,
+            23,
+            59,
+            59,
+          );
+
           matchDate =
-              suratDate.day == now.day &&
-              suratDate.month == now.month &&
-              suratDate.year == now.year;
-        } else if (_dateFilter == 'Bulan ini') {
-          matchDate =
-              suratDate.month == now.month && suratDate.year == now.year;
-        } else if (_selectedDate != null) {
-          matchDate =
-              suratDate.day == _selectedDate!.day &&
-              suratDate.month == _selectedDate!.month &&
-              suratDate.year == _selectedDate!.year;
+              suratDate.isAfter(start.subtract(const Duration(days: 1))) &&
+              suratDate.isBefore(end.add(const Duration(seconds: 1)));
         }
       } catch (_) {
         matchDate = true;
       }
-
       return matchSearch && matchJenis && matchDate;
     }).toList();
   }
 
   void _showDateFilter() async {
-    final result = await showDialog<String>(
+    final result = await DateRangeFilterBottomSheet.show(
       context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.35),
-      builder: (context) {
-        final w = MediaQuery.of(context).size.width;
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.symmetric(horizontal: w * 0.08),
-          elevation: 0,
-          child: DateFilterDialog(currentFilter: _dateFilter),
-        );
-      },
+      initialStartDate: _startDate,
+      initialEndDate: _endDate,
+      initialChip: _activeChip,
     );
 
     if (result == null) return;
 
-    if (result == 'Pilih tanggal') {
-      final picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2030),
-        builder: (context, child) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
-                primary: AppColors.bluePrimary,
-                onPrimary: Colors.white,
-                onSurface: Colors.black87,
-              ),
-              datePickerTheme: DatePickerThemeData(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-            ),
-            child: child!,
-          );
-        },
-      );
-
-      if (picked != null) {
-        setState(() {
-          _selectedDate = picked;
-          _dateFilter = '${picked.day}/${picked.month}/${picked.year}';
-          FilterState.kepsekSelectedDate = picked;
-          FilterState.kepsekDateFilter = _dateFilter;
-        });
-      }
-    } else {
-      setState(() {
-        _selectedDate = null;
-        _dateFilter = result;
-        FilterState.kepsekSelectedDate = null;
-        FilterState.kepsekDateFilter = result;
-      });
-    }
+    setState(() {
+      _startDate = result.startDate;
+      _endDate = result.endDate;
+      _activeChip = result.activeChip;
+      _dateFilter = result.dateFilterLabel;
+    });
   }
 
   @override
@@ -149,12 +125,13 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
     final size = MediaQuery.of(context).size;
     final w = size.width;
     final h = size.height;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(w * 0.04),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
               SizedBox(height: h * 0.02),
@@ -176,7 +153,6 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
                 onChanged: (value) {
                   setState(() {
                     _searchQuery = value;
-                    FilterState.kepsekSearchQuery = value;
                   });
                 },
               ),
@@ -275,6 +251,7 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
                         ),
                       )
                     : ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 12),
                         itemCount: _filteredSurat.length,
                         itemBuilder: (context, index) {
                           final surat = _filteredSurat[index];
@@ -289,18 +266,23 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
                               type: CardType.history,
                               data: Map<String, String>.from(surat['data']),
                               onDetail: () {
-                                final isMasuk = surat['jenisSurat'] == 'Surat Masuk';
+                                final isMasuk =
+                                    surat['jenisSurat'] == 'Surat Masuk';
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => isMasuk
                                         ? OutputSuratmasuk(
-                                            isApproved: surat['status'] == 'disetujui',
+                                            isApproved:
+                                                surat['status'] == 'disetujui',
                                             catatan: surat['catatan'] ?? '-',
                                             tujuan: surat['tujuan'] ?? '-',
-                                            instruksi: surat['instruksi'] ?? '-',
-                                            koordinasi: surat['koordinasi'] ?? '-',
-                                            diteruskanKe: surat['diteruskanKe'] ?? '-',
+                                            instruksi:
+                                                surat['instruksi'] ?? '-',
+                                            koordinasi:
+                                                surat['koordinasi'] ?? '-',
+                                            diteruskanKe:
+                                                surat['diteruskanKe'] ?? '-',
                                             isReadOnly: true,
                                           )
                                         : OutputSuratkeluar(
@@ -320,14 +302,29 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
         ),
       ),
 
-      bottomNavigationBar: CustomNavbar(
-        role: Role.kepsek,
-        currentIndex: 1,
-        onTap: (index) {
-          handleNavbarTap(
-            context, index, Role.kepsek, "Kepala Sekolah", "kepsek@gmail.com", "Kepala Sekolah",
-          );
-        },
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomNavbar(
+            role: Role.kepsek,
+            currentIndex: 1,
+            onTap: (index) {
+              handleNavbarTap(
+                context,
+                index,
+                Role.kepsek,
+                "Kepala Sekolah",
+                "kepsek@gmail.com",
+                "Kepala Sekolah",
+              );
+            },
+          ),
+
+          ColoredBox(
+            color: AppColors.bg,
+            child: SizedBox(height: bottomPadding, width: double.infinity),
+          ),
+        ],
       ),
     );
   }
@@ -339,7 +336,6 @@ class _HistoryKepsekPageState extends State<HistoryKepsekPage> {
       onPressed: () {
         setState(() {
           _jenisFilter = value;
-          FilterState.kepsekJenisFilter = value;
         });
       },
       style: ElevatedButton.styleFrom(

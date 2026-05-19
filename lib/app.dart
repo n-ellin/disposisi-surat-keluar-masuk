@@ -12,10 +12,10 @@ import 'shared/auth/profile_page.dart';
 import 'shared/widgets/notification_page.dart';
 
 // ── TATA USAHA ───────────────────────────────────────────────────────────────
-import 'features/tata usaha/pages/menuTU.dart';
-import 'features/tata usaha/pages/history_tu.dart';
-import 'features/tata usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
-import 'features/tata usaha/pages/hasil_disposisi_surat_masuk_page.dart';
+import 'features/tata_usaha/pages/menuTU.dart';
+import 'features/tata_usaha/pages/history_tu.dart';
+import 'features/tata_usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
+import 'features/tata_usaha/pages/hasil_disposisi_surat_masuk_page.dart';
 
 // ── KEPALA SEKOLAH ───────────────────────────────────────────────────────────
 import 'features/kepsek/pages/menu_kepsek_page.dart';
@@ -28,9 +28,23 @@ import 'features/users/pages/menu_user_page.dart';
 import 'features/users/pages/history_user_page.dart';
 import 'features/users/pages/detail_surat_page.dart';
 
+class NoAnimationTransitionBuilder extends PageTransitionsBuilder {
+  const NoAnimationTransitionBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return child;
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,10 +53,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('id', 'ID'),
-        Locale('en', 'US'),
-      ],
+      supportedLocales: const [Locale('id', 'ID'), Locale('en', 'US')],
       locale: const Locale('id', 'ID'),
 
       debugShowCheckedModeBanner: false,
@@ -51,6 +62,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
+
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: NoAnimationTransitionBuilder(),
+            TargetPlatform.iOS: NoAnimationTransitionBuilder(),
+          },
+        ),
+
         textSelectionTheme: const TextSelectionThemeData(
           cursorColor: Colors.black,
           selectionColor: Colors.black26,

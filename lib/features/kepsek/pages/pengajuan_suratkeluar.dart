@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/utils/full-imges-viewer.dart';
-import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
+import 'package:ta_mobile_disposisi_surat/features/tata_usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
 
 class InputSuratKeluar extends StatefulWidget {
   const InputSuratKeluar({super.key});
@@ -13,6 +13,12 @@ class InputSuratKeluar extends StatefulWidget {
 class _InputSuratKeluarState extends State<InputSuratKeluar> {
   final TextEditingController catatanController = TextEditingController();
 
+  final ScrollController _scrollController = ScrollController();
+
+  final GlobalKey _catatanKey = GlobalKey();
+
+  String? catatanError;
+
   bool _showLampiran = false;
 
   static const List<String> _attachmentUrls = [
@@ -23,8 +29,41 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     catatanController.dispose();
     super.dispose();
+  }
+
+  bool _validate() {
+    catatanError = null;
+
+    bool hasError = false;
+
+    if (catatanController.text.trim().isEmpty) {
+      catatanError = "Catatan wajib diisi.";
+      hasError = true;
+    }
+
+    setState(() {});
+
+    if (hasError) {
+      _scrollToField(_catatanKey);
+    }
+
+    return !hasError;
+  }
+
+  void _scrollToField(GlobalKey key) {
+    final context = key.currentContext;
+
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
+    }
   }
 
   void _showConfirmDialog(BuildContext context, {required bool isApproved}) {
@@ -69,6 +108,15 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    final w = size.width;
+    final h = size.height;
+
+    double rf(double size) {
+      return (w * (size / 375)).clamp(size * 0.9, size * 1.15);
+    }
+
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
@@ -76,40 +124,42 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // HEADER — fixed, tidak ikut scroll
+            // HEADER — fixed, responsive
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              padding: EdgeInsets.fromLTRB(w * 0.05, h * 0.025, w * 0.05, 0),
               child: Row(
                 children: [
-                  InkWell(
-                    borderRadius: BorderRadius.circular(30),
-                    onTap: () => Navigator.pop(context),
-                    child: const Padding(
-                      padding: EdgeInsets.all(6),
-                      child: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: AppColors.orangePrimary,
-                        size: 22,
-                      ),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      color: AppColors.orangePrimary,
+                      size: rf(20),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    "Detail Surat Keluar",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.orangePrimary,
+
+                  SizedBox(width: w * 0.02),
+
+                  Expanded(
+                    child: Text(
+                      "Detail Surat Keluar",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: rf(18),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.orangePrimary,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
-
+            SizedBox(height: h * 0.025),
             // CONTENT — scrollable
             Expanded(
               child: SingleChildScrollView(
+                controller: _scrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +178,7 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
                         Expanded(
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: const Color(0xFF66BB6A),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(
@@ -140,15 +190,20 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
                               "Terima",
                               style: TextStyle(fontWeight: FontWeight.w700),
                             ),
-                            onPressed: () =>
-                                _showConfirmDialog(context, isApproved: true),
+                            onPressed: () {
+                              final isValid = _validate();
+
+                              if (!isValid) return;
+
+                              _showConfirmDialog(context, isApproved: true);
+                            },
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red.shade600,
+                              backgroundColor: const Color(0xFFEF5350),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(
@@ -160,8 +215,13 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
                               "Tolak",
                               style: TextStyle(fontWeight: FontWeight.w700),
                             ),
-                            onPressed: () =>
-                                _showConfirmDialog(context, isApproved: false),
+                            onPressed: () {
+                              final isValid = _validate();
+
+                              if (!isValid) return;
+
+                              _showConfirmDialog(context, isApproved: false);
+                            },
                           ),
                         ),
                       ],
@@ -306,8 +366,35 @@ class _InputSuratKeluarState extends State<InputSuratKeluar> {
     return _sectionCard(
       title: "Form Disposisi",
       children: [
-        _buildLabel("Catatan"),
-        _textField(hint: "Masukkan catatan...", controller: catatanController),
+        _buildLabel("Catatan *"),
+        Container(
+          key: _catatanKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _textField(
+                hint: "Masukkan catatan...",
+                controller: catatanController,
+              ),
+
+              if (catatanError != null)
+                Transform.translate(
+                  offset: const Offset(0, -6),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: Text(
+                      catatanError!,
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
+                        height: 1,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }

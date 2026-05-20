@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/app_color.dart';
 import 'package:ta_mobile_disposisi_surat/core/utils/full-imges-viewer.dart';
-import 'package:ta_mobile_disposisi_surat/features/tata%20usaha/pages/hasil_disposisi_surat_masuk_page.dart';
 
 class InputSuratMasuk extends StatefulWidget {
   final Map<String, dynamic> surat;
@@ -15,18 +14,24 @@ class InputSuratMasuk extends StatefulWidget {
 class _InputSuratMasukState extends State<InputSuratMasuk> {
   String? _selectedStatus;
 
-  bool _showLampiran = false;
-
   final TextEditingController catatanTerimaController = TextEditingController();
   final TextEditingController catatanTolakController = TextEditingController();
   final TextEditingController tanggapanController = TextEditingController();
   final TextEditingController instruksiController = TextEditingController();
   final TextEditingController koordinasiController = TextEditingController();
-  final TextEditingController multiSelectController = TextEditingController();
+
+  final ScrollController _scrollController = ScrollController();
+
+  final GlobalKey _tujuanKey = GlobalKey();
+  final GlobalKey _catatanKey = GlobalKey();
+
+  String? tujuanError;
+  String? catatanError;
 
   List<String> selectedTujuan = [];
 
   bool get isApproved => _selectedStatus == 'terima';
+
   bool get isRejected => _selectedStatus == 'tolak';
 
   List<String> get attachmentUrls =>
@@ -34,18 +39,100 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
   Map<String, dynamic> get suratData => widget.surat['data'] ?? {};
 
+  // ── VALIDASI ─────────────────────────────────────────
+
+  bool _validate() {
+    tujuanError = null;
+    catatanError = null;
+
+    if (_selectedStatus == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Pilih status terlebih dahulu."),
+          backgroundColor: Colors.red.shade400,
+        ),
+      );
+      return false;
+    }
+
+    bool hasError = false;
+
+    if (isApproved) {
+      if (selectedTujuan.isEmpty) {
+        tujuanError = "Penerima disposisi wajib dipilih.";
+        hasError = true;
+      }
+
+      if (catatanTerimaController.text.trim().isEmpty) {
+        catatanError = "Catatan wajib diisi.";
+        hasError = true;
+      }
+
+      setState(() {});
+
+      if (hasError) {
+        if (selectedTujuan.isEmpty) {
+          _scrollToField(_tujuanKey);
+        } else {
+          _scrollToField(_catatanKey);
+        }
+      }
+
+      return !hasError;
+    }
+
+    if (isRejected) {
+      if (catatanTolakController.text.trim().isEmpty) {
+        catatanError = "Catatan wajib diisi.";
+        hasError = true;
+
+        setState(() {});
+        _scrollToField(_catatanKey);
+
+        return false;
+      }
+    }
+
+    setState(() {});
+    return true;
+  }
+
+  void _scrollToField(GlobalKey key) {
+    final context = key.currentContext;
+
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+        alignment: 0.2,
+      );
+    }
+  }
+
   @override
   void dispose() {
+    _scrollController.dispose();
+
     catatanTerimaController.dispose();
     catatanTolakController.dispose();
     tanggapanController.dispose();
     instruksiController.dispose();
     koordinasiController.dispose();
-    multiSelectController.dispose();
+
     super.dispose();
   }
 
-  // ── CONFIRM DIALOG ─────────────────────────────────────────────────────────
+  // ── SUBMIT ───────────────────────────────────────────
+
+  void _onKirimPressed() {
+    final isValid = _validate();
+
+    if (!isValid) return;
+
+    _showConfirmDialog(context);
+  }
+
   void _showConfirmDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -75,7 +162,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
             ),
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pop(context);
+              _submitDisposisi();
             },
             child: const Text("Yakin"),
           ),
@@ -84,230 +171,256 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     );
   }
 
+  void _submitDisposisi() {
+    final payload = {
+      'status': _selectedStatus,
+
+      if (isApproved) ...{
+        'tujuan': selectedTujuan,
+        'catatan': catatanTerimaController.text.trim(),
+        'tanggapan': tanggapanController.text.trim(),
+        'instruksi': instruksiController.text.trim(),
+        'koordinasi': koordinasiController.text.trim(),
+      },
+
+      if (isRejected) 'catatan': catatanTolakController.text.trim(),
+    };
+
+    debugPrint('Payload disposisi: $payload');
+
+    Navigator.pop(context);
+  }
+
+  // ── BUILD ────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
-        child: Column(
-          children: [
-            // ── HEADER FIXED ─────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Column(
-                children: [
-                  const SizedBox(height: 18),
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 18),
 
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8, bottom: 10),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          borderRadius: BorderRadius.circular(30),
-                          onTap: () => Navigator.pop(context),
-                          child: const Padding(
-                            padding: EdgeInsets.all(6),
-                            child: Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              color: AppColors.bluePrimary,
-                              size: 22,
+              // HEADER
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 10),
+                child: Row(
+                  children: [
+                    InkWell(
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: () => Navigator.pop(context),
+                      child: const Padding(
+                        padding: EdgeInsets.all(6),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: AppColors.bluePrimary,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    const Expanded(
+                      child: Text(
+                        "Detail Surat Masuk",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.bluePrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // DETAIL CARD
+              _detailCard(context),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "Status",
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+              ),
+
+              const SizedBox(height: 8),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedStatus = 'terima';
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _selectedStatus == 'terima'
+                              ? AppColors.bluePrimary
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _selectedStatus == 'terima'
+                                ? AppColors.bluePrimary
+                                : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              _selectedStatus == 'terima'
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              size: 16,
+                              color: _selectedStatus == 'terima'
+                                  ? Colors.white
+                                  : Colors.grey.shade400,
                             ),
+
+                            const SizedBox(width: 6),
+
+                            Text(
+                              "Terima",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: _selectedStatus == 'terima'
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedStatus = 'tolak';
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _selectedStatus == 'tolak'
+                              ? AppColors.bluePrimary.withOpacity(0.75)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _selectedStatus == 'tolak'
+                                ? AppColors.bluePrimary
+                                : Colors.grey.shade300,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          "Detail Surat Masuk",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.bluePrimary,
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              _selectedStatus == 'tolak'
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              size: 16,
+                              color: _selectedStatus == 'tolak'
+                                  ? Colors.white
+                                  : Colors.grey.shade400,
+                            ),
+
+                            const SizedBox(width: 6),
+
+                            Text(
+                              "Tolak",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: _selectedStatus == 'tolak'
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
 
-            // ── CONTENT SCROLL ──────────────────────────────────
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              // FORM TERIMA
+              if (isApproved) ...[
+                const SizedBox(height: 20),
+
+                _formDisposisi(),
+
+                const SizedBox(height: 16),
+
+                _formTambahan(),
+              ],
+
+              // FORM TOLAK
+              if (isRejected) ...[
+                const SizedBox(height: 20),
+
+                _sectionCard(
+                  title: "Form Disposisi",
                   children: [
-                    const SizedBox(height: 6),
+                    _buildLabel("Catatan"),
 
-                    // ── DETAIL CARD ─────────────────────────────
-                    _detailCard(context),
-                    const SizedBox(height: 20),
-
-                    // ── STATUS RADIO BUTTON ────────────────────
-                    const Text(
-                      "Status",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                      ),
+                    _textField(
+                      hint: "Masukkan catatan...",
+                      controller: catatanTolakController,
                     ),
-
-                    const SizedBox(height: 8),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () =>
-                                setState(() => _selectedStatus = 'terima'),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: _selectedStatus == 'terima'
-                                    ? AppColors.bluePrimary
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: _selectedStatus == 'terima'
-                                      ? AppColors.bluePrimary
-                                      : Colors.grey.shade300,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    _selectedStatus == 'terima'
-                                        ? Icons.radio_button_checked
-                                        : Icons.radio_button_off,
-                                    color: _selectedStatus == 'terima'
-                                        ? Colors.white
-                                        : Colors.grey.shade400,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    "Terima",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: _selectedStatus == 'terima'
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () =>
-                                setState(() => _selectedStatus = 'tolak'),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: _selectedStatus == 'tolak'
-                                    ? Colors.red.shade400
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: _selectedStatus == 'tolak'
-                                      ? Colors.red.shade400
-                                      : Colors.grey.shade300,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    _selectedStatus == 'tolak'
-                                        ? Icons.radio_button_checked
-                                        : Icons.radio_button_off,
-                                    color: _selectedStatus == 'tolak'
-                                        ? Colors.white
-                                        : Colors.grey.shade400,
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    "Tolak",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: _selectedStatus == 'tolak'
-                                          ? Colors.white
-                                          : Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // ── FORM BERDASARKAN STATUS ────────────────
-                    if (isApproved) ...[
-                      const SizedBox(height: 20),
-                      _formDisposisi(),
-                      const SizedBox(height: 16),
-                      _formTambahan(),
-                    ],
-
-                    if (isRejected) ...[
-                      const SizedBox(height: 20),
-                      _sectionCard(
-                        title: "Form Disposisi",
-                        children: [
-                          _buildLabel("Catatan"),
-                          _textField(
-                            hint: "Masukkan catatan...",
-                            controller: catatanTolakController,
-                          ),
-                        ],
-                      ),
-                    ],
-
-                    const SizedBox(height: 20),
-
-                    // ── BUTTON ─────────────────────────────────
-                    if (_selectedStatus != null)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.bluePrimary,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 30,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () => _showConfirmDialog(context),
-                          child: const Text("Kirim"),
-                        ),
-                      ),
-
-                    const SizedBox(height: 30),
                   ],
                 ),
-              ),
-            ),
-          ],
+              ],
+
+              const SizedBox(height: 20),
+
+              // BUTTON
+              if (_selectedStatus != null)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.bluePrimary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: _onKirimPressed,
+                    child: const Text("Kirim"),
+                  ),
+                ),
+
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ── DETAIL CARD ────────────────────────────────────────────────────────────
+  // ── DETAIL CARD ─────────────────────────────────────
 
   Widget _detailCard(BuildContext context) {
     return Container(
@@ -316,13 +429,6 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-            color: Colors.black.withOpacity(0.08),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,26 +438,34 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
             "Nomor Surat",
             suratData['Nomor Surat'] ?? '-',
           ),
+
           _detailItem(
             Icons.calendar_today_outlined,
             "Tanggal",
             widget.surat['tanggal'] ?? '-',
           ),
+
           _detailItem(
             Icons.person_outline,
             "Pengirim",
             suratData['Dari'] ?? '-',
           ),
+
           _detailItem(Icons.notes, "Perihal", suratData['Perihal'] ?? '-'),
+
+          const SizedBox(height: 4),
+
           Text(
             "Lampiran",
             style: TextStyle(
-              color: Colors.grey.shade500,
+              color: Colors.grey.shade600,
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),
+
           const SizedBox(height: 8),
+
           if (attachmentUrls.isEmpty)
             Text(
               "Tidak ada lampiran",
@@ -382,12 +496,14 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.attach_file_rounded,
                       color: AppColors.bluePrimary,
                       size: 20,
                     ),
+
                     const SizedBox(width: 10),
+
                     Text(
                       "${attachmentUrls.length} File Lampiran",
                       style: const TextStyle(
@@ -395,7 +511,9 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                         fontSize: 14,
                       ),
                     ),
+
                     const Spacer(),
+
                     Icon(
                       Icons.remove_red_eye_outlined,
                       color: Colors.grey.shade500,
@@ -416,11 +534,10 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 3),
-            child: Icon(icon, color: Colors.grey.shade500, size: 24),
-          ),
+          Icon(icon, color: Colors.grey.shade500),
+
           const SizedBox(width: 16),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -429,17 +546,17 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                   label,
                   style: TextStyle(
                     color: Colors.grey.shade500,
-                    fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+
                 const SizedBox(height: 4),
+
                 Text(
                   value,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    height: 1.2,
                   ),
                 ),
               ],
@@ -450,19 +567,57 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
     );
   }
 
-  // ── FORM ───────────────────────────────────────────────────────────────────
+  // ── FORM ─────────────────────────────────────────────
 
   Widget _formDisposisi() {
     return _sectionCard(
       title: "Form Disposisi",
       children: [
-        _buildLabel("Diteruskan Ke"),
-        _multiSelectField(),
+        _buildLabel("Diteruskan Ke *"),
+
+        Container(
+          key: _tujuanKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _multiSelectField(),
+
+              if (tujuanError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6, left: 4),
+                  child: Text(
+                    tujuanError!,
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+            ],
+          ),
+        ),
+
         const SizedBox(height: 12),
-        _buildLabel("Catatan"),
-        _textField(
-          hint: "Masukkan catatan tambahan...",
-          controller: catatanTerimaController,
+
+        _buildLabel("Catatan *"),
+
+        Container(
+          key: _catatanKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _textField(
+                hint: "Masukkan catatan tambahan...",
+                controller: catatanTerimaController,
+              ),
+
+              if (catatanError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6, left: 4),
+                  child: Text(
+                    catatanError!,
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+            ],
+          ),
         ),
       ],
     );
@@ -477,13 +632,17 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
           hint: "Masukkan tanggapan dan saran...",
           controller: tanggapanController,
         ),
+
         const SizedBox(height: 12),
+
         _buildLabel("Proses Lebih Lanjut"),
         _textField(
           hint: "Masukkan instruksi proses selanjutnya...",
           controller: instruksiController,
         ),
+
         const SizedBox(height: 12),
+
         _buildLabel("Koordinasi atau Konfirmasi"),
         _textField(
           hint: "Tulis pihak yang perlu koordinasi",
@@ -500,13 +659,6 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-            color: Colors.black.withOpacity(0.05),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,7 +673,9 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
+
               const SizedBox(width: 8),
+
               Text(
                 title,
                 style: const TextStyle(
@@ -531,7 +685,9 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               ),
             ],
           ),
+
           const SizedBox(height: 18),
+
           ...children,
         ],
       ),
@@ -557,245 +713,295 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
         hintStyle: TextStyle(color: AppColors.hinttext, fontSize: 14),
         filled: true,
         fillColor: Colors.white,
+
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 14,
           vertical: 14,
         ),
+
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
+
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.bluePrimary, width: 1.5),
+          borderSide: const BorderSide(
+            color: AppColors.bluePrimary,
+            width: 1.5,
+          ),
         ),
       ),
     );
   }
 
-  // ── MULTI SELECT ───────────────────────────────────────────────────────────
+  // ── MULTI SELECT ────────────────────────────────────
+
+  static const List<String> _tujuanOptions = [
+    "Waka Kurikulum",
+    "Waka Kesiswaan",
+    "Waka Humas",
+    "Waka Sarpras",
+    "Ketua Konsli",
+    "Koordinator",
+    "BK",
+    "BKK",
+    "Prakerin",
+  ];
 
   Widget _multiSelectField() {
-    return TextField(
-      controller: multiSelectController,
-      readOnly: true,
-      enableInteractiveSelection: false,
-      showCursor: false,
-      decoration: InputDecoration(
-        hintText: "Pilih penerima",
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 14,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: AppColors.bluePrimary),
-        ),
-        suffixIcon: const Icon(Icons.keyboard_arrow_down_rounded),
-      ),
-      onTap: () async {
-        final result = await showDialog<List<String>>(
-          context: context,
-          builder: (_) {
-            final options = [
-              "Waka Kurikulum",
-              "Waka Kesiswaan",
-              "Waka Humas",
-              "Waka Sarpras",
-              "Ketua Konsli",
-              "Koordinator",
-              "BK",
-              "BKK",
-              "Prakerin",
-            ];
-            List<String> temp = List.from(selectedTujuan);
+    final displayText = selectedTujuan.isEmpty
+        ? "Pilih penerima"
+        : selectedTujuan.join(", ");
 
-            return AlertDialog(
+    return GestureDetector(
+      onTap: _showTujuanDialog,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                displayText,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: selectedTujuan.isEmpty
+                      ? AppColors.hinttext
+                      : Colors.black87,
+                ),
+              ),
+            ),
+
+            const Icon(Icons.keyboard_arrow_down_rounded),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showTujuanDialog() async {
+    List<String> temp = List.from(selectedTujuan);
+
+    final result = await showDialog<List<String>>(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.35),
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return Dialog(
+              insetPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 24,
+              ),
+              backgroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(22),
               ),
-              title: const Text(
-                "Pilih Tujuan",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: StatefulBuilder(
-                builder: (context, setStateDialog) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: options.map((e) {
-                        return CheckboxListTile(
-                          value: temp.contains(e),
-                          activeColor: AppColors.bluePrimary,
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(e),
-                          controlAffinity: ListTileControlAffinity.leading,
-                          onChanged: (v) {
-                            setStateDialog(() {
-                              v == true ? temp.add(e) : temp.remove(e);
-                            });
-                          },
-                        );
-                      }).toList(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.72,
+                  maxWidth: 420,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // HEADER
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 14),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.bluePrimary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.groups_rounded,
+                              color: AppColors.bluePrimary,
+                              size: 20,
+                            ),
+                          ),
+
+                          const SizedBox(width: 12),
+
+                          const Expanded(
+                            child: Text(
+                              "Pilih Tujuan Disposisi",
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
+
+                    Divider(height: 1, color: Colors.grey.shade200),
+
+                    // LIST
+                    Flexible(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        shrinkWrap: true,
+                        itemCount: _tujuanOptions.length,
+                        itemBuilder: (_, i) {
+                          final opt = _tujuanOptions[i];
+                          final isSelected = temp.contains(opt);
+
+                          return Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(14),
+                              onTap: () {
+                                setStateDialog(() {
+                                  isSelected ? temp.remove(opt) : temp.add(opt);
+                                });
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 4,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 14,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? AppColors.bluePrimary.withOpacity(0.08)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? AppColors.bluePrimary
+                                        : Colors.grey.shade300,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    // CUSTOM CHECKBOX
+                                    AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 180,
+                                      ),
+                                      width: 22,
+                                      height: 22,
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? AppColors.bluePrimary
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? AppColors.bluePrimary
+                                              : Colors.grey.shade400,
+                                          width: 1.6,
+                                        ),
+                                      ),
+                                      child: isSelected
+                                          ? const Icon(
+                                              Icons.check_rounded,
+                                              size: 15,
+                                              color: Colors.white,
+                                            )
+                                          : null,
+                                    ),
+
+                                    const SizedBox(width: 14),
+
+                                    Expanded(
+                                      child: Text(
+                                        opt,
+                                        style: TextStyle(
+                                          fontSize: 14.5,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.w500,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    Divider(height: 1, color: Colors.grey.shade200),
+
+                    // BUTTONS
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.grey.shade700,
+                                side: BorderSide(color: Colors.grey.shade300),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text("Batal"),
+                            ),
+                          ),
+
+                          const SizedBox(width: 12),
+
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context, temp);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.bluePrimary,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text("Simpan"),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    "Batal",
-                    style: TextStyle(color: AppColors.bluePrimary),
-                  ),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.bluePrimary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                  ),
-                  onPressed: () => Navigator.pop(context, temp),
-                  child: const Text("OK"),
-                ),
-              ],
             );
           },
         );
-
-        if (result != null) {
-          setState(() {
-            selectedTujuan = result;
-            multiSelectController.text = result.join(", ");
-          });
-        }
       },
     );
-  }
-}
 
-// ── ATTACHMENT CAROUSEL ────────────────────────────────────────────────────
+    if (result != null) {
+      setState(() {
+        selectedTujuan = result;
 
-class _AttachmentCarousel extends StatefulWidget {
-  const _AttachmentCarousel({required this.attachmentUrls});
-  final List<String> attachmentUrls;
-
-  @override
-  State<_AttachmentCarousel> createState() => _AttachmentCarouselState();
-}
-
-class _AttachmentCarouselState extends State<_AttachmentCarousel> {
-  late final PageController _pageController;
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController(viewportFraction: 0.92);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final attachmentUrls = widget.attachmentUrls;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 230,
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              PageView.builder(
-                controller: _pageController,
-                itemCount: attachmentUrls.length,
-                onPageChanged: (index) => setState(() => _currentIndex = index),
-                itemBuilder: (context, index) {
-                  final path = attachmentUrls[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => FullScreenImageViewer(
-                              imageAssetPath: path,
-                              imageUrls: attachmentUrls,
-                              initialIndex: index,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
-                          child: Image.asset(
-                            path,
-                            fit: BoxFit.contain,
-                            width: double.infinity,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.broken_image_rounded,
-                                    size: 50,
-                                    color: Colors.grey,
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text("Gagal memuat gambar"),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-              Positioned(
-                bottom: 12,
-                child: Row(
-                  children: List.generate(attachmentUrls.length, (index) {
-                    final isActive = _currentIndex == index;
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                      width: isActive ? 18 : 7,
-                      height: 7,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: isActive
-                            ? AppColors.bluePrimary
-                            : Colors.grey.shade400,
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+        if (selectedTujuan.isNotEmpty) {
+          tujuanError = null;
+        }
+      });
+    }
   }
 }

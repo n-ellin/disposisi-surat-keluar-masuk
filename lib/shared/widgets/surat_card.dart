@@ -35,7 +35,14 @@ class SuratCard extends StatelessWidget {
 
   // ── GETTERS ──────────────────────────────────────────────────────────────────
 
-  bool get showStatus => role == CardRole.tu || role == CardRole.kepsek;
+  bool get showStatus {
+    // Menu: hanya TU yang lihat status
+    if (isMenu) return role == CardRole.tu;
+
+    // Home
+    return role == CardRole.tu;
+  }
+
   bool get isHome => type == CardType.home;
   bool get isHistory => type == CardType.history;
   bool get isMenu => type == CardType.menu;
@@ -138,8 +145,8 @@ class SuratCard extends StatelessWidget {
                     child: isHome
                         ? _buildHomeCard(w)
                         : isHistory
-                            ? _buildHistoryCard(w)
-                            : _buildMenuCard(w),
+                        ? _buildHistoryCard(w)
+                        : _buildMenuCard(w),
                   ),
                 ),
               ],
@@ -194,7 +201,7 @@ class SuratCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: w * 0.042,   // naik dari 0.036
+                  fontSize: w * 0.042, // naik dari 0.036
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -204,7 +211,7 @@ class SuratCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: w * 0.036,   // naik dari 0.030
+                  fontSize: w * 0.036, // naik dari 0.030
                   color: Colors.grey.shade600,
                 ),
               ),
@@ -226,7 +233,7 @@ class SuratCard extends StatelessWidget {
                 child: Text(
                   tanggal,
                   style: TextStyle(
-                    fontSize: w * 0.036,   // naik dari 0.032
+                    fontSize: w * 0.036, // naik dari 0.032
                     color: Colors.grey.shade500,
                   ),
                 ),
@@ -250,7 +257,7 @@ class SuratCard extends StatelessWidget {
                         child: Text(
                           _label(),
                           style: TextStyle(
-                            fontSize: w * 0.032,   // naik dari 0.028
+                            fontSize: w * 0.032, // naik dari 0.028
                             fontWeight: FontWeight.w700,
                             color: _textColor(),
                           ),
@@ -315,7 +322,7 @@ class SuratCard extends StatelessWidget {
                   Text(
                     jenisSurat,
                     style: TextStyle(
-                      fontSize: w * 0.042,   // naik dari 0.036
+                      fontSize: w * 0.042, // naik dari 0.036
                       fontWeight: FontWeight.w700,
                       color: Colors.black87,
                     ),
@@ -334,7 +341,7 @@ class SuratCard extends StatelessWidget {
                       child: Text(
                         _label(),
                         style: TextStyle(
-                          fontSize: w * 0.030,   // naik dari 0.026
+                          fontSize: w * 0.030, // naik dari 0.026
                           fontWeight: FontWeight.w700,
                           color: _textColor(),
                         ),
@@ -347,7 +354,7 @@ class SuratCard extends StatelessWidget {
             Text(
               tanggal,
               style: TextStyle(
-                fontSize: w * 0.036,   // naik dari 0.032
+                fontSize: w * 0.036, // naik dari 0.032
                 color: Colors.grey.shade500,
               ),
             ),
@@ -372,7 +379,7 @@ class SuratCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: w * 0.040,   // naik dari 0.034
+                      fontSize: w * 0.040, // naik dari 0.034
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
                     ),
@@ -383,7 +390,7 @@ class SuratCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: w * 0.034,   // naik dari 0.029
+                      fontSize: w * 0.034, // naik dari 0.029
                       color: Colors.grey.shade600,
                     ),
                   ),
@@ -472,7 +479,7 @@ class SuratCard extends StatelessWidget {
                   Text(
                     jenisSurat,
                     style: TextStyle(
-                      fontSize: w * 0.042,   // naik dari 0.036
+                      fontSize: w * 0.042, // naik dari 0.036
                       fontWeight: FontWeight.w700,
                       color: Colors.black87,
                     ),
@@ -491,7 +498,7 @@ class SuratCard extends StatelessWidget {
                       child: Text(
                         _label(),
                         style: TextStyle(
-                          fontSize: w * 0.030,   // naik dari 0.026
+                          fontSize: w * 0.030, // naik dari 0.026
                           fontWeight: FontWeight.w700,
                           color: _textColor(),
                         ),
@@ -504,7 +511,7 @@ class SuratCard extends StatelessWidget {
             Text(
               tanggal,
               style: TextStyle(
-                fontSize: w * 0.036,   // naik dari 0.032
+                fontSize: w * 0.036, // naik dari 0.032
                 color: Colors.grey.shade500,
               ),
             ),
@@ -529,7 +536,7 @@ class SuratCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: w * 0.040,   // naik dari 0.036
+                      fontSize: w * 0.040, // naik dari 0.036
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
                     ),
@@ -540,7 +547,7 @@ class SuratCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: w * 0.034,   // naik dari 0.032
+                      fontSize: w * 0.034, // naik dari 0.032
                       color: Colors.grey.shade600,
                     ),
                   ),
@@ -561,7 +568,7 @@ class SuratCard extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.person_outline_rounded,
-                            size: w * 0.036,   // naik dari 0.033
+                            size: w * 0.036, // naik dari 0.033
                             color: Colors.grey.shade600,
                           ),
                           SizedBox(width: w * 0.01),
@@ -571,7 +578,7 @@ class SuratCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: w * 0.031,   // naik dari 0.027
+                                fontSize: w * 0.031, // naik dari 0.027
                                 fontWeight: FontWeight.w500,
                                 color: Colors.grey.shade600,
                               ),
@@ -607,7 +614,7 @@ class SuratCard extends StatelessWidget {
                   Text(
                     'Detail',
                     style: TextStyle(
-                      fontSize: w * 0.035,   // naik dari 0.030
+                      fontSize: w * 0.035, // naik dari 0.030
                       fontWeight: FontWeight.w600,
                       height: 1,
                     ),

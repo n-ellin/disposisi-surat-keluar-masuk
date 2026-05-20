@@ -17,9 +17,24 @@ class HistoryUsersPage extends StatefulWidget {
 }
 
 class _HistoryUsersPageState extends State<HistoryUsersPage> {
-  String _searchQuery = FilterState.guruSearchQuery;
-  String _dateFilter = FilterState.guruDateFilter;
-  DateTime? _selectedDate = FilterState.guruSelectedDate;
+  String _searchQuery = '';
+
+  String _dateFilter = 'Hari ini';
+  String _activeChip = 'Hari ini';
+
+  DateTime? _startDate;
+  DateTime? _endDate;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final now = DateTime.now();
+
+    _startDate = DateTime(now.year, now.month, now.day);
+
+    _endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+  }
 
   List<Map<String, dynamic>> get _historySurat => DummySurat.allSurat
       .where((s) => s['jenisSurat'].toString().toLowerCase() == 'surat masuk')
@@ -28,9 +43,13 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
   List<Map<String, dynamic>> get _filteredSurat {
     return _historySurat.where((s) {
       final query = _searchQuery.toLowerCase();
+
       final jenis = s['jenisSurat'].toString().toLowerCase();
+
       final tanggal = s['tanggal'].toString().toLowerCase();
+
       final dari = s['data']['Dari'].toString().toLowerCase();
+
       final perihal = s['data']['Perihal'].toString().toLowerCase();
 
       final matchSearch =
@@ -41,34 +60,52 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
           perihal.contains(query);
 
       bool matchDate = true;
+
       try {
         final parts = tanggal.split(' ');
-        final day = int.parse(parts[0]);
-        final monthMap = {
-          'januari': 1, 'februari': 2, 'maret': 3, 'april': 4,
-          'mei': 5, 'juni': 6, 'juli': 7, 'agustus': 8,
-          'september': 9, 'oktober': 10, 'november': 11, 'desember': 12,
-        };
-        final month = monthMap[parts[1].toLowerCase()] ?? 1;
-        final year = int.parse(parts[2]);
-        final suratDate = DateTime(year, month, day);
-        final now = DateTime.now();
 
-        if (_dateFilter == FilterState.defaultDateFilter) {
-          matchDate = true;
-        } else if (_dateFilter == 'Hari ini') {
+        final day = int.parse(parts[0]);
+
+        final monthMap = {
+          'januari': 1,
+          'februari': 2,
+          'maret': 3,
+          'april': 4,
+          'mei': 5,
+          'juni': 6,
+          'juli': 7,
+          'agustus': 8,
+          'september': 9,
+          'oktober': 10,
+          'november': 11,
+          'desember': 12,
+        };
+
+        final month = monthMap[parts[1].toLowerCase()] ?? 1;
+
+        final year = int.parse(parts[2]);
+
+        final suratDate = DateTime(year, month, day);
+
+        if (_startDate != null && _endDate != null) {
+          final start = DateTime(
+            _startDate!.year,
+            _startDate!.month,
+            _startDate!.day,
+          );
+
+          final end = DateTime(
+            _endDate!.year,
+            _endDate!.month,
+            _endDate!.day,
+            23,
+            59,
+            59,
+          );
+
           matchDate =
-              suratDate.day == now.day &&
-              suratDate.month == now.month &&
-              suratDate.year == now.year;
-        } else if (_dateFilter == 'Bulan ini') {
-          matchDate =
-              suratDate.month == now.month && suratDate.year == now.year;
-        } else if (_selectedDate != null) {
-          matchDate =
-              suratDate.day == _selectedDate!.day &&
-              suratDate.month == _selectedDate!.month &&
-              suratDate.year == _selectedDate!.year;
+              suratDate.isAfter(start.subtract(const Duration(days: 1))) &&
+              suratDate.isBefore(end.add(const Duration(seconds: 1)));
         }
       } catch (_) {
         matchDate = true;
@@ -79,64 +116,21 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
   }
 
   void _showDateFilter() async {
-    final result = await showDialog<String>(
+    final result = await DateRangeFilterBottomSheet.show(
       context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.35),
-      builder: (context) {
-        final w = MediaQuery.of(context).size.width;
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.symmetric(horizontal: w * 0.08),
-          elevation: 0,
-          child: DateFilterDialog(currentFilter: _dateFilter),
-        );
-      },
+      initialStartDate: _startDate,
+      initialEndDate: _endDate,
+      initialChip: _activeChip,
     );
 
     if (result == null) return;
 
-    if (result == 'Pilih tanggal') {
-      final picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2020),
-        lastDate: DateTime(2030),
-        builder: (context, child) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
-                primary: AppColors.bluePrimary,
-                onPrimary: Colors.white,
-                onSurface: Colors.black87,
-              ),
-              datePickerTheme: DatePickerThemeData(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-            ),
-            child: child!,
-          );
-        },
-      );
-
-      if (picked != null) {
-        setState(() {
-          _selectedDate = picked;
-          _dateFilter = '${picked.day}/${picked.month}/${picked.year}';
-          FilterState.guruSelectedDate = picked;
-          FilterState.guruDateFilter = _dateFilter;
-        });
-      }
-    } else {
-      setState(() {
-        _selectedDate = null;
-        _dateFilter = result;
-        FilterState.guruSelectedDate = null;
-        FilterState.guruDateFilter = result;
-      });
-    }
+    setState(() {
+      _startDate = result.startDate;
+      _endDate = result.endDate;
+      _activeChip = result.activeChip;
+      _dateFilter = result.dateFilterLabel;
+    });
   }
 
   void _openLampiran(BuildContext context, Map<String, dynamic> surat) {
@@ -147,21 +141,22 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
         SnackBar(
           content: const Text("Tidak ada lampiran"),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           margin: const EdgeInsets.all(16),
           duration: const Duration(seconds: 2),
         ),
       );
+
       return;
     }
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => FullScreenImageViewer(
-          imageUrls: lampiran,
-          initialIndex: 0,
-        ),
+        builder: (_) =>
+            FullScreenImageViewer(imageUrls: lampiran, initialIndex: 0),
       ),
     );
   }
@@ -169,79 +164,95 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     final w = size.width;
     final h = size.height;
 
+    double rf(double size) {
+      return (w * (size / 375)).clamp(size * 0.9, size * 1.15);
+    }
+
     return Scaffold(
       backgroundColor: AppColors.bg,
+
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(w * 0.04),
+          padding: EdgeInsets.symmetric(horizontal: w * 0.05),
+
           child: Column(
             children: [
-              SizedBox(height: h * 0.02),
+              SizedBox(height: h * 0.025),
 
               // TITLE
               Text(
                 "Riwayat",
                 style: TextStyle(
-                  fontSize: w * 0.07,
+                  fontSize: rf(22),
                   fontWeight: FontWeight.bold,
                   color: AppColors.bluePrimary,
                 ),
               ),
 
-              SizedBox(height: h * 0.02),
+              SizedBox(height: h * 0.025),
 
               // SEARCH
               SearchBarInput(
                 onChanged: (value) {
                   setState(() {
                     _searchQuery = value;
-                    FilterState.guruSearchQuery = value;
                   });
                 },
               ),
 
-              SizedBox(height: h * 0.014),
+              SizedBox(height: h * 0.016),
 
-              // FILTER TANGGAL
+              // FILTER DATE
               GestureDetector(
                 onTap: _showDateFilter,
+
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
+
+                  padding: EdgeInsets.symmetric(
+                    horizontal: rf(14),
+                    vertical: rf(10),
                   ),
+
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+
+                    borderRadius: BorderRadius.circular(rf(12)),
+
                     border: Border.all(color: const Color(0xFFE2E5EA)),
                   ),
+
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                     children: [
                       Row(
                         children: [
                           Icon(
                             Icons.calendar_today_rounded,
-                            size: 18,
+                            size: rf(18),
                             color: AppColors.bluePrimary,
                           ),
-                          const SizedBox(width: 8),
+
+                          SizedBox(width: w * 0.02),
+
                           Text(
                             _dateFilter,
-                            style: const TextStyle(
-                              fontSize: 13,
+                            style: TextStyle(
+                              fontSize: rf(13),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
                       ),
-                      const Icon(
+
+                      Icon(
                         Icons.keyboard_arrow_down_rounded,
-                        size: 18,
+                        size: rf(18),
                         color: Colors.grey,
                       ),
                     ],
@@ -249,7 +260,7 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
                 ),
               ),
 
-              SizedBox(height: h * 0.02),
+              SizedBox(height: h * 0.022),
 
               // LIST
               Expanded(
@@ -257,25 +268,30 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
+
                           children: [
                             Container(
                               width: w * 0.2,
                               height: w * 0.2,
+
                               decoration: BoxDecoration(
                                 color: Colors.grey.shade100,
                                 shape: BoxShape.circle,
                               ),
+
                               child: Icon(
                                 Icons.inbox_outlined,
-                                size: w * 0.1,
+                                size: rf(40),
                                 color: Colors.grey.shade300,
                               ),
                             ),
+
                             SizedBox(height: h * 0.016),
+
                             Text(
                               "Belum ada riwayat surat",
                               style: TextStyle(
-                                fontSize: w * 0.038,
+                                fontSize: rf(14),
                                 color: Colors.grey.shade400,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -285,18 +301,26 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
                       )
                     : ListView.builder(
                         itemCount: _filteredSurat.length,
+
                         itemBuilder: (context, index) {
                           final surat = _filteredSurat[index];
 
                           return Padding(
-                            padding: EdgeInsets.only(bottom: h * 0.02),
+                            padding: EdgeInsets.only(bottom: rf(8)),
+
                             child: SuratCard(
                               jenisSurat: surat['jenisSurat'].toString(),
+
                               tanggal: surat['tanggal'].toString(),
+
                               role: CardRole.Users,
+
                               type: CardType.history,
+
                               data: Map<String, String>.from(surat['data']),
+
                               diteruskanKe: surat['diteruskanKe']?.toString(),
+
                               onDetail: () => _openLampiran(context, surat),
                             ),
                           );
@@ -308,14 +332,36 @@ class _HistoryUsersPageState extends State<HistoryUsersPage> {
         ),
       ),
 
-      bottomNavigationBar: CustomNavbar(
-        role: Role.users,
-        currentIndex: 1,
-        onTap: (index) {
-          handleNavbarTap(
-            context, index, Role.users, "User", "user@gmail.com", "User",
-          );
-        },
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+
+        children: [
+          CustomNavbar(
+            role: Role.users,
+
+            currentIndex: 1,
+
+            onTap: (index) {
+              handleNavbarTap(
+                context,
+                index,
+                Role.users,
+                "User",
+                "user@gmail.com",
+                "User",
+              );
+            },
+          ),
+
+          ColoredBox(
+            color: AppColors.bg,
+
+            child: SizedBox(
+              height: MediaQuery.of(context).padding.bottom,
+              width: double.infinity,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -18,6 +18,15 @@ class OutputSuratkeluar extends StatelessWidget {
   Widget build(BuildContext context) {
     const orange = Color(0xFFE08B2E);
 
+    final size = MediaQuery.of(context).size;
+
+    final w = size.width;
+    final h = size.height;
+
+    double rf(double size) {
+      return (w * (size / 375)).clamp(size * 0.9, size * 1.15);
+    }
+
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
@@ -26,36 +35,41 @@ class OutputSuratkeluar extends StatelessWidget {
           children: [
             // HEADER — fixed, tidak ikut scroll
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              padding: EdgeInsets.fromLTRB(w * 0.05, h * 0.025, w * 0.05, 0),
               child: Row(
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
-                    child: const Icon(
+                    child: Icon(
                       Icons.arrow_back_ios_new,
                       color: AppColors.orangePrimary,
-                      size: 20,
+                      size: rf(20),
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  const Text(
-                    "Detail Surat Keluar",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.orangePrimary,
+
+                  SizedBox(width: w * 0.02),
+
+                  Expanded(
+                    child: Text(
+                      "Detail Surat Keluar",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: rf(18),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.orangePrimary,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: h * 0.025),
 
             // CONTENT — scrollable
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: w * 0.05),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -65,33 +79,38 @@ class OutputSuratkeluar extends StatelessWidget {
                       color: Colors.white,
                       surfaceTintColor: Colors.transparent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(w * 0.04),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(w * 0.04),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               "Catatan",
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: rf(14),
                                 fontWeight: FontWeight.bold,
                                 color: orange,
                               ),
                             ),
-                            const SizedBox(height: 8),
+
+                            SizedBox(height: h * 0.01),
+
                             Container(
                               width: double.infinity,
-                              constraints: const BoxConstraints(minHeight: 120),
-                              padding: const EdgeInsets.all(12),
+                              constraints: BoxConstraints(minHeight: h * 0.14),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: w * 0.03,
+                                vertical: h * 0.015,
+                              ),
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(w * 0.02),
                               ),
                               child: Text(
                                 catatan.isEmpty ? "-" : catatan,
-                                style: const TextStyle(fontSize: 14),
+                                style: TextStyle(fontSize: rf(14)),
                               ),
                             ),
                           ],
@@ -99,102 +118,84 @@ class OutputSuratkeluar extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
-
-                    // LAMPIRAN — hanya tampil dari history
-                    if (isReadOnly && lampiranUrls.isNotEmpty) ...[
-                      const Text(
-                        "Lampiran Surat",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: orange,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Card(
-                        elevation: 0,
-                        color: Colors.white,
-                        surfaceTintColor: Colors.transparent,
-                        shadowColor: Colors.black12,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: _AttachmentCarousel(
-                            attachmentUrls: lampiranUrls,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
+                    SizedBox(height: h * 0.025),
 
                     // TOMBOL
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(0, 44),
-                            side: const BorderSide(color: orange, width: 1.2),
-                            foregroundColor: orange,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => FullScreenImageViewer(
-                                  imageAssetPath: 'assets/images/undangan.png',
-                                  imageUrls: const [
-                                    'assets/images/undangan.png',
-                                    'assets/images/logo.png',
-                                  ],
-                                  initialIndex: 0,
-                                ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.remove_red_eye, size: 18),
-                          label: const Text(
-                            "Lihat Surat",
-                            style: TextStyle(fontWeight: FontWeight.w500),
-                          ),
-                        ),
-
-                        if (!isReadOnly) ...[
-                          const SizedBox(width: 12),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(0, 44),
-                              backgroundColor: orange,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 12,
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Wrap(
+                        alignment: WrapAlignment.end,
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: [
+                          OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: Size(0, h * 0.055),
+                              side: const BorderSide(color: orange, width: 1.2),
+                              foregroundColor: orange,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: w * 0.05,
+                                vertical: h * 0.014,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(w * 0.03),
                               ),
-                              elevation: 0,
                             ),
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              "Konfirmasi",
-                              style: TextStyle(fontWeight: FontWeight.w500),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => FullScreenImageViewer(
+                                    imageAssetPath:
+                                        'assets/images/undangan.png',
+                                    imageUrls: const [
+                                      'assets/images/undangan.png',
+                                      'assets/images/logo.png',
+                                    ],
+                                    initialIndex: 0,
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: Icon(Icons.remove_red_eye, size: rf(18)),
+                            label: Text(
+                              "Lihat Surat",
+                              style: TextStyle(
+                                fontSize: rf(14),
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
+
+                          if (!isReadOnly) ...[
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(0, h * 0.055),
+                                backgroundColor: orange,
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: w * 0.05,
+                                  vertical: h * 0.014,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(w * 0.03),
+                                ),
+                                elevation: 0,
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(
+                                "Konfirmasi",
+                                style: TextStyle(
+                                  fontSize: rf(14),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
 
-                    const SizedBox(height: 30),
+                    SizedBox(height: h * 0.03),
                   ],
                 ),
               ),
@@ -209,6 +210,7 @@ class OutputSuratkeluar extends StatelessWidget {
 // ATTACHMENT CAROUSEL
 class _AttachmentCarousel extends StatefulWidget {
   const _AttachmentCarousel({required this.attachmentUrls});
+
   final List<String> attachmentUrls;
 
   @override
@@ -217,25 +219,38 @@ class _AttachmentCarousel extends StatefulWidget {
 
 class _AttachmentCarouselState extends State<_AttachmentCarousel> {
   late PageController _pageController;
+
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
+
     _pageController = PageController();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final attachmentUrls = widget.attachmentUrls;
+
+    final size = MediaQuery.of(context).size;
+
+    final w = size.width;
+    final h = size.height;
+
+    double rfLocal(double size) {
+      return (w * (size / 375)).clamp(size * 0.9, size * 1.15);
+    }
+
     return SizedBox(
-      height: 220,
+      height: (w * 0.55).clamp(180, 320),
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
@@ -245,8 +260,9 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
             itemCount: attachmentUrls.length,
             itemBuilder: (context, index) {
               final path = attachmentUrls[index];
+
               return Padding(
-                padding: const EdgeInsets.only(right: 8, bottom: 28),
+                padding: EdgeInsets.only(right: w * 0.02, bottom: 28),
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).push(
@@ -259,27 +275,32 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
                       ),
                     );
                   },
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(w * 0.03),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(w * 0.03),
                     child: Container(
                       width: double.infinity,
                       color: Colors.white,
                       child: Image.asset(
                         path,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 40),
+                        errorBuilder: (_, __, ___) => Padding(
+                          padding: EdgeInsets.symmetric(vertical: h * 0.04),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.broken_image,
-                                size: 50,
+                                size: rfLocal(50),
                                 color: Colors.grey,
                               ),
-                              SizedBox(height: 10),
-                              Text("Gagal memuat gambar"),
+
+                              SizedBox(height: h * 0.01),
+
+                              Text(
+                                "Gagal memuat gambar",
+                                style: TextStyle(fontSize: rfLocal(14)),
+                              ),
                             ],
                           ),
                         ),
@@ -290,15 +311,17 @@ class _AttachmentCarouselState extends State<_AttachmentCarousel> {
               );
             },
           ),
+
           Positioned(
             bottom: 4,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: List.generate(attachmentUrls.length, (index) {
                 final isActive = index == _currentIndex;
+
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  margin: EdgeInsets.symmetric(horizontal: w * 0.008),
                   width: isActive ? 10 : 6,
                   height: isActive ? 10 : 6,
                   decoration: BoxDecoration(

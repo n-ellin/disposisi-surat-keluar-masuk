@@ -16,10 +16,10 @@ class SearchBarInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
-    final fs = fontSize ?? w * 0.038;
+    final fs = fontSize ?? (w * 0.038).clamp(13.0, 17.0);
 
     return Container(
-      height: w * 0.128,              // lebih tinggi, radius tetap 14
+      height: (w * 0.128).clamp(44.0, 56.0),           // lebih tinggi, radius tetap 14
       decoration: BoxDecoration(
         color: AppColors.searchBg,
         borderRadius: BorderRadius.circular(14),

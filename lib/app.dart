@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'core/constants/role.dart';
 
 // ── AUTH ─────────────────────────────────────────────────────────────────────
@@ -12,10 +13,10 @@ import 'shared/auth/profile_page.dart';
 import 'shared/widgets/notification_page.dart';
 
 // ── TATA USAHA ───────────────────────────────────────────────────────────────
-import 'features/tata usaha/pages/menuTU.dart';
-import 'features/tata usaha/pages/history_tu.dart';
-import 'features/tata usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
-import 'features/tata usaha/pages/hasil_disposisi_surat_masuk_page.dart';
+import 'features/tata_usaha/pages/menuTU.dart';
+import 'features/tata_usaha/pages/history_tu.dart';
+import 'features/tata_usaha/pages/hasil_pengajuan_surat_keluar_page.dart';
+import 'features/tata_usaha/pages/hasil_disposisi_surat_masuk_page.dart';
 
 // ── KEPALA SEKOLAH ───────────────────────────────────────────────────────────
 import 'features/kepsek/pages/menu_kepsek_page.dart';
@@ -28,11 +29,8 @@ import 'features/users/pages/menu_user_page.dart';
 import 'features/users/pages/history_user_page.dart';
 import 'features/users/pages/detail_surat_page.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-class CustomPageTransitionBuilder extends PageTransitionsBuilder {
-  const CustomPageTransitionBuilder();
+class NoAnimationTransitionBuilder extends PageTransitionsBuilder {
+  const NoAnimationTransitionBuilder();
 
   @override
   Widget buildTransitions<T>(
@@ -42,37 +40,31 @@ class CustomPageTransitionBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(1, 0),
-        end: Offset.zero,
-      ).animate(
-        CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-        ),
-      ),
-
-      child: FadeTransition(
-        opacity: animation,
-        child: child,
-      ),
-    );
+    return child;
   }
 }
+
+/// ── APP ─────────────────────────────────────────────────────────────────────
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'E-Disposisi',
+
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('id', 'ID'), Locale('en', 'US')],
-      locale: const Locale('id', 'ID'),
 
-      debugShowCheckedModeBanner: false,
-      title: 'E-Disposisi',
+      supportedLocales: const [Locale('id', 'ID'), Locale('en', 'US')],
+
+      locale: const Locale('id', 'ID'),
 
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -80,8 +72,8 @@ class CustomPageTransitionBuilder extends PageTransitionsBuilder {
 
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
-            TargetPlatform.android: CustomPageTransitionBuilder(),
-            TargetPlatform.iOS: CustomPageTransitionBuilder(),
+            TargetPlatform.android: NoAnimationTransitionBuilder(),
+            TargetPlatform.iOS: NoAnimationTransitionBuilder(),
           },
         ),
 
@@ -95,12 +87,12 @@ class CustomPageTransitionBuilder extends PageTransitionsBuilder {
       initialRoute: '/splash_screen',
 
       routes: {
-        // ── AUTH ───────────────────────────────────────────────────────────
         '/splash_screen': (context) => const SplashScreen(),
+
         '/signin': (context) => const Login(),
+
         '/gantipw': (context) => const GantiKataSandiPage(),
 
-        // ── SHARED ─────────────────────────────────────────────────────────
         '/profile': (context) {
           final args =
               ModalRoute.of(context)!.settings.arguments
@@ -112,13 +104,16 @@ class CustomPageTransitionBuilder extends PageTransitionsBuilder {
             jabatan: args['jabatan'] as String,
           );
         },
+
         '/notif': (context) =>
             NotificationPage(role: Role.tu, notifications: const []),
 
-        // ── TATA USAHA ─────────────────────────────────────────────────────
+        // ── TU ───────────────────────────────────────────────────────────────
         '/menu_tu': (context) =>
             const TuDashboardPage(jenisSurat: 'Surat Masuk'),
+
         '/history_tu': (context) => const HistoryTUPage(),
+
         '/output_suratmasuk': (context) => const OutputSuratmasuk(
           isApproved: true,
           catatan: '-',
@@ -127,24 +122,30 @@ class CustomPageTransitionBuilder extends PageTransitionsBuilder {
           koordinasi: '-',
           diteruskanKe: '-',
         ),
+
         '/output_suratkeluar': (context) =>
             const OutputSuratkeluar(catatan: '-'),
 
-        // ── KEPALA SEKOLAH ─────────────────────────────────────────────────
+        // ── KEPSEK ───────────────────────────────────────────────────────────
         '/menu_kepsek': (context) =>
             const KepsekDashboardPage(jenisSurat: 'Surat Masuk'),
+
         '/history_kepsek': (context) => const HistoryKepsekPage(),
+
         '/input_suratmasuk': (context) {
           final surat =
               ModalRoute.of(context)!.settings.arguments
                   as Map<String, dynamic>;
           return InputSuratMasuk(surat: surat);
         },
+
         '/input_suratkeluar': (context) => const InputSuratKeluar(),
 
-        // ── USER / OTHER ───────────────────────────────────────────────────
+        // ── USER ─────────────────────────────────────────────────────────────
         '/menu_other': (context) => const MenuUser(),
+
         '/history_other': (context) => const HistoryUsersPage(),
+
         '/detail_suratUsers': (context) {
           final surat =
               ModalRoute.of(context)!.settings.arguments

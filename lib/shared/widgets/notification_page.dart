@@ -18,42 +18,58 @@ class NotificationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final grouped = _groupNotifications();
 
+    final size = MediaQuery.of(context).size;
+
+    final w = size.width;
+    final h = size.height;
+
+    double rf(double size) {
+      return (w * (size / 375)).clamp(size * 0.9, size * 1.2);
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: w * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 24),
-              _buildHeader(context),
-              const SizedBox(height: 20), // 24 → 20
+              SizedBox(height: h * 0.03),
+
+              _buildHeader(context, rf, w),
+
+              SizedBox(height: h * 0.025),
+
               Expanded(
                 child: notifications.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
                           'Belum ada notifikasi',
                           style: TextStyle(
                             color: Colors.grey,
-                            fontSize: 16,
-                          ), // 14 → 16
+                            fontSize: rf(15),
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       )
                     : ListView(
+                        padding: EdgeInsets.only(bottom: h * 0.02),
                         children: grouped.entries.map((entry) {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 entry.key,
-                                style: const TextStyle(
-                                  fontSize: 15, // 13 → 15
+                                style: TextStyle(
+                                  fontSize: rf(14),
                                   color: Colors.grey,
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(height: 8), // 14 → 8
+
+                              SizedBox(height: h * 0.01),
+
                               ...entry.value.map(
                                 (notif) => _NotificationCard(
                                   title: notif['title'],
@@ -62,7 +78,8 @@ class NotificationPage extends StatelessWidget {
                                   isRead: notif['isRead'],
                                 ),
                               ),
-                              const SizedBox(height: 12), // 20 → 12
+
+                              SizedBox(height: h * 0.01),
                             ],
                           );
                         }).toList(),
@@ -79,39 +96,53 @@ class NotificationPage extends StatelessWidget {
 
   Map<String, List<Map<String, dynamic>>> _groupNotifications() {
     final Map<String, List<Map<String, dynamic>>> grouped = {};
+
     for (final notif in notifications) {
       final group = _timeGroup(notif['createdAt'] as DateTime);
+
       grouped.putIfAbsent(group, () => []).add(notif);
     }
+
     return grouped;
   }
 
   String _timeGroup(DateTime date) {
     final diff = DateTime.now().difference(date).inDays;
+
     if (diff == 0) return 'Hari ini';
+
     if (diff == 1) return 'Kemarin';
+
     return '$diff hari yang lalu';
   }
 
-  // SESUDAH
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(
+    BuildContext context,
+    double Function(double) rf,
+    double w,
+  ) {
     return Row(
       children: [
         GestureDetector(
           onTap: () => Navigator.pop(context),
-          child: const Icon(
+          child: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: AppColors.bluePrimary,
-            size: 22,
+            size: rf(22),
           ),
         ),
-        const SizedBox(width: 10),
-        const Text(
-          'Notifikasi',
-          style: TextStyle(
-            fontSize: 24, // 22 → 24
-            fontWeight: FontWeight.bold,
-            color: AppColors.bluePrimary,
+
+        SizedBox(width: w * 0.025),
+
+        Expanded(
+          child: Text(
+            'Notifikasi',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: rf(24),
+              fontWeight: FontWeight.bold,
+              color: AppColors.bluePrimary,
+            ),
           ),
         ),
       ],
@@ -136,19 +167,28 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    final w = size.width;
+    final h = size.height;
+
+    double rf(double size) {
+      return (w * (size / 375)).clamp(size * 0.9, size * 1.2);
+    }
+
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: h * 0.016),
+      padding: EdgeInsets.all(rf(16)),
       decoration: BoxDecoration(
         color: isRead ? Colors.white : const Color(0xFFF8FBFF),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(rf(18)),
         border: Border.all(
           color: isRead ? Colors.transparent : color.withOpacity(0.15),
         ),
         boxShadow: [
           BoxShadow(
-            blurRadius: 10,
+            blurRadius: rf(10),
             color: Colors.black.withOpacity(0.05),
             offset: const Offset(0, 4),
           ),
@@ -161,30 +201,33 @@ class _NotificationCard extends StatelessWidget {
               right: 0,
               top: 2,
               child: Container(
-                width: 10, // 9 → 10
-                height: 10,
+                width: rf(10),
+                height: rf(10),
                 decoration: BoxDecoration(color: color, shape: BoxShape.circle),
               ),
             ),
 
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: EdgeInsets.only(right: w * 0.04),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 16, // 14 → 16
+                    fontSize: rf(16),
                     fontWeight: isRead ? FontWeight.w600 : FontWeight.bold,
                     color: Colors.black87,
+                    height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 8),
+
+                SizedBox(height: h * 0.008),
+
                 Text(
                   desc,
                   style: TextStyle(
-                    fontSize: 14, // 13 → 14
+                    fontSize: rf(14),
                     height: 1.5,
                     color: isRead ? Colors.black54 : Colors.black87,
                   ),

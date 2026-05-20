@@ -14,4 +14,3 @@ void main() {
   );
   runApp(const MyApp());
 }
-//git terbaru

@@ -205,7 +205,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
             children: [
               const SizedBox(height: 18),
 
-              // HEADER
+              // ── HEADER ───────────────────────────────────────────────────
               Padding(
                 padding: const EdgeInsets.only(top: 8, bottom: 10),
                 child: Row(
@@ -242,7 +242,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
 
               const SizedBox(height: 20),
 
-              // DETAIL CARD
+              // CONTENT
               _detailCard(context),
 
               const SizedBox(height: 20),
@@ -264,7 +264,7 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 9),
                         decoration: BoxDecoration(
                           color: _selectedStatus == 'terima'
                               ? AppColors.bluePrimary
@@ -372,25 +372,20 @@ class _InputSuratMasukState extends State<InputSuratMasuk> {
               ],
 
               // FORM TOLAK
-              if (isRejected) ...[
-                const SizedBox(height: 20),
-
+              if (isRejected)
                 _sectionCard(
                   title: "Form Disposisi",
                   children: [
                     _buildLabel("Catatan"),
-
                     _textField(
                       hint: "Masukkan catatan...",
                       controller: catatanTolakController,
                     ),
                   ],
                 ),
-              ],
 
               const SizedBox(height: 20),
 
-              // BUTTON
               if (_selectedStatus != null)
                 Align(
                   alignment: Alignment.centerRight,

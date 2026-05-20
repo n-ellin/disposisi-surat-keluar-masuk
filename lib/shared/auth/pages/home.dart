@@ -181,15 +181,15 @@ class _HomeState extends State<Home> {
                 children: [
                   SizedBox(height: h * 0.03),
 
-              /// HEADER
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Image.asset(
-                    "assets/images/logosmk.jpg",
-                    width: w * 0.1,
-                    height: w * 0.1,
-                  ),
+                  /// HEADER
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Image.asset(
+                        "assets/images/logosmk.jpg",
+                        width: w * 0.1,
+                        height: w * 0.1,
+                      ),
 
                       GestureDetector(
                         onTap: _openNotifikasi,
@@ -248,7 +248,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
 
-              SizedBox(height: h * 0.03),
+                  SizedBox(height: h * 0.03),
 
                   /// STAT CARD
                   Row(
@@ -292,7 +292,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
 
-                  SizedBox(width: w * 0.04),
+                      SizedBox(width: w * 0.04),
 
                       Expanded(
                         child: GestureDetector(
@@ -346,7 +346,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
 
-              SizedBox(height: h * 0.015),
+                  SizedBox(height: h * 0.015),
 
                   /// LIST
                   Expanded(

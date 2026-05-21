@@ -22,252 +22,15 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final w = MediaQuery.of(context).size.width;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    final w = size.width;
-    final h = size.height;
-
-    /// NOTE:
-    /// responsive font scale
     double rf(double size) {
-      return (w * (size / 375)).clamp(size * 0.9, size * 1.2);
+      return (w * (size / 375)).clamp(size * 0.80, size * 1.30);
     }
 
     return Scaffold(
       backgroundColor: const Color(0xFFF2F2F2),
-
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
-
-            /// NOTE:
-            /// maxWidth supaya tetap rapi di tablet
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: w * 0.055),
-
-              child: Column(
-                children: [
-                  SizedBox(height: h * 0.02),
-
-                  /// TITLE
-                  Text(
-                    'Profile',
-                    style: TextStyle(
-                      color: AppColors.bluePrimary,
-                      fontSize: rf(24),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-
-                  SizedBox(height: h * 0.03),
-
-                  /// AVATAR
-                  Container(
-                    padding: EdgeInsets.all((w * 0.008).clamp(3, 6)),
-
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-
-                      border: Border.all(color: Colors.grey.shade200, width: 2),
-                    ),
-
-                    child: CircleAvatar(
-                      radius: (w * 0.10).clamp(38, 52),
-
-                      backgroundColor: Colors.grey.shade200,
-
-                      child: Icon(
-                        Icons.person,
-
-                        size: (w * 0.11).clamp(40, 56),
-
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: h * 0.035),
-
-                  /// INFO CARD
-                  _cardWrapper(
-                    w: w,
-
-                    child: Column(
-                      children: [
-                        _profileTile(
-                          context,
-
-                          icon: Icons.work_outline,
-
-                          label: 'JABATAN',
-
-                          value: jabatan,
-
-                          rf: rf,
-                        ),
-
-                        SizedBox(height: h * 0.015),
-
-                        _profileTile(
-                          context,
-
-                          icon: Icons.person_outline,
-
-                          label: 'NAMA',
-
-                          value: nama,
-
-                          rf: rf,
-                        ),
-
-                        SizedBox(height: h * 0.015),
-
-                        _profileTile(
-                          context,
-
-                          icon: Icons.email_outlined,
-
-                          label: 'EMAIL',
-
-                          value: email,
-
-                          rf: rf,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: h * 0.025),
-
-                  /// KEAMANAN CARD
-                  _cardWrapper(
-                    w: w,
-
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
-                      children: [
-                        Text(
-                          'Keamanan',
-
-                          style: TextStyle(
-                            fontSize: rf(15),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-
-                        SizedBox(height: h * 0.02),
-
-                        InkWell(
-                          borderRadius: BorderRadius.circular(14),
-
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const GantiKataSandiPage(),
-                              ),
-                            );
-                          },
-
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(
-                                  (w * 0.03).clamp(10, 14),
-                                ),
-
-                                decoration: BoxDecoration(
-                                  color: AppColors.bluePrimary.withOpacity(
-                                    0.10,
-                                  ),
-
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-
-                                child: Icon(
-                                  Icons.lock_outline,
-
-                                  color: AppColors.bluePrimary,
-
-                                  size: rf(22),
-                                ),
-                              ),
-
-                              SizedBox(width: w * 0.04),
-
-                              Expanded(
-                                child: Text(
-                                  'Ubah Kata Sandi',
-
-                                  overflow: TextOverflow.ellipsis,
-
-                                  style: TextStyle(
-                                    fontSize: rf(15),
-
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-
-                              Icon(
-                                Icons.chevron_right,
-
-                                size: rf(28),
-
-                                color: Colors.grey.shade500,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: h * 0.035),
-
-                  /// LOGOUT BUTTON
-                  SizedBox(
-                    width: double.infinity,
-
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: h * 0.018),
-
-                        side: BorderSide(
-                          color: Colors.red.shade400,
-                          width: 1.4,
-                        ),
-
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-
-                      onPressed: () => _showLogoutDialog(context, rf),
-
-                      child: Text(
-                        'Keluar',
-
-                        style: TextStyle(
-                          color: Colors.red,
-
-                          fontSize: rf(15),
-
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: h * 0.02),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
 
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
@@ -279,24 +42,191 @@ class ProfilePage extends StatelessWidget {
               handleNavbarTap(context, index, role, nama, email, jabatan);
             },
           ),
-
           ColoredBox(
             color: AppColors.bg,
-
-            child: SizedBox(
-              height: MediaQuery.of(context).padding.bottom,
-
-              width: double.infinity,
-            ),
+            child: SizedBox(height: bottomPadding, width: double.infinity),
           ),
         ],
+      ),
+
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: rf(20)),
+              child: Column(
+                children: [
+                  SizedBox(height: rf(20)),
+
+                  // ── TITLE ──────────────────────────────────────────────
+                  Text(
+                    'Profile',
+                    style: TextStyle(
+                      color: AppColors.bluePrimary,
+                      fontSize: rf(24),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  SizedBox(height: rf(24)),
+
+                  // ── AVATAR ─────────────────────────────────────────────
+                  Container(
+                    padding: EdgeInsets.all(rf(4)),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.grey.shade200, width: 2),
+                    ),
+                    child: CircleAvatar(
+                      radius: rf(44),
+                      backgroundColor: Colors.grey.shade200,
+                      child: Icon(
+                        Icons.person,
+                        size: rf(46),
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: rf(28)),
+
+                  // ── INFO CARD ──────────────────────────────────────────
+                  _cardWrapper(
+                    rf: rf,
+                    child: Column(
+                      children: [
+                        _profileTile(
+                          context,
+                          icon: Icons.work_outline,
+                          label: 'JABATAN',
+                          value: jabatan,
+                          rf: rf,
+                        ),
+                        SizedBox(height: rf(12)),
+                        _profileTile(
+                          context,
+                          icon: Icons.person_outline,
+                          label: 'NAMA',
+                          value: nama,
+                          rf: rf,
+                        ),
+                        SizedBox(height: rf(12)),
+                        _profileTile(
+                          context,
+                          icon: Icons.email_outlined,
+                          label: 'EMAIL',
+                          value: email,
+                          rf: rf,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: rf(20)),
+
+                  // ── KEAMANAN CARD ──────────────────────────────────────
+                  _cardWrapper(
+                    rf: rf,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Keamanan',
+                          style: TextStyle(
+                            fontSize: rf(15),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+
+                        SizedBox(height: rf(16)),
+
+                        InkWell(
+                          borderRadius: BorderRadius.circular(rf(14)),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const GantiKataSandiPage(),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(rf(10)),
+                                decoration: BoxDecoration(
+                                  color: AppColors.bluePrimary.withOpacity(0.10),
+                                  borderRadius: BorderRadius.circular(rf(12)),
+                                ),
+                                child: Icon(
+                                  Icons.lock_outline,
+                                  color: AppColors.bluePrimary,
+                                  size: rf(22),
+                                ),
+                              ),
+
+                              SizedBox(width: rf(14)),
+
+                              Expanded(
+                                child: Text(
+                                  'Ubah Kata Sandi',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: rf(15),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+
+                              Icon(
+                                Icons.chevron_right,
+                                size: rf(26),
+                                color: Colors.grey.shade500,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: rf(28)),
+
+                  // ── LOGOUT BUTTON ──────────────────────────────────────
+                  SizedBox(
+                    width: double.infinity,
+                    height: rf(50),
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.red.shade400, width: 1.4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(rf(16)),
+                        ),
+                      ),
+                      onPressed: () => _showLogoutDialog(context, rf),
+                      child: Text(
+                        'Keluar',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: rf(15),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: rf(20)),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  // ── LOGOUT DIALOG ─────────────────────────────────────────────────────────────
-
-  // ── LOGOUT DIALOG ─────────────────────────────────────────────────────────────
+  // ── LOGOUT DIALOG ─────────────────────────────────────────────────────────
 
   void _showLogoutDialog(BuildContext context, double Function(double) rf) {
     final w = MediaQuery.of(context).size.width;
@@ -307,42 +237,29 @@ class ProfilePage extends StatelessWidget {
       barrierLabel: "Logout",
       barrierColor: Colors.black.withOpacity(0.45),
       transitionDuration: const Duration(milliseconds: 180),
-
       pageBuilder: (_, __, ___) {
         return Center(
           child: Material(
             color: Colors.transparent,
-
             child: Container(
               width: w * 0.82,
-
               constraints: const BoxConstraints(maxWidth: 340),
-
-              padding: EdgeInsets.symmetric(
-                horizontal: w * 0.05,
-                vertical: w * 0.05,
-              ),
-
+              padding: EdgeInsets.all(rf(24)),
               decoration: BoxDecoration(
                 color: Colors.white,
-
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(rf(20)),
               ),
-
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-
                 children: [
-                  /// ICON
+                  // ICON
                   Container(
                     width: rf(54),
                     height: rf(54),
-
                     decoration: BoxDecoration(
                       color: Colors.red.withOpacity(0.08),
                       shape: BoxShape.circle,
                     ),
-
                     child: Icon(
                       Icons.logout_rounded,
                       color: const Color(0xFFE24B4A),
@@ -352,27 +269,25 @@ class ProfilePage extends StatelessWidget {
 
                   SizedBox(height: rf(16)),
 
-                  /// TITLE
+                  // TITLE
                   Text(
                     "Keluar dari akun?",
                     textAlign: TextAlign.center,
-
                     style: TextStyle(
-                      fontSize: rf(20),
+                      fontSize: rf(18),
                       fontWeight: FontWeight.w700,
                       color: Colors.black87,
                     ),
                   ),
 
-                  SizedBox(height: rf(7)),
+                  SizedBox(height: rf(8)),
 
-                  /// SUBTITLE
+                  // SUBTITLE
                   Text(
                     "Anda yakin ingin keluar?",
                     textAlign: TextAlign.center,
-
                     style: TextStyle(
-                      fontSize: rf(14),
+                      fontSize: rf(13),
                       color: Colors.grey.shade600,
                       height: 1.4,
                     ),
@@ -380,33 +295,24 @@ class ProfilePage extends StatelessWidget {
 
                   SizedBox(height: rf(20)),
 
-                  /// BUTTONS
+                  // BUTTONS
                   Row(
                     children: [
                       Expanded(
                         child: SizedBox(
                           height: rf(42),
-
                           child: OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.grey.shade700,
-
                               side: BorderSide(color: Colors.grey.shade300),
-
                               padding: EdgeInsets.zero,
-
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(11),
+                                borderRadius: BorderRadius.circular(rf(11)),
                               ),
                             ),
-
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-
+                            onPressed: () => Navigator.pop(context),
                             child: Text(
                               "Batal",
-
                               style: TextStyle(
                                 fontSize: rf(13),
                                 fontWeight: FontWeight.w600,
@@ -421,25 +327,18 @@ class ProfilePage extends StatelessWidget {
                       Expanded(
                         child: SizedBox(
                           height: rf(42),
-
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFE24B4A),
-
                               foregroundColor: Colors.white,
-
                               elevation: 0,
-
                               padding: EdgeInsets.zero,
-
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(11),
+                                borderRadius: BorderRadius.circular(rf(11)),
                               ),
                             ),
-
                             onPressed: () {
                               Navigator.pop(context);
-
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
@@ -448,10 +347,8 @@ class ProfilePage extends StatelessWidget {
                                 (route) => false,
                               );
                             },
-
                             child: Text(
                               "Keluar",
-
                               style: TextStyle(
                                 fontSize: rf(13),
                                 fontWeight: FontWeight.w600,
@@ -468,7 +365,6 @@ class ProfilePage extends StatelessWidget {
           ),
         );
       },
-
       transitionBuilder: (_, animation, __, child) {
         return FadeTransition(
           opacity: animation,
@@ -483,32 +379,27 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // ── HELPERS ──────────────────────────────────────────────────────────────────
+  // ── HELPERS ───────────────────────────────────────────────────────────────
 
-  Widget _cardWrapper({required Widget child, required double w}) {
+  Widget _cardWrapper({
+    required Widget child,
+    required double Function(double) rf,
+  }) {
     return Container(
       width: double.infinity,
-
-      padding: EdgeInsets.all((w * 0.04).clamp(14, 22)),
-
+      padding: EdgeInsets.all(rf(18)),
       decoration: BoxDecoration(
         color: Colors.white,
-
-        borderRadius: BorderRadius.circular(18),
-
+        borderRadius: BorderRadius.circular(rf(18)),
         border: Border.all(color: const Color(0xFFE5E7EB)),
-
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
-
             blurRadius: 10,
-
             offset: const Offset(0, 4),
           ),
         ],
       ),
-
       child: child,
     );
   }
@@ -520,68 +411,52 @@ class ProfilePage extends StatelessWidget {
     required String value,
     required double Function(double) rf,
   }) {
-    final w = MediaQuery.of(context).size.width;
-
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: w * 0.035, vertical: w * 0.025),
-
+      padding: EdgeInsets.symmetric(
+        horizontal: rf(14),
+        vertical: rf(12),
+      ),
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
-
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(rf(14)),
       ),
-
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all((w * 0.018).clamp(8, 12)),
-
+            padding: EdgeInsets.all(rf(9)),
             decoration: BoxDecoration(
               color: const Color(0xFFEDEFF3),
-
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(rf(10)),
             ),
-
             child: Icon(icon, size: rf(18), color: AppColors.bluePrimary),
           ),
 
-          SizedBox(width: w * 0.03),
+          SizedBox(width: rf(12)),
 
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
                 Text(
                   label,
-
                   overflow: TextOverflow.ellipsis,
-
                   style: TextStyle(
                     fontSize: rf(10),
-
                     letterSpacing: 1,
-
                     color: Colors.grey.shade500,
-
                     fontWeight: FontWeight.w600,
                   ),
                 ),
 
-                SizedBox(height: w * 0.008),
+                SizedBox(height: rf(3)),
 
                 Text(
                   value,
-
                   overflow: TextOverflow.ellipsis,
-
                   maxLines: 2,
-
                   style: TextStyle(
                     fontSize: rf(14),
-
                     fontWeight: FontWeight.w500,
-
                     color: Colors.black87,
                   ),
                 ),

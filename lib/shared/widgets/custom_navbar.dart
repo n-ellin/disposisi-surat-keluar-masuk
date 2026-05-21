@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ta_mobile_disposisi_surat/core/constants/role.dart';
 
-// ── WIDGET ────────────────────────────────────────────────────────────────────
-
 class CustomNavbar extends StatelessWidget {
   final Role role;
   final int currentIndex;
@@ -18,22 +16,32 @@ class CustomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+
+    double rf(double size) {
+      return (w * (size / 375)).clamp(size * 0.80, size * 1.30);
+    }
+
     return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+      padding: EdgeInsets.only(
+        left: rf(16),
+        right: rf(16),
+        bottom: rf(12),
+      ),
       child: Material(
         color: Colors.white,
         elevation: 8,
         shadowColor: Colors.black26,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(rf(24)),
         clipBehavior: Clip.antiAlias,
-        child: Container(
-          height: 70,
+        child: SizedBox(
+          height: rf(62),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Expanded(child: _navIcon('assets/icons/ic_home.svg', 0)),
-              Expanded(child: _navIcon('assets/icons/ic_history.svg', 1)),
-              Expanded(child: _navIcon('assets/icons/ic_profile.svg', 2)),
+              Expanded(child: _navIcon(context, rf, 'assets/icons/ic_home.svg', 0)),
+              Expanded(child: _navIcon(context, rf, 'assets/icons/ic_history.svg', 1)),
+              Expanded(child: _navIcon(context, rf, 'assets/icons/ic_profile.svg', 2)),
             ],
           ),
         ),
@@ -41,9 +49,12 @@ class CustomNavbar extends StatelessWidget {
     );
   }
 
-  // ── NAV ICON ─────────────────────────────────────────────────────────────────
-
-  Widget _navIcon(String asset, int index) {
+  Widget _navIcon(
+    BuildContext context,
+    double Function(double) rf,
+    String asset,
+    int index,
+  ) {
     final isActive = currentIndex == index;
 
     return GestureDetector(
@@ -57,10 +68,12 @@ class CustomNavbar extends StatelessWidget {
             scale: scale,
             child: SvgPicture.asset(
               asset,
-              width: 22,
-              height: 22,
+              width: rf(22),
+              height: rf(22),
               colorFilter: ColorFilter.mode(
-                isActive ? const Color(0xFF2E8BC0) : const Color(0xFF9FB8C2),
+                isActive
+                    ? const Color(0xFF2E8BC0)
+                    : const Color(0xFF9FB8C2),
                 BlendMode.srcIn,
               ),
             ),
@@ -69,13 +82,4 @@ class CustomNavbar extends StatelessWidget {
       ),
     );
   }
-}
-
-// ── NO NOTCH SHAPE ────────────────────────────────────────────────────────────
-
-class _NoNotch extends NotchedShape {
-  const _NoNotch();
-
-  @override
-  Path getOuterPath(Rect host, Rect? guest) => Path()..addRect(host);
 }

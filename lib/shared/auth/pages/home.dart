@@ -96,7 +96,6 @@ class _HomeState extends State<Home> {
       notifications.where((n) => n['isRead'] == false).length;
 
   List<Map<String, dynamic>> get _allSurat => DummySurat.allSurat;
-
   List<Map<String, dynamic>> get _suratTerbaru =>
       DummySurat.allSurat.reversed.take(5).toList();
 
@@ -126,21 +125,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    final w = size.width;
-    final h = size.height;
-
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-
-    double responsiveText(double size) {
-      return (w * (size / 375)).clamp(size * 0.85, size * 1.25);
-    }
 
     return Scaffold(
       backgroundColor: AppColors.bg,
 
-      /// NAVBAR
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -158,13 +147,9 @@ class _HomeState extends State<Home> {
               );
             },
           ),
-
           ColoredBox(
             color: AppColors.bg,
-            child: SizedBox(
-              height: bottomPadding,
-              width: double.infinity,
-            ),
+            child: SizedBox(height: bottomPadding, width: double.infinity),
           ),
         ],
       ),
@@ -174,266 +159,274 @@ class _HomeState extends State<Home> {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 500),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: w * 0.06),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: h * 0.03),
+            // LayoutBuilder di dalam ConstrainedBox:
+            // w yang dipakai adalah lebar KONTEN setelah di-constrain,
+            // bukan lebar layar penuh — ini yang mencegah overflow & posisi mepet kiri
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final w = constraints.maxWidth.clamp(0.0, 430.0);
+                double rf(double s) {
+                  final scale = (w / 375).clamp(0.88, 1.10);
+                  return s * scale;
+                }
 
-                  /// HEADER
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                return Padding(
+                  // Fixed horizontal padding — tidak ikut scale DPI
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.asset(
-                        "assets/images/logosmk.jpg",
-                        width: w * 0.1,
-                        height: w * 0.1,
-                      ),
+                      SizedBox(height: rf(24)),
 
-                      GestureDetector(
-                        onTap: _openNotifikasi,
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Icon(
-                              Icons.notifications_none,
-                              size: w * 0.075,
-                              color: AppColors.bluePrimary,
-                            ),
+                      // ── HEADER ────────────────────────────────────────────
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.asset(
+                            "assets/images/logosmk.jpg",
+                            width: rf(40),
+                            height: rf(40),
+                          ),
 
-                            if (notifCount > 0)
-                              Positioned(
-                                right: -(w * 0.008),
-                                top: -(w * 0.008),
-                                child: Container(
-                                  padding: EdgeInsets.all(w * 0.008),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFE53935),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  constraints: BoxConstraints(
-                                    minWidth: w * 0.045,
-                                    minHeight: w * 0.045,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      notifCount > 9
-                                          ? '9+'
-                                          : notifCount.toString(),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: responsiveText(9),
-                                        fontWeight: FontWeight.bold,
-                                        height: 1,
+                          GestureDetector(
+                            onTap: _openNotifikasi,
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Icon(
+                                  Icons.notifications_none,
+                                  size: rf(28),
+                                  color: AppColors.bluePrimary,
+                                ),
+
+                                if (notifCount > 0)
+                                  Positioned(
+                                    right: -rf(4),
+                                    top: -rf(4),
+                                    child: Container(
+                                      padding: EdgeInsets.all(rf(3)),
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFFE53935),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      constraints: BoxConstraints(
+                                        minWidth: rf(16),
+                                        minHeight: rf(16),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          notifCount > 9
+                                              ? '9+'
+                                              : notifCount.toString(),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: rf(9),
+                                            fontWeight: FontWeight.bold,
+                                            height: 1,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: rf(18)),
+
+                      // ── TITLE ─────────────────────────────────────────────
+                      Text(
+                        "Disposisi Surat",
+                        style: TextStyle(
+                          fontSize: rf(22),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      SizedBox(height: rf(20)),
+
+                      // ── STAT CARDS ────────────────────────────────────────
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                if (widget.role == Role.tu) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const TuDashboardPage(
+                                        jenisSurat: 'Surat Masuk',
+                                      ),
+                                    ),
+                                  );
+                                } else if (widget.role == Role.kepsek) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const KepsekDashboardPage(
+                                        jenisSurat: 'Surat Masuk',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: _statCard(
+                                rf: rf,
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF6DA8B4),
+                                    Color(0xFF0F6E7A),
+                                  ],
                                 ),
+                                iconPath: "assets/icons/ic_inmail.svg",
+                                jumlah: jumlahSuratMasuk.toString(),
+                                label: "Masuk",
                               ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(height: h * 0.02),
-
-                  /// TITLE
-                  Text(
-                    "Disposisi Surat",
-                    style: TextStyle(
-                      fontSize: responsiveText(22),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  SizedBox(height: h * 0.03),
-
-                  /// STAT CARD
-                  Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            if (widget.role == Role.tu) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const TuDashboardPage(
-                                    jenisSurat: 'Surat Masuk',
-                                  ),
-                                ),
-                              );
-                            } else if (widget.role == Role.kepsek) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const KepsekDashboardPage(
-                                    jenisSurat: 'Surat Masuk',
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                          child: _statCard(
-                            w: w,
-                            responsiveText: responsiveText,
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF6DA8B4),
-                                Color(0xFF0F6E7A),
-                              ],
                             ),
-                            iconPath: "assets/icons/ic_inmail.svg",
-                            jumlah: jumlahSuratMasuk.toString(),
-                            label: "Masuk",
                           ),
-                        ),
-                      ),
 
-                      SizedBox(width: w * 0.04),
+                          SizedBox(width: rf(14)),
 
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            if (widget.role == Role.tu) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const TuDashboardPage(
-                                    jenisSurat: 'Surat Keluar',
-                                  ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                if (widget.role == Role.tu) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const TuDashboardPage(
+                                        jenisSurat: 'Surat Keluar',
+                                      ),
+                                    ),
+                                  );
+                                } else if (widget.role == Role.kepsek) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const KepsekDashboardPage(
+                                        jenisSurat: 'Surat Keluar',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: _statCard(
+                                rf: rf,
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFD6A66B),
+                                    Color(0xFFDA7B17),
+                                  ],
                                 ),
-                              );
-                            } else if (widget.role == Role.kepsek) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const KepsekDashboardPage(
-                                    jenisSurat: 'Surat Keluar',
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                          child: _statCard(
-                            w: w,
-                            responsiveText: responsiveText,
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFFD6A66B),
-                                Color(0xFFDA7B17),
-                              ],
+                                iconPath: "assets/icons/ic_outmail.svg",
+                                jumlah: jumlahSuratKeluar.toString(),
+                                label: "Keluar",
+                              ),
                             ),
-                            iconPath: "assets/icons/ic_outmail.svg",
-                            jumlah: jumlahSuratKeluar.toString(),
-                            label: "Keluar",
                           ),
+                        ],
+                      ),
+
+                      SizedBox(height: rf(24)),
+
+                      // ── SURAT TERBARU ─────────────────────────────────────
+                      Text(
+                        "Surat Terbaru",
+                        style: TextStyle(
+                          fontSize: rf(18),
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ],
-                  ),
 
-                  SizedBox(height: h * 0.03),
+                      SizedBox(height: rf(12)),
 
-                  /// HEADER LIST
-                  Text(
-                    "Surat Terbaru",
-                    style: TextStyle(
-                      fontSize: responsiveText(18),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                      // ── LIST ──────────────────────────────────────────────
+                      Expanded(
+                        child: ListView.builder(
+                          padding: EdgeInsets.only(bottom: rf(16)),
+                          itemCount: _suratTerbaru.length,
+                          itemBuilder: (context, index) {
+                            final surat = _suratTerbaru[index];
+                            final isMasuk =
+                                surat['jenisSurat'] == 'Surat Masuk';
 
-                  SizedBox(height: h * 0.015),
+                            return SuratCard(
+                              jenisSurat: surat['jenisSurat'] ?? '',
+                              tanggal: surat['tanggal'] ?? '-',
+                              data: Map<String, String>.from(
+                                surat['data'] ?? {},
+                              ),
+                              role: widget.role == Role.kepsek
+                                  ? CardRole.kepsek
+                                  : CardRole.tu,
+                              type: CardType.home,
+                              status: widget.role == Role.kepsek
+                                  ? null
+                                  : surat['status'],
+                              onDetail: () {
+                                if (widget.role == Role.kepsek) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => isMasuk
+                                          ? InputSuratMasuk(surat: surat)
+                                          : const InputSuratKeluar(),
+                                    ),
+                                  );
+                                  return;
+                                }
 
-                  /// LIST
-                  Expanded(
-                    child: ListView.builder(
-                      padding: EdgeInsets.only(bottom: h * 0.02),
-                      itemCount: _suratTerbaru.length,
-                      itemBuilder: (context, index) {
-                        final surat = _suratTerbaru[index];
-
-                        final isMasuk =
-                            surat['jenisSurat'] == 'Surat Masuk';
-
-                        return SuratCard(
-                          jenisSurat: surat['jenisSurat'] ?? '',
-                          tanggal: surat['tanggal'] ?? '-',
-                          data: Map<String, String>.from(
-                            surat['data'] ?? {},
-                          ),
-                          role: widget.role == Role.kepsek
-                              ? CardRole.kepsek
-                              : CardRole.tu,
-                          type: CardType.home,
-                          status: widget.role == Role.kepsek
-                              ? null
-                              : surat['status'],
-                          onDetail: () {
-                            if (widget.role == Role.kepsek) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => isMasuk
-                                      ? InputSuratMasuk(surat: surat)
-                                      : const InputSuratKeluar(),
-                                ),
-                              );
-
-                              return;
-                            }
-
-                            final status =
-                                surat['status']
+                                final status = surat['status']
                                         ?.toString()
                                         .toLowerCase() ??
                                     '';
 
-                            if (status == 'diproses') {
-                              showProcessDialog(context);
-                              return;
-                            }
+                                if (status == 'diproses') {
+                                  showProcessDialog(context);
+                                  return;
+                                }
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => isMasuk
-                                    ? OutputSuratmasuk(
-                                        isApproved:
-                                            status == 'disetujui',
-                                        catatan:
-                                            surat['catatan'] ?? '-',
-                                        tujuan:
-                                            surat['tujuan'] ?? '-',
-                                        instruksi:
-                                            surat['instruksi'] ?? '-',
-                                        koordinasi:
-                                            surat['koordinasi'] ?? '-',
-                                        diteruskanKe:
-                                            surat['diteruskanKe'] ??
-                                                '-',
-                                      )
-                                    : OutputSuratkeluar(
-                                        catatan:
-                                            surat['catatan'] ?? '-',
-                                        isReadOnly: false,
-                                        lampiranUrls:
-                                            List<String>.from(
-                                          surat['lampiran'] ?? [],
-                                        ),
-                                      ),
-                              ),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => isMasuk
+                                        ? OutputSuratmasuk(
+                                            isApproved:
+                                                status == 'disetujui',
+                                            catatan:
+                                                surat['catatan'] ?? '-',
+                                            tujuan: surat['tujuan'] ?? '-',
+                                            instruksi:
+                                                surat['instruksi'] ?? '-',
+                                            koordinasi:
+                                                surat['koordinasi'] ?? '-',
+                                            diteruskanKe:
+                                                surat['diteruskanKe'] ??
+                                                    '-',
+                                          )
+                                        : OutputSuratkeluar(
+                                            catatan:
+                                                surat['catatan'] ?? '-',
+                                            isReadOnly: false,
+                                            lampiranUrls:
+                                                List<String>.from(
+                                              surat['lampiran'] ?? [],
+                                            ),
+                                          ),
+                                  ),
+                                );
+                              },
                             );
                           },
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ),
@@ -442,28 +435,27 @@ class _HomeState extends State<Home> {
   }
 
   Widget _statCard({
-    required double w,
-    required double Function(double) responsiveText,
+    required double Function(double) rf,
     required LinearGradient gradient,
     required String iconPath,
     required String jumlah,
     required String label,
   }) {
     return Container(
-      padding: EdgeInsets.all(w * 0.04),
+      padding: EdgeInsets.all(rf(14)),
       decoration: BoxDecoration(
         gradient: gradient,
-        borderRadius: BorderRadius.circular(w * 0.05),
+        borderRadius: BorderRadius.circular(rf(18)),
       ),
       child: Row(
         children: [
           CircleAvatar(
-            radius: w * 0.055,
+            radius: rf(20),
             backgroundColor: Colors.white.withOpacity(0.3),
             child: SvgPicture.asset(
               iconPath,
-              width: w * 0.06,
-              height: w * 0.06,
+              width: rf(22),
+              height: rf(22),
               colorFilter: const ColorFilter.mode(
                 Colors.white,
                 BlendMode.srcIn,
@@ -471,7 +463,7 @@ class _HomeState extends State<Home> {
             ),
           ),
 
-          SizedBox(width: w * 0.03),
+          SizedBox(width: rf(10)),
 
           Expanded(
             child: Column(
@@ -482,7 +474,7 @@ class _HomeState extends State<Home> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: responsiveText(20),
+                    fontSize: rf(20),
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
@@ -493,7 +485,7 @@ class _HomeState extends State<Home> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: responsiveText(14),
+                    fontSize: rf(13),
                     color: Colors.white,
                   ),
                 ),
@@ -502,60 +494,6 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showProcessDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.45),
-      builder: (context) {
-        return Dialog(
-          backgroundColor: const Color(0xFFF3F0F6),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          insetPadding: const EdgeInsets.symmetric(horizontal: 80),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF4A4A4A),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.info_outline,
-                    color: Colors.white,
-                    size: 26,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  "Surat Dalam Proses",
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Surat masih dalam proses pengajuan.",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey,
-                    height: 1.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

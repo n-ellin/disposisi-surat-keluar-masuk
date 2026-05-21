@@ -21,10 +21,6 @@ class _LoginState extends State<Login> {
   String? _passwordError;
 
   bool _obscure = true;
-
-  // ================= NOTE =================
-  // TAMBAHAN:
-  // supaya loading login lebih smooth
   bool _isLoading = false;
 
   static const List<String> _validEmails = [
@@ -40,15 +36,11 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
-  // ================= VALIDATION =================
-
   void _validateEmail() {
     setState(() => _emailError = null);
   }
 
   Future<void> _login() async {
-    // ================= NOTE =================
-    // cegah double tap button login
     if (_isLoading) return;
 
     final email = _emailC.text.trim();
@@ -71,14 +63,10 @@ class _LoginState extends State<Login> {
 
     if (_emailError != null || _passwordError != null) return;
 
-    // ================= NOTE =================
-    // loading state
     setState(() {
       _isLoading = true;
     });
 
-    // ================= NOTE =================
-    // simulasi loading biar UX lebih enak
     await Future.delayed(const Duration(milliseconds: 800));
 
     if (email == 'kepsek@gmail.com' && password == '123456') {
@@ -116,8 +104,6 @@ class _LoginState extends State<Login> {
     );
   }
 
-  // ================= BUILD =================
-
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -128,179 +114,201 @@ class _LoginState extends State<Login> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: const Color(0xFFF2F2F2),
         body: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Column(
-                children: [
-                  // ================= ICON =================
-
-                  Container(
-                    width: 82,
-                    height: 82,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0F6E7A).withOpacity(0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.mail_outline_rounded,
-                      size: 38,
-                      color: Color(0xFF0F6E7A),
-                    ),
-                  ),
-
-                  const SizedBox(height: 22),
-
-                  // ================= TITLE =================
-
-                  const Text(
-                    'Masuk',
-                    style: TextStyle(
-                      fontSize: 38,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF0F6E7A),
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Text(
-                    'Silakan login untuk melanjutkan',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.black.withOpacity(0.45),
-                    ),
-                  ),
-
-                  const SizedBox(height: 34),
-
-                  // ================= CARD =================
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ================= EMAIL =================
+                        const SizedBox(height: 40),
 
-                        const _FieldLabel(text: 'EMAIL'),
+                        // ================= ICON =================
 
-                        const SizedBox(height: 10),
-
-                        _buildEmailField(),
+                        Container(
+                          width: 82,
+                          height: 82,
+                          decoration: BoxDecoration(
+                            color:
+                                const Color(0xFF0F6E7A).withOpacity(0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.mail_outline_rounded,
+                            size: 38,
+                            color: Color(0xFF0F6E7A),
+                          ),
+                        ),
 
                         const SizedBox(height: 22),
 
-                        // ================= PASSWORD =================
+                        // ================= TITLE =================
 
-                        const _FieldLabel(text: 'KATA SANDI'),
-
-                        const SizedBox(height: 10),
-
-                        _buildPasswordField(),
-
-                        const SizedBox(height: 10),
-
-                        // ================= FORGOT PASSWORD =================
-
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ForgotPasswordPage(),
-                              ),
-                            ),
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size.zero,
-                              tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text(
-                              'Lupa Kata sandi?',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.bluePrimary,
-                              ),
-                            ),
+                        const Text(
+                          'Masuk',
+                          style: TextStyle(
+                            fontSize: 38,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF0F6E7A),
                           ),
                         ),
 
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 8),
 
-                        // ================= LOGIN BUTTON =================
+                        Text(
+                          'Silakan login untuk melanjutkan',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black.withOpacity(0.45),
+                          ),
+                        ),
 
-                        SizedBox(
+                        const SizedBox(height: 34),
+
+                        // ================= CARD =================
+
+                        Container(
                           width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            // ================= NOTE =================
-                            // disable button saat loading
-                            onPressed: _isLoading ? null : _login,
-
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              backgroundColor: AppColors.bluePrimary,
-                              disabledBackgroundColor:
-                                  AppColors.bluePrimary.withOpacity(0.7),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18),
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
                               ),
-                            ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              // ================= EMAIL =================
 
-                            // ================= NOTE =================
-                            // loading indicator di button
-                            child: _isLoading
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.4,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Masuk',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
+                              const _FieldLabel(text: 'EMAIL'),
+
+                              const SizedBox(height: 10),
+
+                              _buildEmailField(),
+
+                              const SizedBox(height: 22),
+
+                              // ================= PASSWORD =================
+
+                              const _FieldLabel(text: 'KATA SANDI'),
+
+                              const SizedBox(height: 10),
+
+                              _buildPasswordField(),
+
+                              const SizedBox(height: 10),
+
+                              // ================= FORGOT PASSWORD =================
+
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const ForgotPasswordPage(),
                                     ),
                                   ),
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize
+                                            .shrinkWrap,
+                                  ),
+                                  child: const Text(
+                                    'Lupa Kata sandi?',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color:
+                                          AppColors.bluePrimary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 24),
+
+                              // ================= LOGIN BUTTON =================
+
+                              SizedBox(
+                                width: double.infinity,
+                                height: 50,
+                                child: ElevatedButton(
+                                  onPressed:
+                                      _isLoading ? null : _login,
+                                  style:
+                                      ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    backgroundColor:
+                                        AppColors.bluePrimary,
+                                    disabledBackgroundColor:
+                                        AppColors.bluePrimary
+                                            .withOpacity(0.7),
+                                    shape:
+                                        RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(
+                                              18),
+                                    ),
+                                  ),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child:
+                                              CircularProgressIndicator(
+                                            strokeWidth: 2.4,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Text(
+                                          'Masuk',
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            fontWeight:
+                                                FontWeight.w700,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+
+                        const SizedBox(height: 30),
                       ],
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: 24),
+                // ================= COPYRIGHT =================
 
-                  Text(
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
                     '© 2025 SMKN 2 Singosari',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.black.withOpacity(0.35),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -388,27 +396,21 @@ class _LoginState extends State<Login> {
       isDense: true,
       hintText: hint,
       errorText: error,
-
       hintStyle: TextStyle(
         color: AppColors.hinttext.withOpacity(0.35),
         fontSize: 14,
       ),
-
       prefixIcon: Icon(
         prefixIcon,
         color: Colors.grey.shade600,
         size: 20,
       ),
-
       suffixIcon: suffixIcon,
-
       filled: true,
       fillColor: const Color(0xFFF3F4F6),
-
       contentPadding: const EdgeInsets.symmetric(
         vertical: 14,
       ),
-
       enabledBorder: border,
       focusedBorder: focusedBorder,
       errorBorder: border,
@@ -416,8 +418,6 @@ class _LoginState extends State<Login> {
     );
   }
 }
-
-// ================= FIELD LABEL =================
 
 class _FieldLabel extends StatelessWidget {
   final String text;
